@@ -19,6 +19,10 @@ body {
   background-color: #304050;
 }
 
+.logo h1 {
+  text-decoration: none;
+}
+
 .SidebarList {
   height: auto;
   padding: 0;
@@ -35,8 +39,7 @@ body {
   justify-content: center;
   align-items: center;
   height: 120px;
-  font-family: "Trebuchet MS", "Lucida Sans Unicode", "Lucida Grande",
-    "Lucida Sans", Arial, sans-serif;
+  font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
   cursor: pointer;
 }
 
@@ -64,8 +67,9 @@ body {
   background-color: #293846;
 }
 
-.SidebarList #active {
+.active-link {
   background-color: #293846;
+  text-decoration: none;
 }
 
 .row #icon {
@@ -76,11 +80,6 @@ body {
 
 .row #title {
   flex: 70%;
-}
-
-.toggle-sidebar {
-  position: relative;
-  right: 0;
 }
 
 /* Navbar */

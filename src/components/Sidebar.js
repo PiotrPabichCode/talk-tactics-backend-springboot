@@ -5,12 +5,11 @@ import LocalLibraryIcon from "@mui/icons-material/LocalLibrary";
 import SwitchLeftIcon from "@mui/icons-material/SwitchLeft";
 import SwitchRightIcon from "@mui/icons-material/SwitchRight";
 import { Link } from "react-router-dom";
-
 function Sidebar() {
   return (
     <>
       <div className="Sidebar">
-        <Link to={"/"}>
+        <Link to={"/"} style={{textDecoration: 'none'}}>
           <div className="logo">
             <h1>TalkTactics</h1>
           </div>
@@ -18,7 +17,7 @@ function Sidebar() {
         <ul className="SidebarList">
           {SidebarData.map((val, key) => {
             return (
-              <Link to={val.link}>
+              <Link to={val.link}  style={{textDecoration: 'none'}}>
                 <li
                   key={key}
                   className="row"
@@ -34,5 +33,20 @@ function Sidebar() {
     </>
   );
 }
+
+
+const pages = document.querySelectorAll(".row");
+
+pages.forEach((item) => {
+  item.addEventListener('click', active_item);
+})
+
+function active_item () {
+  pages.forEach((item) => {
+    item.classList.remove('active-link');
+  });
+  this.classList.add('active-link');
+}
+
 
 export default Sidebar;
