@@ -1,6 +1,5 @@
 import "./App.css";
 import React from "react";
-import Sidebar from "./components/Sidebar/Sidebar";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import Home from "./pages/Home/Home";
 import Account from "./pages/Account/Account";
@@ -14,7 +13,6 @@ function App() {
     <div className="App">
       <BrowserRouter>
         <Navbar />
-        {/* <Sidebar /> */}
         
         <Routes>
           <Route path="/" element={<Home />} />

@@ -2,3 +2,10 @@
     margin-left: 5rem;
     padding: 1rem;
 }
+
+@media only screen and (max-width: 600px) {
+    .tasks-container {
+        margin: 0;
+        padding: 2rem;
+    }
+}

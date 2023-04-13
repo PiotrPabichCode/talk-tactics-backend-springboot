@@ -6,7 +6,7 @@ import TaskIcon from "@mui/icons-material/Task";
 import LogoutIcon from "@mui/icons-material/Logout";
 import InfoIcon from "@mui/icons-material/Info";
 
-export const SidebarData = [
+export const NavbarData = [
   {
     title: "Home",
     icon: <HomeIcon />,
@@ -39,4 +39,4 @@ export const SidebarData = [
   },
 ];
 
-export default SidebarData;
+export default NavbarData;

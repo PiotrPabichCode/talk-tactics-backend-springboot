@@ -15,11 +15,6 @@ body {
   padding: 0;
 }
 
-main {
-  margin-left: 5rem;
-  padding: 1rem;
-}
-
 body::-webkit-scrollbar {
   width: 0.25rem;
 }
@@ -33,7 +28,4 @@ body::-webkit-scrollbar-thumb {
 }
 
 .App {
-  width: 100vw;
-  height: 100vh;
-  /* background-color: #dee3e7; */
 }
