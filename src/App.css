@@ -1,91 +1,39 @@
-.App {
-  width: 100vw;
-  height: 100vh;
-  display: flex;
-  flex-direction: row;
-  background-color: #dee3e7;
+:root {
+  font-size: 16px;
+  font-family: 'Open Sans';
+  --text-primary: #b6b6b6;
+  --text-seconday: #ececec;
+  --bg-primary: #23232e;
+  --bg-secondary: #141418;
+  --transition-speed: 600ms;
 }
 
 body {
+  color: black;
+  background-color: white;
   margin: 0;
   padding: 0;
 }
 
-/* Sidebar */
-
-.Sidebar {
-  height: 100%;
-  width: 250px;
-  background-color: #304050;
+main {
+  margin-left: 5rem;
+  padding: 1rem;
 }
 
-.logo h1 {
-  text-decoration: none;
+body::-webkit-scrollbar {
+  width: 0.25rem;
 }
 
-.SidebarList {
-  height: auto;
-  padding: 0;
-  width: 100%;
+body::-webkit-scrollbar-track {
+  background: #1e1e24;
 }
 
-.logo {
-  height: auto;
-  padding: 0;
-  width: 100%;
-  color: white;
-  display: flex;
-  flex-direction: row;
-  justify-content: center;
-  align-items: center;
-  height: 120px;
-  font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
-  cursor: pointer;
+body::-webkit-scrollbar-thumb {
+  background: #6649b8;
 }
 
-.logo-icon {
-  height: 100px;
-  width: 100px;
-}
-
-.SidebarList .row {
-  width: 100%;
-  height: 60px;
-  list-style-type: none;
-  margin: 0%;
-  color: white;
-  display: flex;
-  flex-direction: row;
-  justify-content: center;
-  align-items: center;
-  font-family: "Trebuchet MS", "Lucida Sans Unicode", "Lucida Grande",
-    "Lucida Sans", Arial, sans-serif;
-}
-
-.SidebarList .row:hover {
-  cursor: pointer;
-  background-color: #293846;
-}
-
-.active-link {
-  background-color: #293846;
-  text-decoration: none;
-}
-
-.row #icon {
-  flex: 30%;
-  display: grid;
-  place-items: center;
-}
-
-.row #title {
-  flex: 70%;
-}
-
-/* Navbar */
-
-.Navbar {
-  width: 100%;
-  height: 100px;
-  /* background-color: #293846; */
+.App {
+  width: 100vw;
+  height: 100vh;
+  background-color: #dee3e7;
 }

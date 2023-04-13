@@ -1,5 +1,5 @@
 import React from "react";
-import "../App.css";
+import "./Sidebar.css";
 import { SidebarData } from "./SidebarData";
 import LocalLibraryIcon from "@mui/icons-material/LocalLibrary";
 import SwitchLeftIcon from "@mui/icons-material/SwitchLeft";
