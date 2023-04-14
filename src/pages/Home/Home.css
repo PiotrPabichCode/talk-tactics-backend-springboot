@@ -1,0 +1,78 @@
+.home_wrapper {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    min-width: max-content;
+    width: 100%;
+    height: 100%;
+    padding-bottom: 8rem;
+}
+
+.homecontainer {
+    display: flex;
+    flex-direction: row;
+    padding-top: 3rem;
+    width: 100%;
+    align-items: center;
+    justify-content: center;
+    color: white;
+}
+
+.description1 h1,p {
+    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+}
+
+.description1 h1{
+    font-size: 40px;
+}
+
+.description1 p{
+    font-size: 26px;
+    letter-spacing: 0.1rem;
+}
+
+.homecontainer img {
+    width: 600px;
+    height: 450px;
+}
+
+.description1 {
+    width: 500px;
+    display: flex;
+    flex-direction: column;
+}
+
+.description1 button {
+    background-color: #6C63FF;
+    width: 330px;
+    height: 80px;
+    border-radius: 20px;
+    display: flex;
+    cursor: pointer;
+    font-size: 26px;
+}
+
+.description1 button:hover {
+    background-color: #5046fc;
+    transition: 400ms ease-in;
+}
+
+.description1 #home2desc {
+    padding-top: 30px;
+    width: 400px;
+    letter-spacing: 0.2rem;
+}
+
+@media only screen and (max-width: 800px){
+    .homecontainer {
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+    }
+    .description1 {
+        align-items: center;
+    }
+    .description1 p {
+        font-size: 40px;
+    }
+}

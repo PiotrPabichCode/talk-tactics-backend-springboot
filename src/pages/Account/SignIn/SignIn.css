@@ -51,19 +51,19 @@
 }
 
 
-input::placeholder {
+.mycontainer input::placeholder {
   color: white;
   font-size: 14px;
 }
 
-input:focus::placeholder {
+.mycontainer input:focus::placeholder {
   transform: translateY(-90%);
   transition: var(--transition-speed);
   font-size: 13px;
   color: rgb(163, 149, 149);
 }
 
-input,
+.mycontainer input,
 button {
   font-family: "Dosis", sans-serif;
   letter-spacing: 1.5px;
@@ -76,15 +76,11 @@ button {
   align-items: center;
 }
 
-.label-style {
-  left: 0;
-}
-
-button:hover, input:hover {
+.mycontainer button:hover, input:hover {
   border-color: lightblue;
 }
 
-button:hover {
+.mycontainer button:hover {
   background: #3f4048;
   transition: var(--transition-speed);
   cursor: pointer;
@@ -110,21 +106,22 @@ button:hover {
 }
 
 .register-text {
-  color: white;
+  color: rgb(128, 128, 221);
   font-size: 16px;
   text-decoration: none;
+  padding-left: 10px;
 }
 
 .register-link:hover {
   filter: grayscale(0%) opacity(1);
-  color: rgb(128, 128, 221);
+  color: rgb(98, 98, 211);
 }
 
 .links {
-  display: flex;
-  align-items: center;
-  flex-direction: row;
-  margin-inline: 20px;
-  justify-content: space-between;
-  color: white;
+    display: flex;
+    align-items: center;
+    flex-direction: row;
+    margin-inline: 20px;
+    justify-content: space-between;
+    color: white;
 }

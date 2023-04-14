@@ -10,7 +10,7 @@
 
 body {
   color: black;
-  background-color: white;
+  background-color: #010462;
   margin: 0;
   padding: 0;
 }
@@ -28,9 +28,19 @@ body::-webkit-scrollbar-thumb {
 }
 
 .App {
-  background-image: url("/public/background.jpg");
+  /* background-image: url("/public/background1.png");
   background-repeat: no-repeat;
-  background-size: cover;
-  height: 100vh;
-  width: 100vw;
+  background-size: cover; */
+  height: 100%;
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  /* padding-bottom: 8rem; */
+}
+
+@media only screen and (max-width: 1300px) {
+  .App {
+      flex-direction: column;
+      /* padding-bottom: 12rem; */
+  }
 }

@@ -7,7 +7,7 @@ import KeyboardDoubleArrowRightIcon from '@mui/icons-material/KeyboardDoubleArro
 function Navbar() {
   return (
     <>
-      <nav className="navbar">
+      <div className="navbar">
         <ul className="navbar-nav">
           <li className="logo">
             <Link to="/"  className="nav-link">
@@ -26,7 +26,7 @@ function Navbar() {
             );
           })}
         </ul>
-      </nav>
+      </div>
     </>
   );
 }

@@ -3,7 +3,7 @@
     padding: 1rem;
 }
 
-@media only screen and (max-width: 600px) {
+@media only screen and (max-width: 1300px) {
     .tasks-container {
         margin: 0;
         padding: 2rem;
