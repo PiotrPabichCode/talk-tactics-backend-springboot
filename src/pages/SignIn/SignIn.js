@@ -35,7 +35,7 @@ function SignIn() {
           </button>
         </div>
 
-        <p className="register-text">Lub Zaloguj się Używając</p>
+        <p style={{color: "white", fontSize:"20px"}}>Or sign in by using</p>
         <div className="icons-register">
         <a href="#">
           <FaGoogle className="icon-register" />
@@ -47,14 +47,9 @@ function SignIn() {
           <FaTwitter className="icon-register" />
         </a>
         </div>
-        <p className="register-text">Lub Zarejestruj się Używając</p>
-        <div>
-          <Link
-            to={"/register"}
-            className="register-text register-link"
-          >
-            Zarejestruj się
-          </Link>
+        <div className="links">
+        <p>Don't have an account?</p>            
+        <Link to={"/register"} className="register-text register-link"> Sign up </Link>
         </div>
         <br />
     </div>

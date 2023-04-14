@@ -8,7 +8,7 @@ import Tasks from "./pages/Tasks/Tasks";
 import Assignment from "./pages/Assignment/Assignment";
 import Navbar from "./components/Navbar/Navbar";
 import SignIn from "./pages/SignIn/SignIn";
-
+import SignUp from "./pages/SignUp/SignUp";
 function App() {
   return (
     <div className="App">

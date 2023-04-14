@@ -119,3 +119,12 @@ button:hover {
   filter: grayscale(0%) opacity(1);
   color: rgb(128, 128, 221);
 }
+
+.links {
+  display: flex;
+  align-items: center;
+  flex-direction: row;
+  margin-inline: 20px;
+  justify-content: space-between;
+  color: white;
+}
