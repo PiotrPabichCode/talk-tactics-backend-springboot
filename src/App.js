@@ -7,6 +7,7 @@ import Faq from "./pages/Faq/Faq";
 import Tasks from "./pages/Tasks/Tasks";
 import Assignment from "./pages/Assignment/Assignment";
 import Navbar from "./components/Navbar/Navbar";
+import SignIn from "./pages/SignIn/SignIn";
 
 function App() {
   return (
@@ -16,7 +17,7 @@ function App() {
         
         <Routes>
           <Route path="/" element={<Home />} />
-          <Route path="/account" element={<Account />} />
+          <Route path="/account" element={<SignIn />} />
           <Route path="/assignment" element={<Assignment />} />
           <Route path="/faq" element={<Faq />} />
           <Route path="/tasks" element={<Tasks />} />

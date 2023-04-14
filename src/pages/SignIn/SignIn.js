@@ -5,37 +5,38 @@ import { Link } from "react-router-dom";
 
 function SignIn() {
   return (
-    <div className="wrapper py-3">
-      <div className="mycontainer shadow">
-        <img className="nav-logo pt-3" src="\logo192.png" alt="logo" />
-        <div className="nav-item-text text-white">Time Tacticians</div>
-        <div className="input-container form-floating text-white mx-5 mt-3">
+    <>
+    <div className="wrapper">
+        <div className="mycontainer">
+        <img className="nav-logo" src="\logo192.png" alt="logo" />
+        <div className="nav-item-text">Talk Tactics</div>
+        <div className="input-container">
           <input
-            type="text"
-            placeholder="Nazwa użytkownika"
-            className="form-control bg-transparent text-white"
-            id="floatingUsername"
-          />
-          <label for="floatingUsername">Nazwa użytkownika</label>
+              type="text"
+              placeholder="Username"
+              className="input-style"
+              id="usernameID"
+            />
         </div>
-
-        <div className="input-container form-floating text-white mx-5">
+        <div className="input-container">
           <input
-            type="text"
-            placeholder="Hasło"
-            className="form-control bg-transparent text-white"
-            id="floatingPassword"
-          />
-          <label for="floatingPassword">Hasło</label>
+              type="password"
+              placeholder="Password"
+              className="input-style"
+              id="passwordID"
+            />
         </div>
-
+        <div className="input-container">
         <button
-          type="submit"
-          className="input-container mx-5 mb-3 btn btn-secondary btn-lg bg-dark opacity-75"
-        >
-          Zaloguj się
-        </button>
-        <p className="text-white register-text">Lub Zaloguj się Używając</p>
+            type="submit"
+            className="input-style"
+          >
+            Sign in
+          </button>
+        </div>
+
+        <p className="register-text">Lub Zaloguj się Używając</p>
+        <div className="icons-register">
         <a href="#">
           <FaGoogle className="icon-register" />
         </a>
@@ -45,19 +46,20 @@ function SignIn() {
         <a href="#">
           <FaTwitter className="icon-register" />
         </a>
-        <br />
-        <p className="text-white">Lub Zarejestruj się Używając</p>
+        </div>
+        <p className="register-text">Lub Zarejestruj się Używając</p>
         <div>
           <Link
             to={"/register"}
-            className="link-primary text-info register-text mb-3"
+            className="register-text register-link"
           >
             Zarejestruj się
           </Link>
         </div>
         <br />
-      </div>
     </div>
+    </div>
+    </>
   );
 }
 
