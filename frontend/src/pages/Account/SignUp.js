@@ -1,19 +1,44 @@
-import React from "react";
+import React, { useState } from "react";
+import axios from "axios";
 import "./LoginRegister.css";
 import { FaFacebook, FaTwitter, FaGoogle } from "react-icons/fa";
 import { Link } from "react-router-dom";
 
-const user = {
-  username: "",
-  password: "",
-  repeatPassword: "",
-};
+const SignUp = () => {
+  const [errorMessage, setErrorMessage] = useState("");
 
-const handleRegisterForm = async (e) => {
-  e.preventDefault();
-};
+  const [user, setUser] = useState({
+    login: "",
+    password: "",
+    repeatPassword: "",
+  });
 
-function SignUp() {
+  const handleChange = (e) => {
+    setUser({ ...user, [e.target.name]: e.target.value });
+  };
+
+  const handleRegisterForm = async (e) => {
+    e.preventDefault();
+    setErrorMessage("");
+
+    try {
+      console.log(user);
+      const response = await axios.post(
+        "http://localhost:8080/api/users/register",
+        user
+      );
+      console.log(response.data);
+      setUser({ login: "", password: "", repeatPassword: "" });
+    } catch (error) {
+      if (error.response && error.response.status === 409) {
+        setErrorMessage(error.response.data);
+      } else {
+        setErrorMessage("An error occurred. Please try again.");
+      }
+    }
+    console.log(errorMessage);
+  };
+
   return (
     <>
       <div className="wrapper">
@@ -24,27 +49,33 @@ function SignUp() {
             <div className="input-container">
               <input
                 type="text"
-                placeholder="Username"
+                name="login"
+                value={user.login}
+                onChange={handleChange}
+                placeholder="Login"
                 className="input-style"
-                id="usernameID"
                 required
               />
             </div>
             <div className="input-container">
               <input
                 type="password"
+                name="password"
+                value={user.password}
+                onChange={handleChange}
                 placeholder="Password"
                 className="input-style"
-                id="passwordID"
                 required
               />
             </div>
             <div className="input-container">
               <input
                 type="password"
+                name="repeatPassword"
+                value={user.repeatPassword}
+                onChange={handleChange}
                 placeholder="Repeat password"
                 className="input-style"
-                id="repeatPasswordID"
                 required
               />
             </div>
@@ -81,6 +112,6 @@ function SignUp() {
       </div>
     </>
   );
-}
+};
 
 export default SignUp;
