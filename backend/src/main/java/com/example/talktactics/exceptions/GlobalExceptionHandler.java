@@ -18,7 +18,6 @@ public class GlobalExceptionHandler {
         BindingResult bindingResult = ex.getBindingResult();
         List<FieldError> fieldErrors = bindingResult.getFieldErrors();
 
-        // Construct a custom error response
         ValidationErrorDTO errorDTO = new ValidationErrorDTO();
         for (FieldError fieldError : fieldErrors) {
             errorDTO.addFieldError(fieldError.getField(), fieldError.getDefaultMessage());

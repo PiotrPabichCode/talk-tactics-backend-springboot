@@ -4,6 +4,7 @@ import com.example.talktactics.dto.UserDTO;
 import com.example.talktactics.models.User;
 import com.example.talktactics.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.validation.Errors;
@@ -62,5 +63,15 @@ public class UserController {
         userRepository.save(user);
 
         return ResponseEntity.ok("User registered successfully");
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<?> loginUser(@RequestBody UserDTO userDTO) {
+        User user = userRepository.findByLogin(userDTO.getLogin());
+        if (user == null || !passwordEncoder.matches(userDTO.getPassword(), user.getPassword())) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid credentials");
+        }
+
+        return ResponseEntity.ok("Sign-in successful");
     }
 }
