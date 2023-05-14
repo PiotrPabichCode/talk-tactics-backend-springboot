@@ -23,9 +23,9 @@ export const NavbarData = [
     link: "/assignment",
   },
   {
-    title: "Tasks",
+    title: "Courses",
     icon: <TaskIcon />,
-    link: "/tasks",
+    link: "/courses",
   },
   {
     title: "FAQ",

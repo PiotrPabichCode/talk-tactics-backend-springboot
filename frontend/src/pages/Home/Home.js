@@ -16,9 +16,11 @@ function Home() {
               Witaj w TalkTactics - twoim źródle wiedzy na temat nauki języków
               obcych!
             </p>
-            <Link to={"/login"} style={{ textDecoration: "none" }}>
-              <button>Start now!</button>
-            </Link>
+            <button>
+              <Link to={"/login"} style={{ textDecoration: "none" }}>
+                Start now!
+              </Link>
+            </button>
           </div>
           <img src="home1.svg" alt=""></img>
         </div>

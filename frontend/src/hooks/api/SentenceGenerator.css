@@ -1,0 +1,13 @@
+.sentence_wrapper {
+  margin-top: 5rem;
+  display: flex;
+  justify-content: center;
+  width: 100vw;
+  height: 100%;
+  background-color: black;
+}
+
+.sentence_wrapper button {
+  width: 100px;
+  height: 50px;
+}

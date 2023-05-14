@@ -4,11 +4,11 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import Home from "./pages/Home/Home";
 import Account from "./pages/Account/Account";
 import Faq from "./pages/Faq/Faq";
-import Tasks from "./pages/Tasks/Tasks";
 import Assignment from "./pages/Assignment/Assignment";
 import Navbar from "./components/Navbar/Navbar";
 import SignIn from "./pages/Account/SignIn";
 import SignUp from "./pages/Account/SignUp";
+import Course from "./pages/Course/Course";
 function App() {
   return (
     <div className="App">
@@ -22,7 +22,7 @@ function App() {
           <Route path="/register" element={<SignUp />} />
           <Route path="/assignment" element={<Assignment />} />
           <Route path="/faq" element={<Faq />} />
-          <Route path="/tasks" element={<Tasks />} />
+          <Route path="/courses" element={<Course />} />
         </Routes>
       </BrowserRouter>
     </div>

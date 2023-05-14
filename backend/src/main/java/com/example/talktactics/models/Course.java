@@ -11,12 +11,13 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "users")
-public class User {
+@Table(name = "courses")
+public class Course {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    int id;
-    String login;
-    String password;
-    boolean is_admin;
+    private int id;
+    private String name;
+    @Column(length = 800)
+    private String description;
+    private String level;
 }

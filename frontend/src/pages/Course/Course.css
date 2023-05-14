@@ -1,0 +1,29 @@
+.course__wrapper {
+  margin: 5rem;
+  top: 0;
+  position: absolute;
+  display: flex;
+  border-radius: 20px;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+
+.course__body {
+  margin-bottom: 1rem;
+  min-width: 600px;
+  width: 600px;
+  position: relative;
+  background-color: aliceblue;
+  padding: 0 40px;
+  border-radius: 20px;
+  border-color: black;
+  border-style: hidden;
+}
+
+.course__line {
+  width: 100%;
+  height: 2px;
+  background-color: black;
+  text-align: center;
+}

@@ -1,8 +1,8 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import NavbarData from "./NavbarData";
-import "./Navbar.css"
-import KeyboardDoubleArrowRightIcon from '@mui/icons-material/KeyboardDoubleArrowRight';
+import "./Navbar.css";
+import KeyboardDoubleArrowRightIcon from "@mui/icons-material/KeyboardDoubleArrowRight";
 
 function Navbar() {
   return (
@@ -10,18 +10,17 @@ function Navbar() {
       <div className="navbar">
         <ul className="navbar-nav">
           <li className="logo">
-            <Link to="/"  className="nav-link">
-              <span className="link-text">TalkTactics</span>
-              <KeyboardDoubleArrowRightIcon />
-              </Link>
+            <Link to="/" className="nav-link">
+              TalkTactics
+            </Link>
           </li>
-        {NavbarData.map((val) => {
+          {NavbarData.map((val) => {
             return (
               <li className="nav-item">
-                <Link to={val.link}  className="nav-link">
+                <Link to={val.link} className="nav-link">
                   <div id="icon">{val.icon}</div>
                   <span className="link-text">{val.title}</span>
-                  </Link>
+                </Link>
               </li>
             );
           })}
