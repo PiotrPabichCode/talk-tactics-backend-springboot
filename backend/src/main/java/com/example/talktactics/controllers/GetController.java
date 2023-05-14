@@ -11,9 +11,7 @@ import com.example.talktactics.repositories.TaskRepository;
 import com.example.talktactics.repositories.UserRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -42,6 +40,10 @@ public class GetController {
     @GetMapping("/courses")
     public List<Course> getAllCourses() {
         return courseRepository.findAll();
+    }
+    @GetMapping("/courses/{course_id}")
+    public List<Task> getAllTasksByCourseId(@PathVariable int course_id) {
+        return taskRepository.getTasksByCourseId(course_id);
     }
     @GetMapping("/answers")
     public List<Answer> getAllAnswers() {
