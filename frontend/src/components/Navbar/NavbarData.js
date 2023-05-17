@@ -13,11 +13,6 @@ export const NavbarData = [
     link: "/",
   },
   {
-    title: "Account",
-    icon: <AccountBoxIcon />,
-    link: "/account",
-  },
-  {
     title: "Assignment",
     icon: <AssignmentIcon />,
     link: "/assignment",
@@ -33,9 +28,9 @@ export const NavbarData = [
     link: "/faq",
   },
   {
-    title: "Logout",
-    icon: <LogoutIcon />,
-    link: "/logout",
+    title: "Account",
+    icon: <AccountBoxIcon />,
+    link: "/account",
   },
 ];
 

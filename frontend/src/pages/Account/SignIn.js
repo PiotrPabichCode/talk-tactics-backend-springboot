@@ -34,63 +34,57 @@ const SignIn = (e) => {
 
   return (
     <>
-      <div className="wrapper">
-        <form onSubmit={handleLoginForm}>
-          <div className="mycontainer">
-            <img className="nav-logo" src="\logo192.png" alt="logo" />
-            <div className="nav-item-text">Talk Tactics</div>
-            <div className="input-container">
-              <input
-                type="text"
-                name="login"
-                value={user.login}
-                onChange={handleChange}
-                placeholder="Login"
-                className="input-style"
-                required
-              />
+      <div className="pt-4 justify-content-center align-items-center">
+        <div className="container">
+          <div className="row d-flex justify-content-center">
+            <div className="col-12 col-md-8 col-lg-6">
+              <div className="card bg-white shadow-lg">
+                <div className="card-body p-5">
+                  <form className="mb-3 mt-md-4">
+                    <h2 className="fw-bold mb-2 text-uppercase ">
+                      TalkTactics
+                    </h2>
+                    <div className="mb-3">
+                      <label for="login" className="form-label ">
+                        Login
+                      </label>
+                      <input
+                        type="text"
+                        className="form-control"
+                        id="login"
+                        placeholder="Username"
+                      />
+                    </div>
+                    <div className="mb-3">
+                      <label for="password" className="form-label ">
+                        Password
+                      </label>
+                      <input
+                        type="password"
+                        className="form-control"
+                        id="password"
+                        placeholder="*******"
+                      />
+                    </div>
+                    <div className="d-grid">
+                      <button className="btn btn-outline-dark" type="submit">
+                        Sign in
+                      </button>
+                    </div>
+                  </form>
+                  <div>
+                    <p className="mb-0  text-center">
+                      Don't have an account?{" "}
+                      <Link to="/register" className="text-primary fw-bold">
+                        Sign up
+                      </Link>
+                    </p>
+                  </div>
+                </div>
+              </div>
             </div>
-            <div className="input-container">
-              <input
-                type="password"
-                name="password"
-                value={user.password}
-                onChange={handleChange}
-                placeholder="Password"
-                className="input-style"
-                required
-              />
-            </div>
-            <div className="input-container">
-              <button type="submit" className="input-style">
-                Sign in
-              </button>
-            </div>
-
-            <p style={{ color: "white", fontSize: "20px" }}>
-              Or sign in by using
-            </p>
-            <div className="icons-register">
-              <a href="#">
-                <FaGoogle className="icon-register" />
-              </a>
-              <a href="#">
-                <FaFacebook className="icon-register" />
-              </a>
-              <a href="#">
-                <FaTwitter className="icon-register" />
-              </a>
-            </div>
-            <div className="links">
-              <p>Don't have an account?</p>
-              <Link to={"/register"} className="register-text register-link">
-                {" "}
-                Sign up{" "}
-              </Link>
-            </div>
-            <br />
           </div>
-        </form>
+        </div>
       </div>
     </>
   );

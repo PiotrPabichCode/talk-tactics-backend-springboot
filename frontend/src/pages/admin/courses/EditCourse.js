@@ -1,0 +1,101 @@
+import axios from "axios";
+import React, { useEffect, useState } from "react";
+import { Link, useNavigate, useParams } from "react-router-dom";
+
+export default function EditUser() {
+  let navigate = useNavigate();
+
+  const { id } = useParams();
+
+  const [course, setCourse] = useState({
+    name: "",
+    description: "",
+    level: "",
+  });
+
+  const { name, description, level } = course;
+
+  const onInputChange = (e) => {
+    setCourse({ ...course, [e.target.name]: e.target.value });
+  };
+
+  useEffect(() => {
+    loadCourse();
+  }, []);
+
+  const onSubmit = async (e) => {
+    e.preventDefault();
+    await axios.put(`http://localhost:8080/api/course/${id}`, course);
+    navigate(url);
+  };
+
+  const loadCourse = async () => {
+    const result = await axios.get(`http://localhost:8080/api/course/${id}`);
+    setCourse(result.data);
+  };
+
+  const url = "/admin?isCoursesDisplayed=true";
+
+  return (
+    <div className="container">
+      <div className="row text-light">
+        <div className="col-md-6 offset-md-3 bg-dark opacity-100 border rounded p-4 mt-2 shadow position-relative">
+          <Link
+            className="btn btn-primary position-absolute end-0 me-4"
+            to={url}>
+            Back
+          </Link>
+          <h2 className="text-center m-4">Edit Course</h2>
+
+          <form onSubmit={(e) => onSubmit(e)}>
+            <div className="mb-3">
+              <label htmlFor="Name" className="form-label">
+                Name
+              </label>
+              <input
+                type={"text"}
+                className="form-control"
+                placeholder="Enter task name"
+                name="name"
+                value={name}
+                onChange={(e) => onInputChange(e)}
+              />
+            </div>
+            <div className="mb-3">
+              <label htmlFor="Description" className="form-label">
+                Description
+              </label>
+              <input
+                type={"text"}
+                className="form-control"
+                placeholder="Enter task description"
+                name="description"
+                value={description}
+                onChange={(e) => onInputChange(e)}
+              />
+            </div>
+            <div className="mb-3">
+              <label htmlFor="Level" className="form-label">
+                Level
+              </label>
+              <input
+                type={"text"}
+                className="form-control"
+                placeholder="Enter task level"
+                name="level"
+                value={level}
+                onChange={(e) => onInputChange(e)}
+              />
+            </div>
+            <button type="submit" className="btn btn-outline-primary">
+              Submit
+            </button>
+            <Link className="btn btn-outline-danger mx-2" to={url}>
+              Cancel
+            </Link>
+          </form>
+        </div>
+      </div>
+    </div>
+  );
+}

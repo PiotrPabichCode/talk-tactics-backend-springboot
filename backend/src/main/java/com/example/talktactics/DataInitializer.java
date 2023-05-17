@@ -1,7 +1,9 @@
 package com.example.talktactics;
 
+import com.example.talktactics.models.Answer;
 import com.example.talktactics.models.Course;
 import com.example.talktactics.models.Task;
+import com.example.talktactics.models.User;
 import com.example.talktactics.repositories.AnswerRepository;
 import com.example.talktactics.repositories.CourseRepository;
 import com.example.talktactics.repositories.TaskRepository;
@@ -13,7 +15,10 @@ import org.springframework.boot.ApplicationRunner;
 import org.springframework.stereotype.Component;
 
 import java.lang.reflect.Array;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Random;
 
 @Component
 @Transactional
@@ -29,6 +34,12 @@ public class DataInitializer implements ApplicationRunner {
     private UserRepository userRepository;
 
     public void initData() {
+        // create Users
+        ArrayList<User> users = new ArrayList<>();
+        users.add(User.builder().isAdmin(true).login("admin").password("admin").build());
+        users.add(User.builder().isAdmin(false).login("test1").password("test1").build());
+        users.add(User.builder().isAdmin(false).login("test2").password("test2").build());
+        userRepository.saveAll(users);
         // create Course
         ArrayList<Course> courses = new ArrayList<>();
         courses.add(Course.builder().name("Language Mastery: Advanced Communication Skills").description("Ten kurs został zaprojektowany dla osób, które chcą doskonalić swoje umiejętności komunikacyjne w języku angielskim na zaawansowanym poziomie. Skupia się na rozwijaniu płynności językowej, precyzji w wyrażaniu myśli oraz poszerzaniu słownictwa w różnorodnych kontekstach. Uczestnicy będą mieli okazję praktykować swobodną konwersację, debatować na różne tematy oraz doskonalić umiejętność zrozumienia ze słuchu poprzez autentyczne materiały audio i wideo.").level("Advanced").build());
@@ -154,6 +165,29 @@ public class DataInitializer implements ApplicationRunner {
                 .course(courses.get(2))
                 .build());
         taskRepository.saveAll(tasks);
+
+        // Create answers
+        ArrayList<Answer> answers = new ArrayList<>();
+        Random random = new Random();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy'T'HH:mm:ss");
+
+        for (int i = 0; i < 10; i++) {
+            Task randomTask = tasks.get(random.nextInt(tasks.size()));
+            User randomUser = users.get(random.nextInt(users.size()));
+
+            LocalDateTime currentTime = LocalDateTime.now();
+            String formattedFinishTime = currentTime.format(formatter);
+
+            Answer randomAnswer = Answer.builder()
+                    .content("Random answer content " + i)
+                    .finishTime(LocalDateTime.parse(formattedFinishTime, formatter))
+                    .task(randomTask)
+                    .user(randomUser)
+                    .build();
+
+            answers.add(randomAnswer);
+        }
+        answerRepository.saveAll(answers);
     }
 
 

@@ -1,0 +1,40 @@
+.account__wrapper {
+  margin-top: 6rem;
+  width: 600px;
+  background-color: aliceblue;
+  border-radius: 20px;
+}
+
+.account_name_inline {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  margin-top: 1rem;
+  margin-left: 1rem;
+  gap: 10px;
+}
+
+.account_name_inline p {
+  font-size: 1.5rem;
+}
+
+.account_options_inline {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+}
+
+.account_options_inline button {
+  width: 100%;
+  background-color: black;
+  font-size: 24px;
+  height: 20px;
+  padding: 20px 10px;
+  border-color: white;
+  cursor: pointer;
+}
+
+.account_options_inline button:hover {
+  color: blue;
+  transition: 0.5s;
+}
