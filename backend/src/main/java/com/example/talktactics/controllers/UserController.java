@@ -3,6 +3,7 @@ package com.example.talktactics.controllers;
 import com.example.talktactics.exceptions.AnswerNotFoundException;
 import com.example.talktactics.exceptions.UserNotFoundException;
 import com.example.talktactics.models.Answer;
+import com.example.talktactics.models.Course;
 import com.example.talktactics.models.User;
 import com.example.talktactics.repositories.AnswerRepository;
 import com.example.talktactics.repositories.UserRepository;
@@ -51,5 +52,10 @@ public class UserController {
         }
         userRepository.deleteById(id);
         return "User with id " + id + " deleted.";
+    }
+
+    @GetMapping("/users/login/{userName}")
+    public List<User> getUsersByUserName(@PathVariable String userName) {
+        return userRepository.findByUserNameContaining(userName);
     }
 }

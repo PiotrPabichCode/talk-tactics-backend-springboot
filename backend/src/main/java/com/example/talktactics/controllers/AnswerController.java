@@ -57,7 +57,6 @@ public class AnswerController {
 
     @GetMapping("/answers/username/{name}")
     public List<Answer> getAnswersByUserName(@PathVariable String name) {
-        ArrayList<Answer> answers = answerRepository.findByUserNameContaining(name);
-        return answers;
+        return answerRepository.findByUserNameContaining(name);
     }
 }

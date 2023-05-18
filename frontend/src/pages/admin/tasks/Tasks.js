@@ -5,6 +5,8 @@ import SearchIcon from "@mui/icons-material/Search";
 
 export default function Tasks() {
   const [tasks, setTasks] = useState([]);
+  const [courseName, setCourseName] = useState("");
+  const [searchedTasks, setSearchedTasks] = useState([]);
 
   const { id } = useParams();
 
@@ -12,15 +14,141 @@ export default function Tasks() {
     loadTasks();
   }, []);
 
+  useEffect(() => {
+    if (courseName) {
+      loadSearchedTasks();
+    } else {
+      setSearchedTasks([]);
+    }
+  }, [courseName]);
+
   const loadTasks = async () => {
     const result = await axios.get("http://localhost:8080/api/tasks");
     console.log(result.data);
     setTasks(result.data);
   };
 
+  const loadSearchedTasks = async () => {
+    try {
+      const result = await axios.get(
+        "http://localhost:8080/api/tasks/course/name/" + courseName
+      );
+      setSearchedTasks(result.data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   const deleteTask = async (id) => {
     await axios.delete(`http://localhost:8080/api/task/${id}`);
     loadTasks();
+  };
+
+  const handleInputChange = (event) => {
+    setCourseName(event.target.value);
+  };
+
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    loadSearchedTasks();
+  };
+
+  const renderAllTasks = () => {
+    return (
+      <table className="table table-responsive border shadow text-light bg-dark">
+        <thead>
+          <tr>
+            <th scope="col">ID</th>
+            <th scope="col">Name</th>
+            <th scope="col">Word</th>
+            <th scope="col">Part of speech</th>
+            <th scope="col">Description</th>
+            <th scope="col">Course</th>
+            <th scope="col">Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          {tasks.map((task, index) => (
+            <tr>
+              <th scope="row" key={index}>
+                {index + 1}
+              </th>
+              <td>{task.name}</td>
+              <td>{task.word}</td>
+              <td>{task.partOfSpeech}</td>
+              <td>{task.description}</td>
+              <td>{task.course.name}</td>
+              <td>
+                <Link
+                  className="btn btn-primary mx-2"
+                  to={`/viewtask/${task.id}`}>
+                  View
+                </Link>
+                <Link
+                  className="btn btn-outline-primary mx-2"
+                  to={`/edittask/${task.id}`}>
+                  Edit
+                </Link>
+                <button
+                  className="btn btn-danger mx-2"
+                  onClick={() => deleteTask(task.id)}>
+                  Delete
+                </button>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    );
+  };
+
+  const renderSearchedTasks = () => {
+    return (
+      <table className="table table-responsive border shadow text-light bg-dark">
+        <thead>
+          <tr>
+            <th scope="col">ID</th>
+            <th scope="col">Name</th>
+            <th scope="col">Word</th>
+            <th scope="col">Part of speech</th>
+            <th scope="col">Description</th>
+            <th scope="col">Course</th>
+            <th scope="col">Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          {searchedTasks.map((task, index) => (
+            <tr>
+              <th scope="row" key={index}>
+                {index + 1}
+              </th>
+              <td>{task.name}</td>
+              <td>{task.word}</td>
+              <td>{task.partOfSpeech}</td>
+              <td>{task.description}</td>
+              <td>{task.course.name}</td>
+              <td>
+                <Link
+                  className="btn btn-primary mx-2"
+                  to={`/viewtask/${task.id}`}>
+                  View
+                </Link>
+                <Link
+                  className="btn btn-outline-primary mx-2"
+                  to={`/edittask/${task.id}`}>
+                  Edit
+                </Link>
+                <button
+                  className="btn btn-danger mx-2"
+                  onClick={() => deleteTask(task.id)}>
+                  Delete
+                </button>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    );
   };
 
   return (
@@ -36,11 +164,13 @@ export default function Tasks() {
             </Link>
           </div>
           <div className="col">
-            <form class="d-flex my-3">
+            <form class="d-flex my-3" onSubmit={handleSubmit}>
               <input
                 className="form-control me-1"
                 type="search"
-                placeholder="Search"
+                value={courseName}
+                onChange={handleInputChange}
+                placeholder="Enter course name"
                 aria-label="Search"
               />
               <button className="btn btn-primary" type="submit">
@@ -49,51 +179,7 @@ export default function Tasks() {
             </form>
           </div>
         </div>
-
-        <table className="table table-responsive border shadow text-light bg-dark">
-          <thead>
-            <tr>
-              <th scope="col">ID</th>
-              <th scope="col">Name</th>
-              <th scope="col">Word</th>
-              <th scope="col">Part of speech</th>
-              <th scope="col">Description</th>
-              <th scope="col">Course</th>
-              <th scope="col">Action</th>
-            </tr>
-          </thead>
-          <tbody>
-            {tasks.map((task, index) => (
-              <tr>
-                <th scope="row" key={index}>
-                  {index + 1}
-                </th>
-                <td>{task.name}</td>
-                <td>{task.word}</td>
-                <td>{task.partOfSpeech}</td>
-                <td>{task.description}</td>
-                <td>{task.course.name}</td>
-                <td>
-                  <Link
-                    className="btn btn-primary mx-2"
-                    to={`/viewtask/${task.id}`}>
-                    View
-                  </Link>
-                  <Link
-                    className="btn btn-outline-primary mx-2"
-                    to={`/edittask/${task.id}`}>
-                    Edit
-                  </Link>
-                  <button
-                    className="btn btn-danger mx-2"
-                    onClick={() => deleteTask(task.id)}>
-                    Delete
-                  </button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+        {courseName ? renderSearchedTasks() : renderAllTasks()}
       </div>
     </div>
   );

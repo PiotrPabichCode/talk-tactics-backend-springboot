@@ -61,4 +61,9 @@ public class CourseController {
 
         return "Course with id " + id + " and associated tasks deleted.";
     }
+
+    @GetMapping("/courses/level/{levelName}")
+    public List<Course> getCoursesByLevelName(@PathVariable String levelName) {
+        return courseRepository.findByLevelNameContaining(levelName);
+    }
 }

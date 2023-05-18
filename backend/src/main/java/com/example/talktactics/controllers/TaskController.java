@@ -1,11 +1,13 @@
 package com.example.talktactics.controllers;
 
 import com.example.talktactics.exceptions.TaskNotFoundException;
+import com.example.talktactics.models.Answer;
 import com.example.talktactics.models.Task;
 import com.example.talktactics.repositories.TaskRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -50,5 +52,10 @@ public class TaskController {
         }
         taskRepository.deleteById(id);
         return "Task with id " + id + " deleted.";
+    }
+
+    @GetMapping("/tasks/course/name/{courseName}")
+    public List<Task> getTasksByCourseName(@PathVariable String courseName) {
+        return taskRepository.findByCourseNameContaining(courseName);
     }
 }
