@@ -7,11 +7,12 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.ArrayList;
+import java.util.Optional;
 
 public interface UserRepository extends JpaRepository<User, Long> {
 
     @Query("SELECT u FROM User u WHERE u.login LIKE %:userName%")
     ArrayList<User> findByUserNameContaining(@Param("userName") String userName);
-    boolean existsByLogin(String login);
-    User findByLogin(String login);
+    Boolean existsByLogin(String login);
+    Optional<User> findByLogin(String login);
 }

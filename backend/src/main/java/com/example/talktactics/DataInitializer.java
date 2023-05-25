@@ -36,9 +36,9 @@ public class DataInitializer implements ApplicationRunner {
     public void initData() {
         // create Users
         ArrayList<User> users = new ArrayList<>();
-        users.add(User.builder().isAdmin(true).login("admin").password("admin").build());
-        users.add(User.builder().isAdmin(false).login("test1").password("test1").build());
-        users.add(User.builder().isAdmin(false).login("test2").password("test2").build());
+        users.add(User.builder().login("admin").password("admin").build());
+        users.add(User.builder().login("test1").password("test1").build());
+        users.add(User.builder().login("test2").password("test2").build());
         userRepository.saveAll(users);
         // create Course
         ArrayList<Course> courses = new ArrayList<>();

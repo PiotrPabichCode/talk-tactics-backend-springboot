@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@CrossOrigin("http://localhost:3000")
 @RequestMapping("/api")
 public class UserController {
     @Autowired
@@ -40,7 +39,6 @@ public class UserController {
                 .map(user -> {
                     user.setLogin(newUser.getLogin());
                     user.setPassword(newUser.getPassword());
-                    user.setAdmin(newUser.isAdmin());
                     return userRepository.save(user);
                 }).orElseThrow(() -> new UserNotFoundException(id));
     }

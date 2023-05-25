@@ -1,16 +1,15 @@
-import React, { useState } from "react";
-import axios from "axios";
-import "./LoginRegister.css";
-import { FaFacebook, FaTwitter, FaGoogle } from "react-icons/fa";
-import { Link } from "react-router-dom";
+import React, { useState } from 'react';
+import axios from 'axios';
+import './LoginRegister.css';
+import { Link, useNavigate } from 'react-router-dom';
 
 const SignUp = () => {
-  const [errorMessage, setErrorMessage] = useState("");
+  const navigate = useNavigate();
 
   const [user, setUser] = useState({
-    login: "",
-    password: "",
-    repeatPassword: "",
+    login: '',
+    password: '',
+    repeatPassword: '',
   });
 
   const handleChange = (e) => {
@@ -19,92 +18,97 @@ const SignUp = () => {
 
   const handleRegisterForm = async (e) => {
     e.preventDefault();
-    setErrorMessage("");
-
     try {
       console.log(user);
       const response = await axios.post(
-        "http://localhost:8080/api/users/register",
+        'http://localhost:8080/api/v1/auth/register',
         user
       );
       console.log(response.data);
-      setUser({ login: "", password: "", repeatPassword: "" });
+      setUser({ login: '', password: '', repeatPassword: '' });
+      navigate('/');
     } catch (error) {
-      if (error.response && error.response.status === 409) {
-        setErrorMessage(error.response.data);
-      } else {
-        setErrorMessage("An error occurred. Please try again.");
-      }
+      console.log(error);
     }
-    console.log(errorMessage);
+  };
+
+  const renderRegisterForm = () => {
+    return (
+      <form className='mb-3 mt-md-4' onSubmit={handleRegisterForm}>
+        <h2 className='fw-bold mb-2 text-uppercase'>TalkTactics</h2>
+        <div className='mb-3'>
+          <label htmlFor='login' className='form-label '>
+            Login
+          </label>
+          <input
+            type='text'
+            className='form-control'
+            id='login'
+            name='login'
+            value={user.login}
+            onChange={handleChange}
+            placeholder='Username'
+          />
+        </div>
+        <div className='mb-3'>
+          <label htmlFor='password' className='form-label '>
+            Password
+          </label>
+          <input
+            type='password'
+            className='form-control'
+            id='password'
+            name='password'
+            value={user.password}
+            onChange={handleChange}
+            placeholder='*******'
+          />
+        </div>
+        <div className='mb-3'>
+          <label htmlFor='repeatPassword' className='form-label'>
+            Repeat password
+          </label>
+          <input
+            type='password'
+            className='form-control'
+            id='repeatPassword'
+            name='repeatPassword'
+            value={user.repeatPassword}
+            onChange={handleChange}
+            placeholder='*******'
+          />
+        </div>
+        <div className='d-grid'>
+          <button className='btn btn-outline-dark' type='submit'>
+            Sign up
+          </button>
+        </div>
+      </form>
+    );
   };
 
   return (
-    <>
-      <div className="pt-4 justify-content-center align-items-center">
-        <div className="container">
-          <div className="row d-flex justify-content-center">
-            <div className="col-12 col-md-8 col-lg-6">
-              <div className="card bg-white shadow-lg">
-                <div className="card-body p-5">
-                  <form className="mb-3 mt-md-4">
-                    <h2 className="fw-bold mb-2 text-uppercase ">
-                      TalkTactics
-                    </h2>
-                    <div className="mb-3">
-                      <label for="login" className="form-label ">
-                        Login
-                      </label>
-                      <input
-                        type="text"
-                        className="form-control"
-                        id="login"
-                        placeholder="Username"
-                      />
-                    </div>
-                    <div className="mb-3">
-                      <label for="password" className="form-label ">
-                        Password
-                      </label>
-                      <input
-                        type="password"
-                        className="form-control"
-                        id="password"
-                        placeholder="*******"
-                      />
-                    </div>
-                    <div className="mb-3">
-                      <label for="repeatPassword" className="form-label">
-                        Repeat password
-                      </label>
-                      <input
-                        type="password"
-                        className="form-control"
-                        id="repeatPassword"
-                        placeholder="*******"
-                      />
-                    </div>
-                    <div className="d-grid">
-                      <button className="btn btn-outline-dark" type="submit">
-                        Sign up
-                      </button>
-                    </div>
-                  </form>
-                  <div>
-                    <p className="mb-0  text-center">
-                      Do you have an account?{" "}
-                      <Link to="/login" className="text-primary fw-bold">
-                        Sign in
-                      </Link>
-                    </p>
-                  </div>
+    <div className='pt-4 justify-content-center align-items-center'>
+      <div className='container'>
+        <div className='row d-flex justify-content-center'>
+          <div className='col-12 col-md-8 col-lg-6'>
+            <div className='card bg-white shadow-lg'>
+              <div className='card-body p-5'>
+                {renderRegisterForm()}
+                <div>
+                  <p className='mb-0 text-center'>
+                    Do you have an account?{' '}
+                    <Link to='/login' className='text-primary fw-bold'>
+                      Sign in
+                    </Link>
+                  </p>
                 </div>
               </div>
             </div>
           </div>
         </div>
       </div>
-    </>
+    </div>
   );
 };
 
