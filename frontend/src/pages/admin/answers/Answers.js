@@ -1,14 +1,13 @@
-import React, { useEffect, useState } from "react";
-import axios from "axios";
-import { Link, useParams } from "react-router-dom";
-import SearchIcon from "@mui/icons-material/Search";
+import React, { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
+import SearchIcon from '@mui/icons-material/Search';
+import { request } from '../../../api/AxiosHelper';
+import { toast } from 'react-toastify';
 
 export default function Answers() {
   const [answers, setAnswers] = useState([]);
-  const [username, setUsername] = useState("");
+  const [username, setUsername] = useState('');
   const [searchedAnswers, setSearchedAnswers] = useState([]);
-
-  const { id } = useParams();
 
   useEffect(() => {
     loadAnswers();
@@ -16,6 +15,19 @@ export default function Answers() {
 
   useEffect(() => {
     if (username) {
+      const loadSearchedAnswers = async () => {
+        try {
+          const response = await request(
+            'GET',
+            `/api/answers/username/${username}`
+          );
+          setSearchedAnswers(response.data);
+        } catch (error) {
+          toast.error('Unable to fetch data', {
+            autoClose: 1000,
+          });
+        }
+      };
       loadSearchedAnswers();
     } else {
       setSearchedAnswers([]);
@@ -24,19 +36,8 @@ export default function Answers() {
 
   const loadAnswers = async () => {
     try {
-      const result = await axios.get("http://localhost:8080/api/answers");
-      setAnswers(result.data);
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-  const loadSearchedAnswers = async () => {
-    try {
-      const result = await axios.get(
-        "http://localhost:8080/api/answers/username/" + username
-      );
-      setSearchedAnswers(result.data);
+      const response = await request('GET', '/api/answers');
+      setAnswers(response.data);
     } catch (error) {
       console.log(error);
     }
@@ -46,39 +47,30 @@ export default function Answers() {
     setUsername(event.target.value);
   };
 
-  const handleSubmit = (event) => {
-    event.preventDefault();
-    loadSearchedAnswers();
-  };
-
   const renderAllAnswers = () => {
     return (
-      <table className="table border shadow text-light bg-dark">
+      <table className='table border shadow text-light bg-dark'>
         <thead>
           <tr>
-            <th scope="col">ID</th>
-            <th scope="col">Content</th>
-            <th scope="col">Finish Time</th>
-            <th scope="col">Task</th>
-            <th scope="col">Username</th>
-            <th scope="col">Action</th>
+            <th scope='col'>ID</th>
+            <th scope='col'>Course</th>
+            <th scope='col'>Task</th>
+            <th scope='col'>Username</th>
+            <th scope='col'>Action</th>
           </tr>
         </thead>
         <tbody>
           {answers.map((answer, index) => (
-            <tr>
-              <th scope="row" key={index}>
-                {index + 1}
-              </th>
-              <td>{answer.content}</td>
-              <td>{answer.finishTime}</td>
+            <tr key={index}>
+              <td>{index + 1}</td>
+              <td>{answer.task.course.name}</td>
               <td>{answer.task.name}</td>
               <td>{answer.user.login}</td>
               <td>
                 <Link
-                  className="btn btn-primary mx-2"
+                  className='btn btn-primary mx-2'
                   to={`/viewanswer/${answer.id}`}>
-                  View
+                  More details
                 </Link>
               </td>
             </tr>
@@ -90,32 +82,30 @@ export default function Answers() {
 
   const renderSearchedAnswers = () => {
     return (
-      <table className="table border shadow text-light bg-dark">
+      <table className='table border shadow text-light bg-dark'>
         <thead>
           <tr>
-            <th scope="col">ID</th>
-            <th scope="col">Content</th>
-            <th scope="col">Finish Time</th>
-            <th scope="col">Task</th>
-            <th scope="col">Username</th>
-            <th scope="col">Action</th>
+            <th scope='col'>ID</th>
+            <th scope='col'>Course</th>
+            <th scope='col'>Task</th>
+            <th scope='col'>Username</th>
+            <th scope='col'>Action</th>
           </tr>
         </thead>
         <tbody>
           {searchedAnswers.map((answer, index) => (
             <tr>
-              <th scope="row" key={index}>
+              <th scope='row' key={index}>
                 {index + 1}
               </th>
-              <td>{answer.content}</td>
-              <td>{answer.finishTime}</td>
+              <td>{answer.task.course.name}</td>
               <td>{answer.task.name}</td>
               <td>{answer.user.login}</td>
               <td>
                 <Link
-                  className="btn btn-primary mx-2"
+                  className='btn btn-primary mx-2'
                   to={`/viewanswer/${answer.id}`}>
-                  View
+                  More details
                 </Link>
               </td>
             </tr>
@@ -126,19 +116,19 @@ export default function Answers() {
   };
 
   return (
-    <div className="container">
-      <div className="py-4">
-        <h1 className="text-light">Answers</h1>
-        <form class="d-flex my-4" onSubmit={handleSubmit}>
+    <div className='container'>
+      <div className='py-4'>
+        <h1 className='text-light'>Answers</h1>
+        <form className='d-flex my-4'>
           <input
-            className="form-control me-1"
-            type="search"
+            className='form-control me-1'
+            type='search'
             value={username}
             onChange={handleInputChange}
-            placeholder="Enter username"
-            aria-label="Search"
+            placeholder='Enter username'
+            aria-label='Search'
           />
-          <button className="btn btn-primary" type="submit">
+          <button className='btn btn-primary' type='button'>
             <SearchIcon />
           </button>
         </form>

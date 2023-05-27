@@ -1,82 +1,72 @@
-import React, { useEffect, useState } from "react";
-import axios from "axios";
-import { Link, useParams } from "react-router-dom";
-import SearchIcon from "@mui/icons-material/Search";
+import React, { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
+import SearchIcon from '@mui/icons-material/Search';
+import { request } from '../../../api/AxiosHelper';
 
 export default function Users() {
   const [users, setUsers] = useState([]);
-  const [userName, setUserName] = useState("");
+  const [username, setUsername] = useState('');
   const [searchedUsers, setSearchedUsers] = useState([]);
 
-  const { id } = useParams();
-
   useEffect(() => {
+    const loadUsers = async () => {
+      try {
+        const response = await request('GET', '/api/users');
+        setUsers(response.data);
+      } catch (error) {
+        console.log(error);
+      }
+    };
     loadUsers();
   }, []);
 
   useEffect(() => {
-    if (userName) {
+    if (username) {
+      const loadSearchedUsers = async () => {
+        try {
+          const response = await request('GET', `/api/users/login/${username}`);
+          setSearchedUsers(response.data);
+        } catch (error) {
+          console.log(error);
+        }
+      };
       loadSearchedUsers();
     } else {
       setSearchedUsers([]);
     }
-  }, [userName]);
-
-  const loadUsers = async () => {
-    const result = await axios.get("http://localhost:8080/api/users");
-    console.log(result.data);
-    setUsers(result.data);
-  };
-
-  const loadSearchedUsers = async () => {
-    try {
-      const result = await axios.get(
-        "http://localhost:8080/api/users/login/" + userName
-      );
-      setSearchedUsers(result.data);
-    } catch (error) {
-      console.log(error);
-    }
-  };
+  }, [username]);
 
   const handleInputChange = (event) => {
-    setUserName(event.target.value);
-  };
-
-  const handleSubmit = (event) => {
-    event.preventDefault();
-    loadSearchedUsers();
+    setUsername(event.target.value);
   };
 
   const renderAllUsers = () => {
     return (
-      <table className="table border shadow text-light bg-dark">
+      <table className='table border shadow text-light bg-dark'>
         <thead>
           <tr>
-            <th scope="col">ID</th>
-            <th scope="col">Login</th>
-            <th scope="col">Password</th>
-            <th scope="col">Admin</th>
-            <th scope="col">Action</th>
+            <th scope='col'>ID</th>
+            <th scope='col'>Login</th>
+            <th scope='col'>Email</th>
+            <th scope='col'>Admin</th>
+            <th scope='col'>Action</th>
           </tr>
         </thead>
         <tbody>
           {users.map((user, index) => (
-            <tr>
-              <th scope="row" key={index}>
-                {index + 1}
-              </th>
+            <tr key={index}>
+              <td>{index + 1}</td>
               <td>{user.login}</td>
-              <td>{user.password}</td>
-              <td>{user.admin === true ? "True" : "False"}</td>
+              <td>{user.email}</td>
+              <td>{user.role === 'ADMIN' ? 'True' : 'False'}</td>
               <td>
                 <Link
-                  className="btn btn-primary mx-2"
+                  className='btn btn-primary mx-2'
                   to={`/viewuser/${user.id}`}>
-                  View
+                  More details
                 </Link>
                 <Link
-                  className="btn btn-outline-primary mx-2"
+                  className='btn btn-outline-primary mx-2'
                   to={`/edituser/${user.id}`}>
                   Edit
                 </Link>
@@ -90,33 +80,33 @@ export default function Users() {
 
   const renderSearchedUsers = () => {
     return (
-      <table className="table border shadow text-light bg-dark">
+      <table className='table border shadow text-light bg-dark'>
         <thead>
           <tr>
-            <th scope="col">ID</th>
-            <th scope="col">Login</th>
-            <th scope="col">Password</th>
-            <th scope="col">Admin</th>
-            <th scope="col">Action</th>
+            <th scope='col'>ID</th>
+            <th scope='col'>Login</th>
+            <th scope='col'>Email</th>
+            <th scope='col'>Admin</th>
+            <th scope='col'>Action</th>
           </tr>
         </thead>
         <tbody>
           {searchedUsers.map((user, index) => (
             <tr>
-              <th scope="row" key={index}>
+              <th scope='row' key={index}>
                 {index + 1}
               </th>
               <td>{user.login}</td>
-              <td>{user.password}</td>
-              <td>{user.admin === true ? "True" : "False"}</td>
+              <td>{user.email}</td>
+              <td>{user.admin === true ? 'True' : 'False'}</td>
               <td>
                 <Link
-                  className="btn btn-primary mx-2"
+                  className='btn btn-primary mx-2'
                   to={`/viewuser/${user.id}`}>
-                  View
+                  More details
                 </Link>
                 <Link
-                  className="btn btn-outline-primary mx-2"
+                  className='btn btn-outline-primary mx-2'
                   to={`/edituser/${user.id}`}>
                   Edit
                 </Link>
@@ -129,23 +119,23 @@ export default function Users() {
   };
 
   return (
-    <div className="container">
-      <div className="py-4">
-        <h1 className="text-light">Users</h1>
-        <form class="d-flex my-4" onSubmit={handleSubmit}>
+    <div className='container'>
+      <div className='py-4'>
+        <h1 className='text-light'>Users</h1>
+        <form className='d-flex my-4'>
           <input
-            className="form-control me-1"
-            type="search"
-            value={userName}
+            className='form-control me-1'
+            type='search'
+            value={username}
             onChange={handleInputChange}
-            placeholder="Search"
-            aria-label="Search"
+            placeholder='Search by login'
+            aria-label='Search'
           />
-          <button className="btn btn-primary" type="submit">
+          <button className='btn btn-primary' type='button'>
             <SearchIcon />
           </button>
         </form>
-        {userName ? renderSearchedUsers() : renderAllUsers()}
+        {username ? renderSearchedUsers() : renderAllUsers()}
       </div>
     </div>
   );

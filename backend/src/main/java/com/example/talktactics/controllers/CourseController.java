@@ -2,11 +2,14 @@ package com.example.talktactics.controllers;
 
 import com.example.talktactics.exceptions.CourseNotFoundException;
 import com.example.talktactics.exceptions.TaskNotFoundException;
+import com.example.talktactics.models.Answer;
 import com.example.talktactics.models.Course;
 import com.example.talktactics.models.Task;
+import com.example.talktactics.repositories.AnswerRepository;
 import com.example.talktactics.repositories.CourseRepository;
 import com.example.talktactics.repositories.TaskRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -19,6 +22,8 @@ public class CourseController {
 
     @Autowired
     private TaskRepository taskRepository;
+    @Autowired
+    private AnswerRepository answerRepository;
 
     @PostMapping("/course")
     Course newCourse(@RequestBody Course newCourse) {
@@ -35,8 +40,10 @@ public class CourseController {
         return courseRepository.findById(id).orElseThrow(() -> new CourseNotFoundException(id));
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/course/{id}")
     Course updateCourse(@RequestBody Course newCourse, @PathVariable Long id) {
+        System.out.println(newCourse);
         return courseRepository.findById(id)
                 .map(course -> {
                     course.setDescription(newCourse.getDescription());
@@ -46,6 +53,7 @@ public class CourseController {
                 }).orElseThrow(() -> new CourseNotFoundException(id));
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/course/{id}")
     String deleteCourse(@PathVariable Long id) {
         if (!courseRepository.existsById(id)) {
@@ -55,6 +63,8 @@ public class CourseController {
         Course course = courseRepository.findById(id).orElseThrow(() -> new CourseNotFoundException(id));
 
         List<Task> tasks = taskRepository.findByCourse(course);
+        List<Answer> answers = answerRepository.findByTaskIn(tasks);
+        answerRepository.deleteAll(answers);
         taskRepository.deleteAll(tasks);
         courseRepository.deleteById(id);
 

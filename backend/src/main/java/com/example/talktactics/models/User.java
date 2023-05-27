@@ -1,10 +1,7 @@
 package com.example.talktactics.models;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -15,6 +12,7 @@ import java.util.List;
 @Entity
 @Data
 @Builder
+@ToString
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "users")
@@ -24,6 +22,10 @@ public class User implements UserDetails  {
     int id;
     String login;
     String password;
+    String firstName;
+    String lastName;
+    String email;
+
 
     @Enumerated(EnumType.STRING)
     private Role role;

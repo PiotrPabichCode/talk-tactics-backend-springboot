@@ -1,9 +1,6 @@
 package com.example.talktactics;
 
-import com.example.talktactics.models.Answer;
-import com.example.talktactics.models.Course;
-import com.example.talktactics.models.Task;
-import com.example.talktactics.models.User;
+import com.example.talktactics.models.*;
 import com.example.talktactics.repositories.AnswerRepository;
 import com.example.talktactics.repositories.CourseRepository;
 import com.example.talktactics.repositories.TaskRepository;
@@ -12,6 +9,7 @@ import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import java.lang.reflect.Array;
@@ -32,13 +30,14 @@ public class DataInitializer implements ApplicationRunner {
     private TaskRepository taskRepository;
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     public void initData() {
         // create Users
         ArrayList<User> users = new ArrayList<>();
-        users.add(User.builder().login("admin").password("admin").build());
-        users.add(User.builder().login("test1").password("test1").build());
-        users.add(User.builder().login("test2").password("test2").build());
+        users.add(User.builder().login("admin").password(passwordEncoder.encode("admin")).email("235944@edu.p.lodz.pl").firstName("Piotr").lastName("Pabich").role(Role.ADMIN).build());
+        users.add(User.builder().login("user").password(passwordEncoder.encode("user")).email("user@edu.p.lodz.pl").firstName("Jan").lastName("Tomczyk").role(Role.USER).build());
         userRepository.saveAll(users);
         // create Course
         ArrayList<Course> courses = new ArrayList<>();
@@ -96,7 +95,7 @@ public class DataInitializer implements ApplicationRunner {
         tasks.add(Task.builder()
                 .name("Negotiation Scenario")
                 .word("compromise")
-                .partOfSpeech("Noun/Verb")
+                .partOfSpeech("Noun")
                 .description("Role-play a negotiation situation, aiming to find mutually acceptable solutions by making concessions.")
                 .course(courses.get(1))
                 .build());
@@ -152,7 +151,7 @@ public class DataInitializer implements ApplicationRunner {
         tasks.add(Task.builder()
                 .name("Shopping Interaction")
                 .word("bargain")
-                .partOfSpeech("Noun/Verb")
+                .partOfSpeech("Verb")
                 .description("Engage in a role-play where you discuss prices or negotiate a better deal with a shopkeeper.")
                 .course(courses.get(2))
                 .build());

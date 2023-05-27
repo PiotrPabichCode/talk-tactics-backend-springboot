@@ -1,68 +1,113 @@
-import axios from "axios";
-import React, { useEffect, useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import React, { useEffect, useState } from 'react';
+import { Link, useParams } from 'react-router-dom';
+import { request } from '../../../api/AxiosHelper';
 
 export default function ViewAnswer() {
-  const [answer, setAnswer] = useState({
-    content: "",
-    finishTime: "",
-    task: [],
-    user: [],
-  });
-  const [course, setCourse] = useState([]);
+  const url = '/admin?isAnswersDisplayed=true';
+  const [answerDetails, setAnswerDetails] = useState({});
 
   const { id } = useParams();
 
   useEffect(() => {
+    const loadAnswer = async () => {
+      const response = await request('GET', `/api/answer/${id}`);
+      console.log(response.data);
+      setAnswerDetails(response.data);
+    };
     loadAnswer();
-  }, []);
+  }, [id]);
 
-  const loadAnswer = async () => {
-    const result = await axios.get(`http://localhost:8080/api/answer/${id}`);
-    setAnswer(result.data);
-    setCourse(result.data.task.course);
+  const convertFinishTime = () => {
+    const time = answerDetails.finishTime;
+    const year = time[0];
+    const month = time[1] - 1;
+    const day = time[2];
+    const hours = time[3];
+    const minutes = time[4];
+    const seconds = time[5];
+
+    const formattedTime = `${day}/${month}/${year} ${hours}:${minutes}:${seconds}`;
+    return formattedTime;
   };
 
-  const url = "/admin?isAnswersDisplayed=true";
+  const renderAnswerDetails = () => {
+    return (
+      answerDetails &&
+      answerDetails.task &&
+      answerDetails.user && (
+        <div className='card mb-4'>
+          <div className='card-header'>Answer details</div>
+          <div className='card-body'>
+            <div className='row'>
+              <div className='col-sm-3'>
+                <p className='mb-0'>Course name</p>
+              </div>
+              <div className='col-sm-9'>
+                <p className='text-muted mb-0'>
+                  {answerDetails.task.course.name}
+                </p>
+              </div>
+            </div>
+            <hr />
+            <div className='row'>
+              <div className='col-sm-3'>
+                <p className='mb-0'>Task name</p>
+              </div>
+              <div className='col-sm-9'>
+                <p className='text-muted mb-0'>{answerDetails.task.name}</p>
+              </div>
+            </div>
+            <hr />
+            <div className='row'>
+              <div className='col-sm-3'>
+                <p className='mb-0'>Answer</p>
+              </div>
+              <div className='col-sm-9'>
+                <p className='text-muted mb-0'>{answerDetails.content}</p>
+              </div>
+            </div>
+            <hr />
+            <div className='row'>
+              <div className='col-sm-3'>
+                <p className='mb-0'>User name</p>
+              </div>
+              <div className='col-sm-9'>
+                <p className='text-muted mb-0'>
+                  {answerDetails.user.firstName +
+                    ' ' +
+                    answerDetails.user.lastName +
+                    ' / ' +
+                    answerDetails.user.login}
+                </p>
+              </div>
+            </div>
+            <hr />
+            <div className='row'>
+              <div className='col-sm-3'>
+                <p className='mb-0'>Finish time</p>
+              </div>
+              <div className='col-sm-9'>
+                <p className='text-muted mb-0'>{convertFinishTime()}</p>
+              </div>
+            </div>
+            <hr />
+          </div>
+        </div>
+      )
+    );
+  };
 
   return (
-    <div className="container bg-secondary py-4">
-      <div className="row">
-        <div className="col-md-6 offset-md-3 border rounded p-4 mt-2 shadow bg-dark position-relative">
+    <div className='container-fluid p-4 bg-secondary'>
+      <div className='row'>
+        <div className='container-fluid rounded p-4 shadow bg-dark position-relative'>
           <Link
-            className="btn btn-primary position-absolute end-0 me-4"
+            className='btn btn-primary position-absolute end-0 me-4'
             to={url}>
             Back
           </Link>
-          <h2 className="text-center m-4 text-light">Answer Details</h2>
-
-          <div className="card bg-dark text-light">
-            <div className="card-header table-dark">
-              <h4>Answer ID: {answer.id}</h4>
-            </div>
-            <div className="card-body">
-              <table className="table table-bordered table-responsive table-dark">
-                <thead>
-                  <tr>
-                    <th>Content</th>
-                    <th>Finish time</th>
-                    <th>Task</th>
-                    <th>Course</th>
-                    <th>User name</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td>{answer.content}</td>
-                    <td>{answer.finishTime}</td>
-                    <td>{answer.task.name}</td>
-                    <td>{course.name}</td>
-                    <td>{answer.user.login}</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
+          <h2 className='text-center m-4 text-light'>Answer Details</h2>
+          {renderAnswerDetails()}
         </div>
       </div>
     </div>

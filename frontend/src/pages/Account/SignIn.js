@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import axios from 'axios';
 import './LoginRegister.css';
 import { Link, useNavigate } from 'react-router-dom';
+import { request, setUserData } from '../../api/AxiosHelper';
+import { toast } from 'react-toastify';
 
 const SignIn = () => {
   const navigate = useNavigate();
@@ -18,17 +19,16 @@ const SignIn = () => {
     e.preventDefault();
     try {
       console.log(user);
-      const response = await axios.post(
-        'http://localhost:8080/api/v1/auth/authenticate',
-        user
-      );
+      const response = await request('POST', '/api/v1/auth/authenticate', user);
       console.log(response.data);
-      // window.localStorage.setItem('TOKEN', response.data);
-      // console.log(response.data);
+      setUserData(response.data);
+      toast.success('Sign in successfully');
       setUser({ login: '', password: '' });
       navigate('/');
+      window.location.reload(); // TODO: Change to use Context
     } catch (error) {
-      console.error(error);
+      toast.error('Something went wrong');
+      console.log(error);
     }
   };
 

@@ -7,6 +7,7 @@ import com.example.talktactics.models.Task;
 import com.example.talktactics.repositories.AnswerRepository;
 import com.example.talktactics.repositories.TaskRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -33,6 +34,7 @@ public class AnswerController {
         return answerRepository.findById(id).orElseThrow(() -> new AnswerNotFoundException(id));
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/answer/{id}")
     Answer updateAnswer(@RequestBody Answer newAnswer, @PathVariable Long id) {
         return answerRepository.findById(id)
@@ -45,6 +47,7 @@ public class AnswerController {
                 }).orElseThrow(() -> new AnswerNotFoundException(id));
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/answer/{id}")
     String deleteAnswer(@PathVariable Long id) {
         if(!answerRepository.existsById(id)) {
