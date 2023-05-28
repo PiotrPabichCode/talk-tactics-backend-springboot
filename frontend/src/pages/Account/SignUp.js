@@ -11,6 +11,9 @@ const SignUp = () => {
     login: '',
     password: '',
     repeatPassword: '',
+    email: '',
+    firstName: '',
+    lastName: '',
   });
 
   const handleChange = (e) => {
@@ -20,17 +23,22 @@ const SignUp = () => {
   const handleRegisterForm = async (e) => {
     e.preventDefault();
     try {
-      console.log(user);
       const response = await request('POST', '/api/v1/auth/register', user);
-      console.log(response.data);
       setUserData(response.data);
-      setUser({ login: '', password: '', repeatPassword: '' });
+      setUser({
+        login: '',
+        password: '',
+        repeatPassword: '',
+        email: '',
+        firstName: '',
+        lastName: '',
+      });
       toast.success('Sign up successfully');
       navigate('/');
       window.location.reload(); // TODO: Change to use Context
     } catch (error) {
-      toast.error('Something went wrong');
-      console.log(error);
+      toast.error(error.response.data);
+      console.log(error.response);
     }
   };
 
@@ -38,6 +46,48 @@ const SignUp = () => {
     return (
       <form className='mb-3 mt-md-4' onSubmit={handleRegisterForm}>
         <h2 className='fw-bold mb-2 text-uppercase'>TalkTactics</h2>
+        <div className='mb-3'>
+          <label htmlFor='firstName' className='form-label'>
+            First name
+          </label>
+          <input
+            type='text'
+            className='form-control'
+            id='firstName'
+            name='firstName'
+            value={user.firstName}
+            onChange={handleChange}
+            placeholder='First name'
+          />
+        </div>
+        <div className='mb-3'>
+          <label htmlFor='lastName' className='form-label'>
+            Last name
+          </label>
+          <input
+            type='text'
+            className='form-control'
+            id='lastName'
+            name='lastName'
+            value={user.lastName}
+            onChange={handleChange}
+            placeholder='Last name'
+          />
+        </div>
+        <div className='mb-3'>
+          <label htmlFor='email' className='form-label'>
+            Email
+          </label>
+          <input
+            type='email'
+            className='form-control'
+            id='email'
+            name='email'
+            value={user.email}
+            onChange={handleChange}
+            placeholder='email@xyz.com'
+          />
+        </div>
         <div className='mb-3'>
           <label htmlFor='login' className='form-label '>
             Login
@@ -49,7 +99,7 @@ const SignUp = () => {
             name='login'
             value={user.login}
             onChange={handleChange}
-            placeholder='Username'
+            placeholder='Login'
           />
         </div>
         <div className='mb-3'>
@@ -90,8 +140,8 @@ const SignUp = () => {
   };
 
   return (
-    <div className='pt-4 justify-content-center align-items-center'>
-      <div className='container'>
+    <div className='justify-content-center align-items-center'>
+      <div className='container-fluid bg-secondary p-4'>
         <div className='row d-flex justify-content-center'>
           <div className='col-12 col-md-8 col-lg-6'>
             <div className='card bg-white shadow-lg'>

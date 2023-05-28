@@ -1,12 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useLocation, useParams } from 'react-router-dom';
 import AccountDetails from './AccountDetails';
-import UserSettings from './UserSettings';
 
 export default function User() {
   const [isAccountDetailsDisplayedValue, setIsAccountDetailsDisplayedValue] =
     useState(false);
-  const [isSettingsDisplayed, setIsSettingsDisplayed] = useState(false);
   const [isAssignmentsDisplayed, setIsAssigmentsDisplayed] = useState(false);
   const location = useLocation();
 
@@ -15,32 +13,22 @@ export default function User() {
     const isAccountDetailsDisplayedValue = Boolean(
       searchParams.get('isAccountDetailsDisplayedValue')
     );
-    const isSettingsDisplayedValue = Boolean(
-      searchParams.get('isSettingsDisplayed')
-    );
     const isAssigmentsDisplayedValue = Boolean(
       searchParams.get('isAssigmentsDisplayed')
     );
 
     setIsAccountDetailsDisplayedValue(isAccountDetailsDisplayedValue === true);
-    setIsSettingsDisplayed(isSettingsDisplayedValue === true);
     setIsAssigmentsDisplayed(isAssigmentsDisplayedValue === true);
   }, [location.search]);
 
   const clearDisplays = () => {
     setIsAccountDetailsDisplayedValue(false);
-    setIsSettingsDisplayed(false);
     setIsAssigmentsDisplayed(false);
   };
 
   const handleAccountDetailsDisplay = () => {
     clearDisplays();
     setIsAccountDetailsDisplayedValue(true);
-  };
-
-  const handleSettingsDisplay = () => {
-    clearDisplays();
-    setIsSettingsDisplayed(true);
   };
 
   const handleAssignmentsDisplay = () => {
@@ -63,16 +51,10 @@ export default function User() {
           </button>
           <button
             className='btn btn-outline-light me-2'
-            onClick={handleSettingsDisplay}>
-            Settings
-          </button>
-          <button
-            className='btn btn-outline-light me-2'
             onClick={handleAssignmentsDisplay}>
-            Your assigments
+            Your assignments
           </button>
           {isAccountDetailsDisplayedValue && <AccountDetails />}
-          {isSettingsDisplayed && <UserSettings />}
         </div>
       </section>
     </>

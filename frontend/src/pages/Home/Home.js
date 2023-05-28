@@ -6,7 +6,7 @@ function Home() {
   return (
     <>
       <div className='homecontainer bg-secondary'>
-        <div className='description1'>
+        <div className='description1 align-items-center'>
           <h1>
             Chcesz nauczyć się języka angielskiego, ale nie wiesz od czego
             zacząć?
@@ -15,11 +15,9 @@ function Home() {
             Witaj w TalkTactics - twoim źródle wiedzy na temat nauki języków
             obcych!
           </p>
-          <button className='btn btn-primary text-white'>
-            <Link to={'/login'} className='text-light text-decoration-none'>
-              Start now!
-            </Link>
-          </button>
+          <Link to={'/register'} className='text-light text-decoration-none'>
+            <button className='btn btn-primary'>Start now!</button>
+          </Link>
         </div>
         <img src='home1.svg' alt=''></img>
       </div>
