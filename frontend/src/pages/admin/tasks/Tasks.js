@@ -48,7 +48,7 @@ export default function Tasks() {
 
   const deleteTask = async (id) => {
     try {
-      await request('DELETE', `/api/task/${id}`);
+      await request('DELETE', `/api/tasks/${id}`);
       toast.success('Task deleted successfully');
       courseName ? loadSearchedTasks() : loadTasks();
     } catch (error) {

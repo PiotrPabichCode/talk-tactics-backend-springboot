@@ -29,7 +29,7 @@ export default function EditUser() {
   useEffect(() => {
     const loadCourse = async () => {
       try {
-        const response = await request('GET', `/api/course/${id}`);
+        const response = await request('GET', `/api/courses/${id}`);
         setCourse(response.data);
       } catch (error) {
         console.log(error);
@@ -42,7 +42,7 @@ export default function EditUser() {
     e.preventDefault();
     try {
       if (name !== '' && description !== '' && level !== '') {
-        await request('PUT', `/api/course/${id}`, course);
+        await request('PUT', `/api/courses/${id}`, course);
         navigate(url);
         toast.success('Course edited successfully');
       } else {

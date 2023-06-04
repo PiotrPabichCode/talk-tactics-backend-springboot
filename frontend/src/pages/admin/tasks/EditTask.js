@@ -28,7 +28,7 @@ export default function EditTask() {
   useEffect(() => {
     const loadTask = async () => {
       try {
-        const response = await request('GET', `/api/task/${id}`);
+        const response = await request('GET', `/api/tasks/${id}`);
         setTask(response.data);
       } catch (error) {
         console.log(error);
@@ -67,7 +67,7 @@ export default function EditTask() {
         description !== '' &&
         Object.keys(course).length !== 0
       ) {
-        await request('PUT', `/api/task/${id}`, task);
+        await request('PUT', `/api/tasks/${id}`, task);
         toast.success('Task edited successfully');
         navigate(url);
       } else {

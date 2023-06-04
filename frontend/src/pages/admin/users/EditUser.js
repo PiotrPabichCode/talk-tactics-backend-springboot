@@ -28,7 +28,7 @@ export default function EditUser() {
   useEffect(() => {
     const loadUser = async () => {
       try {
-        const response = await request('GET', `/api/user/${id}`);
+        const response = await request('GET', `/api/users/${id}`);
         console.log(response.data);
         setUpdateData((updateData) => ({
           ...updateData,

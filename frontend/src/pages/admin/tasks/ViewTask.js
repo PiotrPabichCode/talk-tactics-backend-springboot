@@ -13,7 +13,7 @@ export default function ViewTask() {
 
   const loadTask = async () => {
     try {
-      const response = await request('GET', `/api/task/${id}`);
+      const response = await request('GET', `/api/tasks/${id}`);
       console.log(response.data);
       setTaskDetails(response.data);
     } catch (error) {

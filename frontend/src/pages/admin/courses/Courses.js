@@ -42,7 +42,7 @@ export default function Courses() {
 
   const deleteCourse = async (id) => {
     try {
-      await request('DELETE', `/api/course/${id}`);
+      await request('DELETE', `/api/courses/${id}`);
       toast.success('Course has been deleted');
       loadCourses();
     } catch (error) {

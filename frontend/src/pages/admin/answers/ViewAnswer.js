@@ -10,7 +10,7 @@ export default function ViewAnswer() {
 
   useEffect(() => {
     const loadAnswer = async () => {
-      const response = await request('GET', `/api/answer/${id}`);
+      const response = await request('GET', `/api/answers/${id}`);
       console.log(response.data);
       setAnswerDetails(response.data);
     };

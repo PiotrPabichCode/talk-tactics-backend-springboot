@@ -11,7 +11,7 @@ export default function ViewUser() {
   useEffect(() => {
     const loadUser = async () => {
       try {
-        const response = await request('GET', `/api/user/${id}`);
+        const response = await request('GET', `/api/users/${id}`);
         console.log(response.data);
         setUserDetails(response.data);
       } catch (error) {

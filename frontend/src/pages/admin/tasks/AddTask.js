@@ -59,7 +59,7 @@ export default function AddTask() {
         description !== '' &&
         Object.keys(course).length !== 0
       ) {
-        await request('POST', '/api/task', task);
+        await request('POST', '/api/tasks', task);
         toast.success('Added new task successfully');
         navigate(url);
       } else {

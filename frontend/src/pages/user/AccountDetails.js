@@ -93,7 +93,7 @@ const AccountDetails = () => {
   const handleFirstNameForm = async (event) => {
     event.preventDefault();
     try {
-      await request('PUT', `/api/user/${userID}/firstName`, newFirstName);
+      await request('PUT', `/api/users/${userID}/firstName`, newFirstName);
       setFirstName(newFirstName);
       toast.success('First name updated');
       resetNewFirstNameField(event);
@@ -106,7 +106,7 @@ const AccountDetails = () => {
   const handleLastNameForm = async (event) => {
     event.preventDefault();
     try {
-      await request('PUT', `/api/user/${userID}/lastName`, newLastName);
+      await request('PUT', `/api/users/${userID}/lastName`, newLastName);
       setLastName(newLastName);
       toast.success('Last name updated');
       resetNewLastNameField(event);
@@ -119,7 +119,8 @@ const AccountDetails = () => {
   const handleEmailForm = async (event) => {
     event.preventDefault();
     try {
-      await request('PUT', `/api/user/${userID}/email`, newEmail);
+      console.log(newEmail);
+      await request('PUT', `/api/users/${userID}/email`, newEmail);
       setEmail(newEmail);
       toast.success('Email updated');
       resetNewEmailField(event);
@@ -139,7 +140,7 @@ const AccountDetails = () => {
     };
     console.log(newPasswordObj);
     try {
-      await request('PUT', `/api/user/${userID}/password`, newPasswordObj);
+      await request('PUT', `/api/users/${userID}/password`, newPasswordObj);
       setNewPassword(newPassword);
       toast.success('Password updated');
       resetNewPasswordFields(event);

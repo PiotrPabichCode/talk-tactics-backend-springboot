@@ -1,64 +1,47 @@
 package com.example.talktactics.controllers;
 
-import com.example.talktactics.exceptions.AnswerNotFoundException;
-import com.example.talktactics.exceptions.TaskNotFoundException;
 import com.example.talktactics.models.Answer;
-import com.example.talktactics.models.Task;
-import com.example.talktactics.repositories.AnswerRepository;
-import com.example.talktactics.repositories.TaskRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.example.talktactics.services.AnswerService;
+import lombok.AllArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @RestController
+@AllArgsConstructor
 @RequestMapping("/api")
 public class AnswerController {
-    @Autowired
-    private AnswerRepository answerRepository;
-
-    @PostMapping("/answer")
-    Answer newAnswer(@RequestBody Answer newAnswer) {
-        return answerRepository.save(newAnswer);
-    }
+    private final AnswerService answerService;
 
     @GetMapping("/answers")
     List<Answer> getAllAnswers() {
-        return answerRepository.findAll();
+        return answerService.getAnswers();
     }
 
-    @GetMapping("/answer/{id}")
+    @GetMapping("/answers/{id}")
     Answer getAnswerById(@PathVariable Long id) {
-        return answerRepository.findById(id).orElseThrow(() -> new AnswerNotFoundException(id));
+        return answerService.getAnswerById(id);
+    }
+    @GetMapping("/answers/username/{username}")
+    public List<Answer> getAnswersByUserName(@PathVariable String username) {
+        return answerService.filterAnswersByUsername(username);
+    }
+
+    @PostMapping("/answers")
+    Answer newAnswer(@RequestBody Answer answer) {
+        return answerService.createAnswer(answer);
     }
 
     @PreAuthorize("hasRole('ADMIN')")
-    @PutMapping("/answer/{id}")
-    Answer updateAnswer(@RequestBody Answer newAnswer, @PathVariable Long id) {
-        return answerRepository.findById(id)
-                .map(answer -> {
-                    answer.setContent(newAnswer.getContent());
-                    answer.setFinishTime(newAnswer.getFinishTime());
-                    answer.setTask(newAnswer.getTask());
-                    answer.setUser(newAnswer.getUser());
-                    return answerRepository.save(answer);
-                }).orElseThrow(() -> new AnswerNotFoundException(id));
+    @PutMapping("/answers/{id}")
+    Answer updateAnswer(@RequestBody Answer answer, @PathVariable Long id) {
+        return answerService.updateAnswer(answer, id);
     }
 
     @PreAuthorize("hasRole('ADMIN')")
-    @DeleteMapping("/answer/{id}")
-    String deleteAnswer(@PathVariable Long id) {
-        if(!answerRepository.existsById(id)) {
-            throw new AnswerNotFoundException(id);
-        }
-        answerRepository.deleteById(id);
-        return "Answer with id " + id + " deleted.";
-    }
-
-    @GetMapping("/answers/username/{name}")
-    public List<Answer> getAnswersByUserName(@PathVariable String name) {
-        return answerRepository.findByUserNameContaining(name);
+    @DeleteMapping("/answers/{id}")
+    void deleteAnswer(@PathVariable Long id) {
+        answerService.deleteAnswerById(id);
     }
 }

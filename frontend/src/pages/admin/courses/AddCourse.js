@@ -28,7 +28,7 @@ export default function AddCourse() {
     e.preventDefault();
     try {
       if (name !== '' && description !== '' && level !== '') {
-        request('POST', `/api/course`, course);
+        request('POST', `/api/courses`, course);
         toast.success('Course added successfully');
         navigate(url);
       } else {

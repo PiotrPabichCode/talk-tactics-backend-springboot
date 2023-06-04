@@ -22,7 +22,7 @@ export default function AddUser() {
   const onSubmit = async (e) => {
     e.preventDefault();
     try {
-      await request('POST', '/api/user', user);
+      await request('POST', '/api/users', user);
       toast.success('User added successfully');
       navigate('/');
     } catch (error) {
