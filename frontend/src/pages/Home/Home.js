@@ -1,6 +1,8 @@
 import React from 'react';
 import './Home.css';
 import { Link } from 'react-router-dom';
+import home1 from '../../assets/home-img1.svg';
+import home2 from '../../assets/home-img2.svg';
 
 function Home() {
   return (
@@ -19,10 +21,10 @@ function Home() {
             <button className='btn btn-primary'>Start now!</button>
           </Link>
         </div>
-        <img src='home1.svg' alt=''></img>
+        <img src={home1} alt='Background 1' />
       </div>
       <div className='homecontainer bg-secondary'>
-        <img src='home2.svg' alt=''></img>
+        <img src={home2} alt='Background 2' />
         <div className='description1'>
           <p id='home2desc'>
             Nasza strona oferuje kompleksowe materiały edukacyjne, kursy

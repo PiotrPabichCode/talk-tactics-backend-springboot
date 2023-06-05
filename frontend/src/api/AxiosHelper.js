@@ -13,8 +13,16 @@ export const getUserData = () => {
   return JSON.parse(userData);
 };
 
+export const clearUserData = () => {
+  window.localStorage.removeItem('user_data');
+};
+
 export const getAuthToken = () => {
   return getUserData()?.token ?? null;
+};
+
+export const getAuthRefreshToken = () => {
+  return getUserData()?.refreshToken ?? null;
 };
 
 export const getUserRole = () => {
@@ -25,16 +33,60 @@ export const getUsername = () => {
   return getUserData()?.username ?? null;
 };
 
-export const request = (method, url, data) => {
+export const request = async (method, url, data) => {
   let headers = {};
   if (getAuthToken() !== null && getAuthToken() !== 'null') {
     headers = { Authorization: `Bearer ${getAuthToken()}` };
   }
 
-  return axios({
-    method: method,
-    headers: headers,
-    url: url,
-    data: data,
-  });
+  try {
+    const response = await axios({
+      method: method,
+      headers: headers,
+      url: url,
+      data: data,
+    });
+
+    return response;
+  } catch (error) {
+    if (error.response.status === 403) {
+      try {
+        console.log('Token expired - try refresh token');
+        if (
+          getAuthRefreshToken() !== null &&
+          getAuthRefreshToken() !== 'null'
+        ) {
+          headers = { Authorization: `Bearer ${getAuthRefreshToken()}` };
+        }
+
+        // Request new token by passing refresh token
+        const refreshToken = await axios({
+          method: 'POST',
+          headers: headers,
+          url: '/api/v1/auth/refresh-token',
+          data: {
+            login: getUsername(),
+            refreshToken: getAuthRefreshToken(),
+          },
+        });
+
+        setUserData(refreshToken.data);
+        if (getAuthToken() !== null && getAuthToken() !== 'null') {
+          headers = { Authorization: `Bearer ${getAuthToken()}` };
+        }
+
+        return axios({
+          method: method,
+          headers: headers,
+          url: url,
+          data: data,
+        });
+      } catch (error) {
+        clearUserData();
+        console.log('Refresh token has expired. Login required');
+        window.location.reload();
+      }
+    }
+    throw error;
+  }
 };

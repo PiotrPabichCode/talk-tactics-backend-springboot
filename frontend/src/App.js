@@ -7,10 +7,9 @@ import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 import RequireAuth from './api/RequireAuth';
 import RedirectRoute from './api/RedirectRoute';
 import Home from './pages/Home/Home';
-import Assignment from './pages/Assignment/Assignment';
 import Navbar from './components/Navbar/Navbar';
-import SignIn from './pages/Account/SignIn';
-import SignUp from './pages/Account/SignUp';
+import SignIn from './pages/auth/SignIn';
+import SignUp from './pages/auth/SignUp';
 import Admin from './pages/admin/Admin';
 import AddUser from './pages/admin/users/AddUser';
 import EditUser from './pages/admin/users/EditUser';
@@ -24,6 +23,7 @@ import User from './pages/user/User';
 import AddTask from './pages/admin/tasks/AddTask';
 import AddCourse from './pages/admin/courses/AddCourse';
 import AccountDetails from './pages/user/AccountDetails';
+import Footer from './components/Footer/Footer';
 function App() {
   return (
     <div className='App bg-secondary'>
@@ -44,7 +44,6 @@ function App() {
           <Route element={<RequireAuth allowedRoles={['USER', 'ADMIN']} />}>
             <Route exact path='/user' element={<User />} />
             <Route exact path='/accountdetails' element={<AccountDetails />} />
-            <Route exact path='/assignment' element={<Assignment />} />
           </Route>
           <Route element={<RequireAuth allowedRoles={'ADMIN'} />}>
             <Route exact path='/admin' element={<Admin />} />
@@ -60,6 +59,7 @@ function App() {
             <Route exact path='/viewuser/:id' element={<ViewUser />} />
           </Route>
         </Routes>
+        <Footer />
       </BrowserRouter>
     </div>
   );

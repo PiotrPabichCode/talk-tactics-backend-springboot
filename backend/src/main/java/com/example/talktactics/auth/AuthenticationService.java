@@ -32,10 +32,12 @@ public class AuthenticationService {
                 .build();
         repository.save(user);
         var jwtToken = jwtService.generateToken(user);
+        var jwtRefreshToken = jwtService.generateRefreshToken(user);
         return AuthenticationResponse.builder()
                 .username(user.getUsername())
                 .role(user.getRole())
                 .token(jwtToken)
+                .refreshToken(jwtRefreshToken)
                 .build();
     }
 
@@ -68,10 +70,25 @@ public class AuthenticationService {
         var user = repository.findByLogin(request.getLogin())
                 .orElseThrow();
         var jwtToken = jwtService.generateToken(user);
+        var jwtRefreshToken = jwtService.generateRefreshToken(user);
         return AuthenticationResponse.builder()
                 .username(user.getUsername())
                 .role(user.getRole())
                 .token(jwtToken)
+                .refreshToken(jwtRefreshToken)
+                .build();
+    }
+
+    public AuthenticationResponse reauthenticate(RefreshTokenRequest request) {
+        var user = repository.findByLogin(request.getLogin())
+                .orElseThrow();
+        var jwtToken = jwtService.generateToken(user);
+        var jwtRefreshToken = jwtService.generateRefreshToken(user);
+        return AuthenticationResponse.builder()
+                .username(user.getUsername())
+                .role(user.getRole())
+                .token(jwtToken)
+                .refreshToken(jwtRefreshToken)
                 .build();
     }
 }
