@@ -56,7 +56,7 @@ export default function Admin() {
   return (
     <>
       {/* Admin panel */}
-      <section className='container-fluid py-4 bg-secondary'>
+      <section className='container-fluid p-4'>
         <div className='container-fluid rounded bg-dark py-3'>
           <h4 className='display-4 text-center text-light'>Admin panel</h4>
           <hr className='text-light'></hr>

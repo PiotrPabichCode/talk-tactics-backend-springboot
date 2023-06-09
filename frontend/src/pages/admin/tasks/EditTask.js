@@ -3,7 +3,7 @@ import { Link, useNavigate, useParams } from 'react-router-dom';
 import { request } from '../../../api/AxiosHelper';
 import { toast } from 'react-toastify';
 
-export default function EditTask() {
+const EditTask = () => {
   const navigate = useNavigate();
   const url = '/admin?isTasksDisplayed=true';
   const [courses, setCourses] = useState([]);
@@ -80,7 +80,7 @@ export default function EditTask() {
   };
 
   return (
-    <div className='container-fluid pb-3 bg-secondary'>
+    <div className='container-fluid'>
       <div className='row text-light'>
         <div className='col-md-6 offset-md-3 bg-dark opacity-100 border rounded p-4 mt-2 shadow position-relative'>
           <Link
@@ -173,4 +173,6 @@ export default function EditTask() {
       </div>
     </div>
   );
-}
+};
+
+export default EditTask;

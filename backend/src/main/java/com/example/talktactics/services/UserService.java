@@ -1,10 +1,7 @@
 package com.example.talktactics.services;
 
 import com.example.talktactics.exceptions.UserNotFoundException;
-import com.example.talktactics.models.Role;
-import com.example.talktactics.models.UpdatePassword;
-import com.example.talktactics.models.UpdateUser;
-import com.example.talktactics.models.User;
+import com.example.talktactics.models.*;
 import com.example.talktactics.repositories.UserRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.security.core.Authentication;
@@ -165,4 +162,26 @@ public class UserService {
     }
 
 
+    public void addCourseToUser(String login, Course course) {
+        User user = userRepository.findByLogin(login)
+                .orElseThrow();
+        List<Course> userCourses = user.getCourses();
+        boolean hasCourse = userCourses.stream()
+                .anyMatch(c -> c.getName().equals(course.getName()));
+
+        if (!hasCourse) {
+            userCourses.add(course);
+            user.setCourses(userCourses);
+            // Zapisz zmiany w bazie danych
+            userRepository.save(user);
+        } else {
+            throw new IllegalArgumentException("User has already this course");
+        }
+    }
+
+    public List<Course> getAllCoursesFromUser(String login) {
+        User user = userRepository.findByLogin(login).orElseThrow();
+
+        return user.getCourses();
+    }
 }

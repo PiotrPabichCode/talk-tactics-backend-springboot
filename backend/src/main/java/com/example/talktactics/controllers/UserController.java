@@ -1,5 +1,6 @@
 package com.example.talktactics.controllers;
 
+import com.example.talktactics.DTOs.AddCourseUser;
 import com.example.talktactics.models.*;
 import com.example.talktactics.services.UserService;
 import lombok.AllArgsConstructor;
@@ -69,5 +70,16 @@ public class UserController {
     @PutMapping("/users/{userID}/password")
     public User updatePassword(@PathVariable Long userID, @RequestBody UpdatePassword updatePassword) {
         return userService.updatePassword(userID, updatePassword);
+    }
+
+    @PutMapping("/users/add-course")
+    public void addCourseToUser(@RequestBody AddCourseUser addCourseUser) {
+        System.out.println(addCourseUser);
+        userService.addCourseToUser(addCourseUser.getLogin(), addCourseUser.getCourse());
+    }
+
+    @GetMapping("/users/{login}/courses")
+    public List<Course> getUserCourses(@PathVariable String login) {
+        return userService.getAllCoursesFromUser(login);
     }
 }

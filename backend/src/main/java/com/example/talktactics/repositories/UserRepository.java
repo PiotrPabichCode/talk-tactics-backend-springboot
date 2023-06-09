@@ -1,5 +1,6 @@
 package com.example.talktactics.repositories;
 
+import com.example.talktactics.models.Course;
 import com.example.talktactics.models.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -15,4 +16,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
     Boolean existsByLogin(String login);
     Optional<User> findByLogin(String login);
     Boolean existsByEmail(String email);
+
+    @Query("SELECT c FROM User u JOIN Course c WHERE LOWER(c.level) LIKE LOWER(CONCAT('%', :levelName, '%'))")
+    ArrayList<Course> findByLevelName(@Param("levelName") String levelName);
 }

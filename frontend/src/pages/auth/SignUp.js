@@ -23,7 +23,7 @@ const SignUp = () => {
   const handleRegisterForm = async (e) => {
     e.preventDefault();
     try {
-      const response = await request('POST', '/api/v1/auth/register', user);
+      const response = await request('POST', '/api/auth/register', user);
       setUserData(response.data);
       setUser({
         login: '',
@@ -141,7 +141,7 @@ const SignUp = () => {
 
   return (
     <div className='justify-content-center align-items-center'>
-      <div className='container-fluid bg-secondary p-4'>
+      <div className='container-fluid p-4'>
         <div className='row d-flex justify-content-center'>
           <div className='col-12 col-md-8 col-lg-6'>
             <div className='card bg-white shadow-lg'>

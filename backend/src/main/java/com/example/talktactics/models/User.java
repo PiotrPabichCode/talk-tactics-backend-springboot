@@ -26,6 +26,10 @@ public class User implements UserDetails  {
     String lastName;
     String email;
 
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    private List<Course> courses;
+
 
     @Enumerated(EnumType.STRING)
     private Role role;

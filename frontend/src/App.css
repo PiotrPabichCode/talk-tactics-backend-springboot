@@ -22,11 +22,20 @@ body {
   background-color: #0f166a;
   margin: 0;
   padding: 0;
+  height: 100%;
+}
+* {
+  box-sizing: border-box;
 }
 
 .App {
-  height: 100vh;
+  height: 100%;
   text-align: center;
   display: flex;
   flex-direction: column;
+  background-image: url('assets/background.jpg');
+  background-position: center;
+  background-repeat: repeat;
+  background-size: cover;
+  justify-content: center;
 }

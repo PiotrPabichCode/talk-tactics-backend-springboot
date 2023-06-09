@@ -1,25 +1,22 @@
 package com.example.talktactics.controllers;
 
-import com.example.talktactics.exceptions.CourseNotFoundException;
-import com.example.talktactics.models.Answer;
-import com.example.talktactics.models.Course;
-import com.example.talktactics.models.Task;
-import com.example.talktactics.repositories.AnswerRepository;
-import com.example.talktactics.repositories.CourseRepository;
-import com.example.talktactics.repositories.TaskRepository;
+import com.example.talktactics.models.*;
+import com.example.talktactics.repositories.*;
 import com.example.talktactics.services.CourseService;
 import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @AllArgsConstructor
 @RequestMapping("/api")
 public class CourseController {
     private final CourseService courseService;
+    private final CourseItemRepository courseItemRepository;
+    private final MeaningRepository meaningRepository;
 
     @PostMapping("/courses")
     Course createCourse(@RequestBody Course course) {
@@ -50,5 +47,20 @@ public class CourseController {
     @DeleteMapping("/courses/{id}")
     void deleteCourse(@PathVariable Long id) {
         courseService.deleteCourse(id);
+    }
+
+    @GetMapping("/course-items")
+    List<CourseItem> getCourseItems() {
+        return courseItemRepository.findAll();
+    }
+
+    @GetMapping("/course-items/{id}")
+    Optional<CourseItem> getCourseItemDetailsById(@PathVariable Long id) {
+        return courseItemRepository.findById(id);
+    }
+
+    @GetMapping("/meanings")
+    List<Meaning> getMeanings() {
+        return meaningRepository.findAll();
     }
 }

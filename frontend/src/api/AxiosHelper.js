@@ -63,7 +63,7 @@ export const request = async (method, url, data) => {
         const refreshToken = await axios({
           method: 'POST',
           headers: headers,
-          url: '/api/v1/auth/refresh-token',
+          url: '/api/auth/refresh-token',
           data: {
             login: getUsername(),
             refreshToken: getAuthRefreshToken(),

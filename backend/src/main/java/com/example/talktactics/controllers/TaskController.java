@@ -45,7 +45,7 @@ public class TaskController {
     }
 
     @PreAuthorize("hasRole('ADMIN')")
-    @DeleteMapping("/task/{id}")
+    @DeleteMapping("/tasks/{id}")
     void deleteTask(@PathVariable Long id) {
         taskService.deleteTask(id);
     }

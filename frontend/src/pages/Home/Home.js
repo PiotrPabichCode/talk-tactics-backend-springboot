@@ -7,7 +7,7 @@ import home2 from '../../assets/home-img2.svg';
 function Home() {
   return (
     <>
-      <div className='homecontainer bg-secondary'>
+      <div className='homecontainer'>
         <div className='description1 align-items-center'>
           <h1>
             Chcesz nauczyć się języka angielskiego, ale nie wiesz od czego
@@ -23,7 +23,7 @@ function Home() {
         </div>
         <img src={home1} alt='Background 1' />
       </div>
-      <div className='homecontainer bg-secondary'>
+      <div className='homecontainer'>
         <img src={home2} alt='Background 2' />
         <div className='description1'>
           <p id='home2desc'>

@@ -1,27 +1,11 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { Link, useParams } from 'react-router-dom';
-import { request } from '../../../api/AxiosHelper';
+import { useTaskDetails } from './hooks/useTaskDetails';
 
-export default function ViewTask() {
-  const [taskDetails, setTaskDetails] = useState({});
-
-  const { id } = useParams();
-
-  useEffect(() => {
-    loadTask();
-  }, []);
-
-  const loadTask = async () => {
-    try {
-      const response = await request('GET', `/api/tasks/${id}`);
-      console.log(response.data);
-      setTaskDetails(response.data);
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
+const ViewTask = () => {
   const url = '/admin?isTasksDisplayed=true';
+  const { id } = useParams();
+  const taskDetails = useTaskDetails(id);
 
   const renderTaskDetails = () => {
     return (
@@ -81,18 +65,16 @@ export default function ViewTask() {
   };
 
   return (
-    <div className='container-fluid p-4 bg-secondary'>
-      <div className='row'>
-        <div className='container-fluid rounded p-4 shadow bg-dark position-relative'>
-          <Link
-            className='btn btn-primary position-absolute end-0 me-4'
-            to={url}>
-            Back
-          </Link>
-          <h2 className='text-center m-4 text-light'>Task Details</h2>
-          {renderTaskDetails()}
-        </div>
+    <div className='container-fluid p-4'>
+      <div className='container-fluid rounded p-4 shadow bg-dark position-relative'>
+        <Link className='btn btn-primary position-absolute end-0 me-4' to={url}>
+          Back
+        </Link>
+        <h2 className='text-center m-4 text-light'>Task Details</h2>
+        {renderTaskDetails()}
       </div>
     </div>
   );
-}
+};
+
+export default ViewTask;

@@ -19,7 +19,7 @@ const SignIn = () => {
     e.preventDefault();
     try {
       console.log(user);
-      const response = await request('POST', '/api/v1/auth/authenticate', user);
+      const response = await request('POST', '/api/auth/authenticate', user);
       console.log(response.data);
       setUserData(response.data);
       toast.success('Sign in successfully');

@@ -1,45 +1,44 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useLocation, useParams } from 'react-router-dom';
 import AccountDetails from './AccountDetails';
+import UserCourses from './UserCourses';
 
 export default function User() {
-  const [isAccountDetailsDisplayedValue, setIsAccountDetailsDisplayedValue] =
+  const [isAccountDetailsDisplayed, setIsAccountDetailsDisplayed] =
     useState(false);
-  const [isAssignmentsDisplayed, setIsAssigmentsDisplayed] = useState(false);
+  const [isCoursesDisplayed, setIsCoursesDisplayed] = useState(false);
   const location = useLocation();
 
   useEffect(() => {
     const searchParams = new URLSearchParams(location.search);
-    const isAccountDetailsDisplayedValue = Boolean(
-      searchParams.get('isAccountDetailsDisplayedValue')
+    const isAccountDetailsDisplayed = Boolean(
+      searchParams.get('isAccountDetailsDisplayed')
     );
-    const isAssigmentsDisplayedValue = Boolean(
-      searchParams.get('isAssigmentsDisplayed')
-    );
+    const isCoursesDisplayed = Boolean(searchParams.get('isCoursesDisplayed'));
 
-    setIsAccountDetailsDisplayedValue(isAccountDetailsDisplayedValue === true);
-    setIsAssigmentsDisplayed(isAssigmentsDisplayedValue === true);
+    setIsAccountDetailsDisplayed(isAccountDetailsDisplayed === true);
+    setIsCoursesDisplayed(isCoursesDisplayed === true);
   }, [location.search]);
 
   const clearDisplays = () => {
-    setIsAccountDetailsDisplayedValue(false);
-    setIsAssigmentsDisplayed(false);
+    setIsAccountDetailsDisplayed(false);
+    setIsCoursesDisplayed(false);
   };
 
   const handleAccountDetailsDisplay = () => {
     clearDisplays();
-    setIsAccountDetailsDisplayedValue(true);
+    setIsAccountDetailsDisplayed(true);
   };
 
-  const handleAssignmentsDisplay = () => {
+  const handleCoursesDisplay = () => {
     clearDisplays();
-    setIsAssigmentsDisplayed(true);
+    setIsCoursesDisplayed(true);
   };
 
   return (
     <>
       {/* User panel */}
-      <section className='container-fluid py-4 bg-secondary'>
+      <section className='container-fluid py-4'>
         <div className='container rounded bg-dark py-3'>
           <h4 className='display-4 text-center text-light'>User panel</h4>
           <hr className='text-light'></hr>
@@ -51,10 +50,11 @@ export default function User() {
           </button>
           <button
             className='btn btn-outline-light me-2'
-            onClick={handleAssignmentsDisplay}>
-            Your assignments
+            onClick={handleCoursesDisplay}>
+            Your courses
           </button>
-          {isAccountDetailsDisplayedValue && <AccountDetails />}
+          {isAccountDetailsDisplayed && <AccountDetails />}
+          {isCoursesDisplayed && <UserCourses />}
         </div>
       </section>
     </>

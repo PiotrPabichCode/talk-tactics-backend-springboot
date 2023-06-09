@@ -64,7 +64,7 @@ export default function EditUser() {
   };
 
   return (
-    <div className='container-fluid bg-secondary px-4 pb-4'>
+    <div className='container-fluid px-4 pb-4'>
       <div className='row text-light'>
         <div className='col-md-6 offset-md-3 bg-dark opacity-100 border rounded p-4 mt-2 shadow position-relative'>
           <Link

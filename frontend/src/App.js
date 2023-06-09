@@ -24,9 +24,12 @@ import AddTask from './pages/admin/tasks/AddTask';
 import AddCourse from './pages/admin/courses/AddCourse';
 import AccountDetails from './pages/user/AccountDetails';
 import Footer from './components/Footer/Footer';
+import Courses from './pages/Courses/Courses';
+import CourseItemDetails from './pages/Courses/CourseItemDetails';
+import CourseItems from './pages/Courses/CourseItems';
 function App() {
   return (
-    <div className='App bg-secondary'>
+    <div className='App min-vh-100'>
       <ToastContainer />
       <BrowserRouter>
         <Navbar />
@@ -42,6 +45,13 @@ function App() {
 
           {/* Authorized routes */}
           <Route element={<RequireAuth allowedRoles={['USER', 'ADMIN']} />}>
+            <Route exact path='/courses' element={<Courses />} />
+            <Route exact path='/courseItems' element={<CourseItems />} />
+            <Route
+              exact
+              path='/courseItemDetails/:id'
+              element={<CourseItemDetails />}
+            />
             <Route exact path='/user' element={<User />} />
             <Route exact path='/accountdetails' element={<AccountDetails />} />
           </Route>

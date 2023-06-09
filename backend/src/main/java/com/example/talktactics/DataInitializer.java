@@ -1,10 +1,9 @@
 package com.example.talktactics;
 
 import com.example.talktactics.models.*;
-import com.example.talktactics.repositories.AnswerRepository;
-import com.example.talktactics.repositories.CourseRepository;
-import com.example.talktactics.repositories.TaskRepository;
-import com.example.talktactics.repositories.UserRepository;
+import com.example.talktactics.repositories.*;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
@@ -12,10 +11,14 @@ import org.springframework.boot.ApplicationRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
+import java.io.File;
+import java.io.IOException;
 import java.lang.reflect.Array;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Random;
 
 @Component
@@ -31,7 +34,75 @@ public class DataInitializer implements ApplicationRunner {
     @Autowired
     private UserRepository userRepository;
     @Autowired
+    private MeaningRepository meaningRepository;
+    @Autowired
+    private CourseItemRepository courseItemRepository;
+    @Autowired
     private PasswordEncoder passwordEncoder;
+
+    private void loadCourseItemsFromJson(List<Course> courses) {
+        ObjectMapper objectMapper = new ObjectMapper();
+        File jsonFile = new File("src/main/java/com/example/talktactics/utils/long_words.json");
+
+        try {
+            JsonNode jsonNode = objectMapper.readTree(jsonFile);
+            List<CourseItem> courseItems = new ArrayList<>();
+
+            // Iterate over each JSON object in the array
+            for (JsonNode courseItemNode : jsonNode) {
+                JsonNode item = courseItemNode.get(0);
+                String word = item.hasNonNull("word") ? item.get("word").asText() : null;
+                String phonetic = item.hasNonNull("phonetic") ? item.get("phonetic").asText() : null;
+
+                // Create a new CourseItem instance
+                CourseItem courseItem = CourseItem.builder()
+                        .word(word)
+                        .phonetic(phonetic)
+                        .build();
+
+                // Access nested arrays or objects within the current course item
+                JsonNode meaningsNode = item.get("meanings");
+                String partOfSpeech = meaningsNode.get(0).get("partOfSpeech").asText();
+                courseItem.setPartOfSpeech(partOfSpeech);
+                JsonNode definitionsNode = meaningsNode.get(0).get("definitions");
+                List<Meaning> meanings = new ArrayList<>();
+                for (JsonNode definitionNode : definitionsNode) {
+                    System.out.println(definitionNode);
+
+                    String definition = definitionNode.hasNonNull("definition") ? definitionNode.get("definition").asText() : null;
+                    String example = definitionNode.hasNonNull("example") ? definitionNode.get("example").asText() : null;
+
+                    // Create a new Meaning instance
+                    Meaning meaning = Meaning.builder()
+                            .definition(definition)
+                            .example(example)
+                            .build();
+
+                    // Set the course item for the meaning
+                    meaning.setCourseItem(courseItem);
+
+                    meanings.add(meaning);
+                }
+                meaningRepository.saveAll(meanings);
+//                courseItem.setMeanings(meanings);
+                courseItem.setCourse(courses.get(0));
+                courseItems.add(courseItem);
+//                courseItemRepository.save(courseItem);
+                // Save the course item to the database
+                // Assuming you have a JPA EntityManager named entityManager
+//                entityManager.persist(courseItem);
+            }
+
+            courseItemRepository.saveAll(courseItems);
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            // Handle the exception according to your application's error handling strategy
+        }
+    }
+
+
+
 
     public void initData() {
         // create Users
@@ -45,6 +116,7 @@ public class DataInitializer implements ApplicationRunner {
         courses.add(Course.builder().name("Business English: Effective Communication in the Workplace").description("Ten kurs skierowany jest do profesjonalistów, którzy chcą doskonalić swoje umiejętności komunikacyjne w języku angielskim w kontekście biznesowym. Uczestnicy nauczą się skutecznie komunikować się w miejscu pracy, w tym prowadzić efektywne prezentacje, negocjować umowy, redagować profesjonalne e-maile i raporty. Kurs skupi się również na rozwoju umiejętności słuchania ze zrozumieniem oraz pisania precyzyjnych i zwięzłych tekstów biznesowych.").level("Intermediate").build());
         courses.add(Course.builder().name("English for Travelers: Practical Language Skills for Globetrotters").description("Ten kurs został stworzony dla osób, które planują podróżować i chcą nauczyć się praktycznych umiejętności językowych w kontekście podróży. Uczestnicy nauczą się podstawowych zwrotów, które są niezbędne do porozumiewania się w sytuacjach podróżnych, takich jak rezerwacja hotelu, zamawianie jedzenia w restauracji, poruszanie się po mieście czy zakupy. Kurs będzie również obejmować praktyczne wskazówki dotyczące radzenia sobie w różnych sytuacjach kulturowych, jak również podstawy rozumienia ogólnodostępnych informacji, takich jak rozkłady jazdy czy oznaczenia na lotniskach.").level("Beginner").build());
         courseRepository.saveAll(courses);
+        loadCourseItemsFromJson(courses);
 
         // create tasks
         ArrayList<Task> tasks = new ArrayList<>();
