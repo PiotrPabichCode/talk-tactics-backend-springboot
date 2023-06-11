@@ -32,9 +32,9 @@ public class CourseController {
     Course getCourseById(@PathVariable Long id) {
         return courseService.getCourseById(id);
     }
-    @GetMapping("/courses/level/{levelName}")
-    public List<Course> getCoursesByLevelName(@PathVariable String levelName) {
-        return courseService.filterCoursesByLevelName(levelName);
+    @GetMapping("/courses/level/{level}")
+    public List<Course> getCoursesByLevel(@PathVariable String level) {
+        return courseService.filterCoursesByLevelName(level);
     }
 
     @PreAuthorize("hasRole('ADMIN')")
@@ -47,16 +47,6 @@ public class CourseController {
     @DeleteMapping("/courses/{id}")
     void deleteCourse(@PathVariable Long id) {
         courseService.deleteCourse(id);
-    }
-
-    @GetMapping("/course-items")
-    List<CourseItem> getCourseItems() {
-        return courseItemRepository.findAll();
-    }
-
-    @GetMapping("/course-items/{id}")
-    Optional<CourseItem> getCourseItemDetailsById(@PathVariable Long id) {
-        return courseItemRepository.findById(id);
     }
 
     @GetMapping("/meanings")

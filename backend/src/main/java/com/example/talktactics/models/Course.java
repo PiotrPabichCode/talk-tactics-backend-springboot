@@ -1,7 +1,10 @@
 package com.example.talktactics.models;
 
+import com.fasterxml.jackson.annotation.*;
 import jakarta.persistence.*;
 import lombok.*;
+
+import java.util.List;
 
 @Entity
 @Data
@@ -17,5 +20,19 @@ public class Course {
     private String name;
     @Column(length = 800)
     private String description;
-    private String level;
+    private Level level;
+
+    @JsonIgnore
+//    @JsonIgnoreProperties("course")
+    @OneToMany(mappedBy = "course",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true)
+    private List<CourseItem> courseItems;
+
+    @JsonIgnore
+//    @JsonIgnoreProperties("course")
+    @OneToMany(mappedBy = "course",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true)
+    private List<UserCourse> userCourses;
 }

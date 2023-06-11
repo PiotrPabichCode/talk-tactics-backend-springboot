@@ -1,5 +1,7 @@
 package com.example.talktactics.services;
 
+import com.example.talktactics.DTOs.UpdatePassword;
+import com.example.talktactics.DTOs.UpdateUser;
 import com.example.talktactics.exceptions.UserNotFoundException;
 import com.example.talktactics.models.*;
 import com.example.talktactics.repositories.UserRepository;
@@ -10,8 +12,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import static com.example.talktactics.utils.EmailValidator.isValidEmail;
 import static com.example.talktactics.utils.Utils.isEmptyString;
@@ -161,27 +162,4 @@ public class UserService {
         return userRepository.save(user);
     }
 
-
-    public void addCourseToUser(String login, Course course) {
-        User user = userRepository.findByLogin(login)
-                .orElseThrow();
-        List<Course> userCourses = user.getCourses();
-        boolean hasCourse = userCourses.stream()
-                .anyMatch(c -> c.getName().equals(course.getName()));
-
-        if (!hasCourse) {
-            userCourses.add(course);
-            user.setCourses(userCourses);
-            // Zapisz zmiany w bazie danych
-            userRepository.save(user);
-        } else {
-            throw new IllegalArgumentException("User has already this course");
-        }
-    }
-
-    public List<Course> getAllCoursesFromUser(String login) {
-        User user = userRepository.findByLogin(login).orElseThrow();
-
-        return user.getCourses();
-    }
 }

@@ -7,14 +7,12 @@ import { toast } from 'react-toastify';
 const AccountDetails = () => {
   useEffect(() => {
     const username = getUsername();
-    console.log(username);
     const loadUserDetails = async () => {
       try {
         const response = await request(
           'GET',
           `/api/users/by/login/${username}`
         );
-        console.log(response.data);
         setUserID(response.data.id);
         setFirstName(response.data.firstName);
         setLastName(response.data.lastName);
@@ -119,7 +117,6 @@ const AccountDetails = () => {
   const handleEmailForm = async (event) => {
     event.preventDefault();
     try {
-      console.log(newEmail);
       await request('PUT', `/api/users/${userID}/email`, newEmail);
       setEmail(newEmail);
       toast.success('Email updated');

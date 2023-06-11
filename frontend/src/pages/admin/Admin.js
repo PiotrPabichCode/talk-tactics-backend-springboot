@@ -2,14 +2,14 @@ import React, { useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import Users from './users/Users';
 import Courses from './courses/Courses';
-import Tasks from './tasks/Tasks';
-import Answers from './answers/Answers';
+import UserCourses from './user_courses/UserCourses';
+import CourseItems from '../Courses/CourseItems';
 
 export default function Admin() {
   const [isUsersDisplayed, setIsUsersDisplayed] = useState(false);
   const [isCoursesDisplayed, setIsCoursesDisplayed] = useState(false);
-  const [isTasksDisplayed, setIsTasksDisplayed] = useState(false);
-  const [isAnswersDisplayed, setIsAnswersDisplayed] = useState(false);
+  const [isCourseItemsDisplayed, setIsCourseItemsDisplayed] = useState(false);
+  const [isUserCoursesDisplayed, setIsUserCoursesDisplayed] = useState(false);
 
   const location = useLocation();
 
@@ -17,20 +17,24 @@ export default function Admin() {
     const searchParams = new URLSearchParams(location.search);
     const isUsersDisplayedValue = searchParams.get('isUserDisplayed');
     const isCoursesDisplayedValue = searchParams.get('isCoursesDisplayed');
-    const isTasksDisplayedValue = searchParams.get('isTasksDisplayed');
-    const isAnswersDisplayedValue = searchParams.get('isAnswersDisplayed');
+    const isCourseItemsDisplayedValue = searchParams.get(
+      'isCourseItemsDisplayed'
+    );
+    const isUserCoursesDisplayedValue = searchParams.get(
+      'isUserCoursesDisplayed'
+    );
 
     setIsUsersDisplayed(isUsersDisplayedValue === 'true');
     setIsCoursesDisplayed(isCoursesDisplayedValue === 'true');
-    setIsTasksDisplayed(isTasksDisplayedValue === 'true');
-    setIsAnswersDisplayed(isAnswersDisplayedValue === 'true');
+    setIsCourseItemsDisplayed(isCourseItemsDisplayedValue === 'true');
+    setIsUserCoursesDisplayed(isUserCoursesDisplayedValue === 'true');
   }, [location.search]);
 
   const clearDisplays = () => {
     setIsUsersDisplayed(false);
     setIsCoursesDisplayed(false);
-    setIsTasksDisplayed(false);
-    setIsAnswersDisplayed(false);
+    setIsCourseItemsDisplayed(false);
+    setIsUserCoursesDisplayed(false);
   };
 
   const handleUsersDisplay = () => {
@@ -43,14 +47,14 @@ export default function Admin() {
     setIsCoursesDisplayed(true);
   };
 
-  const handleTasksDisplay = () => {
+  const handleCourseItemsDisplay = () => {
     clearDisplays();
-    setIsTasksDisplayed(true);
+    setIsCourseItemsDisplayed(true);
   };
 
-  const handleAnswersDisplay = () => {
+  const handleUserCoursesDisplay = () => {
     clearDisplays();
-    setIsAnswersDisplayed(true);
+    setIsUserCoursesDisplayed(true);
   };
 
   return (
@@ -73,18 +77,18 @@ export default function Admin() {
           </button>
           <button
             className='btn btn-outline-light me-2'
-            onClick={handleTasksDisplay}>
-            Tasks
+            onClick={handleCourseItemsDisplay}>
+            Course items
           </button>
           <button
-            className='btn btn-outline-light'
-            onClick={handleAnswersDisplay}>
-            Answers
+            className='btn btn-outline-light me-2'
+            onClick={handleUserCoursesDisplay}>
+            User courses
           </button>
           {isUsersDisplayed && <Users />}
           {isCoursesDisplayed && <Courses />}
-          {isTasksDisplayed && <Tasks />}
-          {isAnswersDisplayed && <Answers />}
+          {isCourseItemsDisplayed && <CourseItems />}
+          {isUserCoursesDisplayed && <UserCourses />}
         </div>
       </section>
     </>

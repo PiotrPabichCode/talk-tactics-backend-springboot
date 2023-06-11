@@ -8,6 +8,7 @@ export const useCourseDetails = (id) => {
     const loadCourse = async () => {
       try {
         const response = await request('GET', `/api/courses/${id}`);
+        console.log(response.data);
         setCourseDetails(response.data);
       } catch (error) {
         console.log(error);

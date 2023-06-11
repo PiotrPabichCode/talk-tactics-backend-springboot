@@ -17,6 +17,10 @@ export const clearUserData = () => {
   window.localStorage.removeItem('user_data');
 };
 
+export const getUserID = () => {
+  return getUserData()?.id ?? null;
+};
+
 export const getAuthToken = () => {
   return getUserData()?.token ?? null;
 };

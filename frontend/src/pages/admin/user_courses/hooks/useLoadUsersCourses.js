@@ -1,21 +1,14 @@
 import { useEffect, useState } from 'react';
-import { request } from '../../../api/AxiosHelper';
+import { request } from '../../../../api/AxiosHelper';
 import { toast } from 'react-toastify';
-import { getUsername } from '../../../api/AxiosHelper';
 
-export default function useLoadUserCourses() {
+export default function useLoadUsersCourses() {
   const [userCourses, setUserCourses] = useState([]);
-  const login = getUsername();
 
   useEffect(() => {
     const loadUserCourses = async () => {
       try {
-        console.log(login);
-        const response = await request(
-          'GET',
-          `/api/user-courses/users/login/${login}`
-        );
-        console.log(response.data);
+        const response = await request('GET', '/api/user-courses');
         setUserCourses(response.data);
       } catch (error) {
         toast.error('Something went wrong');
@@ -23,7 +16,7 @@ export default function useLoadUserCourses() {
       }
     };
     loadUserCourses();
-  }, [login]);
+  }, []);
 
   return [userCourses, setUserCourses];
 }

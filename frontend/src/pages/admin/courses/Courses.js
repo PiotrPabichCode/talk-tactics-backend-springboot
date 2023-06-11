@@ -4,6 +4,7 @@ import SearchIcon from '@mui/icons-material/Search';
 import useLoadCourses from './hooks/useLoadCourses';
 import useSearchCourses from './hooks/useSearchCourses';
 import deleteCourse from './hooks/deleteCourse';
+import { toast } from 'react-toastify';
 
 const Courses = () => {
   const [level, setLevel] = useState('');
@@ -14,11 +15,16 @@ const Courses = () => {
     setLevel(event.target.value);
   };
 
-  const handleDeleteAction = (id) => {
-    deleteCourse(id);
-    setCourses((prevCourses) => {
-      return prevCourses.filter((course) => course.id !== id);
-    });
+  const handleDeleteAction = async (id) => {
+    try {
+      await deleteCourse(id);
+      setCourses((prevCourses) => {
+        return prevCourses.filter((course) => course.id !== id);
+      });
+    } catch (error) {
+      console.log(error);
+      toast.error('Something went wrong');
+    }
   };
 
   const renderCourses = () => {

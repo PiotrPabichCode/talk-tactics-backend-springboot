@@ -1,5 +1,6 @@
 package com.example.talktactics.models;
 
+import com.fasterxml.jackson.annotation.*;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -20,10 +21,19 @@ public class CourseItem {
     private String phonetic;
     private String partOfSpeech;
 
-    @OneToMany(mappedBy = "courseItem")
+    @JsonIgnoreProperties("course")
+    @OneToMany(mappedBy = "courseItem",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true)
     private List<Meaning> meanings;
 
+    @JsonIgnoreProperties({"courseItems", "userCourses"})
     @ManyToOne
     @JoinColumn(name = "course_id")
     private Course course;
+
+    @JsonIgnore
+    @ManyToOne
+    @JoinColumn(name = "user_course_item_id")
+    private UserCourseItem userCourseItem;
 }

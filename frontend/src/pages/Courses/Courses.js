@@ -69,17 +69,12 @@ export default function Courses() {
     event.preventDefault();
     try {
       const selectedCourse = courses.find((course) => course.id === id);
-      const login = getUsername();
 
       const requestData = {
-        course: selectedCourse,
-        login: login,
+        courseName: selectedCourse.name,
+        login: getUsername(),
       };
-      const response = await request(
-        'PUT',
-        '/api/users/add-course',
-        requestData
-      );
+      await request('PUT', `/api/user-courses`, requestData);
       toast.success('Course added successfully');
     } catch (error) {
       console.log(error);
@@ -89,7 +84,7 @@ export default function Courses() {
 
   return (
     <div className='d-flex justify-content-center m-5'>
-      <Paper alignCenter sx={{ width: '100%', overflow: 'hidden' }}>
+      <Paper sx={{ width: '100%', overflow: 'hidden' }}>
         <TableContainer sx={{ maxHeight: 440 }}>
           <Table stickyHeader aria-label='sticky table'>
             <TableHead>
@@ -105,38 +100,34 @@ export default function Courses() {
               </TableRow>
             </TableHead>
             <TableBody>
-              {courses
-                .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                .map((course) => {
-                  return (
-                    <TableRow
-                      hover
-                      role='checkbox'
-                      tabIndex={-1}
-                      key={course.id}>
-                      {columns.map((column, index) => {
-                        if (index === columns.length - 1) {
-                          return (
-                            <TableCell>
-                              <Button
-                                size='small'
-                                variant='contained'
-                                endIcon={<Add />}
-                                onClick={(e) => handleAddCourse(e, course.id)}>
-                                Add
-                              </Button>
-                            </TableCell>
-                          );
-                        } else
-                          return (
-                            <TableCell key={column.id} align={column.align}>
-                              {course[column.id]}
-                            </TableCell>
-                          );
-                      })}
-                    </TableRow>
-                  );
-                })}
+              {courses.length > 0 &&
+                courses
+                  .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                  .map((course, index) => {
+                    return (
+                      <TableRow
+                        hover
+                        role='checkbox'
+                        tabIndex={-1}
+                        key={course.id}>
+                        <TableCell>
+                          {index + 1 + (page * rowsPerPage, page * rowsPerPage)}
+                        </TableCell>
+                        <TableCell>{course.name}</TableCell>
+                        <TableCell>{course.description}</TableCell>
+                        <TableCell>{course.level}</TableCell>
+                        <TableCell>
+                          <Button
+                            size='small'
+                            variant='contained'
+                            endIcon={<Add />}
+                            onClick={(e) => handleAddCourse(e, course.id)}>
+                            Add
+                          </Button>
+                        </TableCell>
+                      </TableRow>
+                    );
+                  })}
             </TableBody>
           </Table>
         </TableContainer>

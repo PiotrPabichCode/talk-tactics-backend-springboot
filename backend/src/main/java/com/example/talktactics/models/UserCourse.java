@@ -1,11 +1,15 @@
 package com.example.talktactics.models;
 
+
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.util.List;
+
 
 @Entity
 @Data
@@ -13,23 +17,25 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString
-@Table(name = "meanings")
-public class Meaning {
+@Table(name = "user_courses")
+public class UserCourse {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
     @Column(length = 800)
-    private String definition;
-    @Column(length = 800)
-    private String example;
+    private double progress;
+    private boolean completed;
 
-    @JsonIgnoreProperties("meanings")
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
+
     @ManyToOne
     @JoinColumn(name = "course_id")
     private Course course;
 
-    @JsonIgnore
-    @ManyToOne
-    @JoinColumn(name = "course_item_id")
-    private CourseItem courseItem;
+    @OneToMany(mappedBy = "userCourse",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true)
+    private List<UserCourseItem> userCourseItems;
 }

@@ -3,28 +3,29 @@ import { Link } from 'react-router-dom';
 import SearchIcon from '@mui/icons-material/Search';
 import useLoadUserCourses from './hooks/useLoadUserCourses';
 import useSearchUserCourses from './hooks/useSearchUserCourses';
+import { getUserID } from '../../api/AxiosHelper';
 
 const UserCourses = () => {
   const [level, setLevel] = useState('');
-  const [courses, setCourses] = useLoadUserCourses();
+  const [userCourses, setUserCourses] = useLoadUserCourses();
   const [searchedCourses, setSearchedCourses] = useState([]);
 
   useEffect(() => {
     const filterCoursesByLevel = () => {
-      const filteredCourses = courses.filter((course) =>
-        course.level.toLowerCase().includes(level.toLowerCase())
+      const filteredCourses = userCourses.filter((userCourse) =>
+        userCourse.course.level.toLowerCase().includes(level.toLowerCase())
       );
       setSearchedCourses(filteredCourses);
     };
     filterCoursesByLevel();
-  }, [level, courses]);
+  }, [level, userCourses]);
 
   const handleInputChange = (event) => {
     setLevel(event.target.value);
   };
 
   const renderCourses = () => {
-    const coursesList = level ? searchedCourses : courses;
+    const coursesList = level ? searchedCourses : userCourses;
     return (
       <table className='table table-responsive table-dark border shadow text-light'>
         <thead>
@@ -32,19 +33,24 @@ const UserCourses = () => {
             <th>ID</th>
             <th>Name</th>
             <th>Level</th>
+            <th>Progress</th>
+            <th>Completed</th>
             <th>Action</th>
           </tr>
         </thead>
         <tbody>
-          {coursesList.map((course, index) => (
-            <tr key={course.id}>
+          {coursesList.map((userCourse, index) => (
+            <tr key={userCourse.id}>
+              {console.log(userCourse)}
               <td>{index + 1}</td>
-              <td>{course.name}</td>
-              <td>{course.level}</td>
+              <td>{userCourse.course.name}</td>
+              <td>{userCourse.course.level}</td>
+              <td>{userCourse.progress.toFixed(2)}%</td>
+              <td>{userCourse.completed ? 'Yes' : 'No'}</td>
               <td>
                 <Link
                   className='btn btn-primary mx-2'
-                  to={`/viewcourse/${course.id}`}>
+                  to={`/users/${userCourse.user.id}/user-courses/${userCourse.id}`}>
                   Open course
                 </Link>
               </td>

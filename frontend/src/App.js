@@ -16,11 +16,7 @@ import EditUser from './pages/admin/users/EditUser';
 import ViewUser from './pages/admin/users/ViewUser';
 import EditCourse from './pages/admin/courses/EditCourse';
 import ViewCourse from './pages/admin/courses/ViewCourse';
-import EditTask from './pages/admin/tasks/EditTask';
-import ViewTask from './pages/admin/tasks/ViewTask';
-import ViewAnswer from './pages/admin/answers/ViewAnswer';
 import User from './pages/user/User';
-import AddTask from './pages/admin/tasks/AddTask';
 import AddCourse from './pages/admin/courses/AddCourse';
 import AccountDetails from './pages/user/AccountDetails';
 import Footer from './components/Footer/Footer';
@@ -30,6 +26,7 @@ import CourseItems from './pages/Courses/CourseItems';
 function App() {
   return (
     <div className='App min-vh-100'>
+      <div id='app-root' />
       <ToastContainer />
       <BrowserRouter>
         <Navbar />
@@ -46,10 +43,20 @@ function App() {
           {/* Authorized routes */}
           <Route element={<RequireAuth allowedRoles={['USER', 'ADMIN']} />}>
             <Route exact path='/courses' element={<Courses />} />
-            <Route exact path='/courseItems' element={<CourseItems />} />
+            <Route exact path='/courses/:courseID' element={<CourseItems />} />
             <Route
               exact
-              path='/courseItemDetails/:id'
+              path='/users/:userID/user-courses/:courseID'
+              element={<CourseItems />}
+            />
+            <Route
+              exact
+              path='/courses/:courseID/users/:userID'
+              element={<CourseItems />}
+            />
+            <Route
+              exact
+              path='/courses/:courseID/items/:itemID'
               element={<CourseItemDetails />}
             />
             <Route exact path='/user' element={<User />} />
@@ -57,13 +64,9 @@ function App() {
           </Route>
           <Route element={<RequireAuth allowedRoles={'ADMIN'} />}>
             <Route exact path='/admin' element={<Admin />} />
-            <Route exact path='/viewanswer/:id' element={<ViewAnswer />} />
             <Route exact path='/addcourse' element={<AddCourse />} />
             <Route exact path='/editcourse/:id' element={<EditCourse />} />
             <Route exact path='/viewcourse/:id' element={<ViewCourse />} />
-            <Route exact path='/addtask' element={<AddTask />} />
-            <Route exact path='/edittask/:id' element={<EditTask />} />
-            <Route exact path='/viewtask/:id' element={<ViewTask />} />
             <Route exact path='/adduser' element={<AddUser />} />
             <Route exact path='/edituser/:id' element={<EditUser />} />
             <Route exact path='/viewuser/:id' element={<ViewUser />} />

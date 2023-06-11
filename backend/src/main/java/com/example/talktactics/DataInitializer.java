@@ -26,11 +26,7 @@ import java.util.Random;
 public class DataInitializer implements ApplicationRunner {
 
     @Autowired
-    private AnswerRepository answerRepository;
-    @Autowired
     private CourseRepository courseRepository;
-    @Autowired
-    private TaskRepository taskRepository;
     @Autowired
     private UserRepository userRepository;
     @Autowired
@@ -44,23 +40,21 @@ public class DataInitializer implements ApplicationRunner {
         ObjectMapper objectMapper = new ObjectMapper();
         File jsonFile = new File("src/main/java/com/example/talktactics/utils/long_words.json");
 
+        int counter = 0;
         try {
             JsonNode jsonNode = objectMapper.readTree(jsonFile);
             List<CourseItem> courseItems = new ArrayList<>();
 
-            // Iterate over each JSON object in the array
             for (JsonNode courseItemNode : jsonNode) {
                 JsonNode item = courseItemNode.get(0);
                 String word = item.hasNonNull("word") ? item.get("word").asText() : null;
                 String phonetic = item.hasNonNull("phonetic") ? item.get("phonetic").asText() : null;
 
-                // Create a new CourseItem instance
                 CourseItem courseItem = CourseItem.builder()
                         .word(word)
                         .phonetic(phonetic)
                         .build();
 
-                // Access nested arrays or objects within the current course item
                 JsonNode meaningsNode = item.get("meanings");
                 String partOfSpeech = meaningsNode.get(0).get("partOfSpeech").asText();
                 courseItem.setPartOfSpeech(partOfSpeech);
@@ -72,32 +66,26 @@ public class DataInitializer implements ApplicationRunner {
                     String definition = definitionNode.hasNonNull("definition") ? definitionNode.get("definition").asText() : null;
                     String example = definitionNode.hasNonNull("example") ? definitionNode.get("example").asText() : null;
 
-                    // Create a new Meaning instance
                     Meaning meaning = Meaning.builder()
                             .definition(definition)
                             .example(example)
                             .build();
 
-                    // Set the course item for the meaning
                     meaning.setCourseItem(courseItem);
 
                     meanings.add(meaning);
                 }
                 meaningRepository.saveAll(meanings);
-//                courseItem.setMeanings(meanings);
-                courseItem.setCourse(courses.get(0));
+
+                courseItem.setCourse(courses.get(counter / 100));
                 courseItems.add(courseItem);
-//                courseItemRepository.save(courseItem);
-                // Save the course item to the database
-                // Assuming you have a JPA EntityManager named entityManager
-//                entityManager.persist(courseItem);
+                counter++;
             }
 
             courseItemRepository.saveAll(courseItems);
 
         } catch (IOException e) {
             e.printStackTrace();
-            // Handle the exception according to your application's error handling strategy
         }
     }
 
@@ -109,156 +97,18 @@ public class DataInitializer implements ApplicationRunner {
         ArrayList<User> users = new ArrayList<>();
         users.add(User.builder().login("admin").password(passwordEncoder.encode("admin")).email("235944@edu.p.lodz.pl").firstName("Piotr").lastName("Pabich").role(Role.ADMIN).build());
         users.add(User.builder().login("user").password(passwordEncoder.encode("user")).email("user@edu.p.lodz.pl").firstName("Jan").lastName("Tomczyk").role(Role.USER).build());
+        users.add(User.builder().login("user1").password(passwordEncoder.encode("user1")).email("user1@edu.p.lodz.pl").firstName("Tomasz").lastName("Kukułka").role(Role.USER).build());
         userRepository.saveAll(users);
         // create Course
         ArrayList<Course> courses = new ArrayList<>();
-        courses.add(Course.builder().name("Language Mastery: Advanced Communication Skills").description("Ten kurs został zaprojektowany dla osób, które chcą doskonalić swoje umiejętności komunikacyjne w języku angielskim na zaawansowanym poziomie. Skupia się na rozwijaniu płynności językowej, precyzji w wyrażaniu myśli oraz poszerzaniu słownictwa w różnorodnych kontekstach. Uczestnicy będą mieli okazję praktykować swobodną konwersację, debatować na różne tematy oraz doskonalić umiejętność zrozumienia ze słuchu poprzez autentyczne materiały audio i wideo.").level("Advanced").build());
-        courses.add(Course.builder().name("Business English: Effective Communication in the Workplace").description("Ten kurs skierowany jest do profesjonalistów, którzy chcą doskonalić swoje umiejętności komunikacyjne w języku angielskim w kontekście biznesowym. Uczestnicy nauczą się skutecznie komunikować się w miejscu pracy, w tym prowadzić efektywne prezentacje, negocjować umowy, redagować profesjonalne e-maile i raporty. Kurs skupi się również na rozwoju umiejętności słuchania ze zrozumieniem oraz pisania precyzyjnych i zwięzłych tekstów biznesowych.").level("Intermediate").build());
-        courses.add(Course.builder().name("English for Travelers: Practical Language Skills for Globetrotters").description("Ten kurs został stworzony dla osób, które planują podróżować i chcą nauczyć się praktycznych umiejętności językowych w kontekście podróży. Uczestnicy nauczą się podstawowych zwrotów, które są niezbędne do porozumiewania się w sytuacjach podróżnych, takich jak rezerwacja hotelu, zamawianie jedzenia w restauracji, poruszanie się po mieście czy zakupy. Kurs będzie również obejmować praktyczne wskazówki dotyczące radzenia sobie w różnych sytuacjach kulturowych, jak również podstawy rozumienia ogólnodostępnych informacji, takich jak rozkłady jazdy czy oznaczenia na lotniskach.").level("Beginner").build());
+        for(int i = 0; i < 21; i++) {
+            String name = String.format("Mastering Everyday English Vocabulary - Most frequently used words %d%%", (99 - i));
+            String description = "The \"Mastering Everyday English Vocabulary\" course is a comprehensive program designed to enhance individuals' English language skills by expanding their vocabulary with commonly known words, enabling effective communication and improved reading and writing abilities.";
+            Level level = i < 5 ? Level.BEGINNER : i < 15 ? Level.INTERMEDIATE : Level.ADVANCED;
+            courses.add(Course.builder().name(name).description(description).level(level).build());
+        }
         courseRepository.saveAll(courses);
         loadCourseItemsFromJson(courses);
-
-        // create tasks
-        ArrayList<Task> tasks = new ArrayList<>();
-        tasks.add(Task.builder()
-                .name("Vocabulary Expansion")
-                .word("resilient")
-                .partOfSpeech("Adjective")
-                .description("Use a single word to portray someone's ability to recover quickly from challenges or setbacks.")
-                .course(courses.get(0))
-                .build());
-        tasks.add(Task.builder()
-                .name("Idiomatic Expressions")
-                .word("hit the nail on the head")
-                .partOfSpeech("Phrase")
-                .description("Explain the meaning of a popular phrase that signifies a precise and accurate statement.")
-                .course(courses.get(0))
-                .build());
-        tasks.add(Task.builder()
-                .name("Listening Comprehension")
-                .word("elicit")
-                .partOfSpeech("Verb")
-                .description("Identify a verb that means to extract or draw out information from a conversation.")
-                .course(courses.get(0))
-                .build());
-        tasks.add(Task.builder()
-                .name("Oral Presentation")
-                .word("persuasive")
-                .partOfSpeech("Adjective")
-                .description("Deliver a speech with the intention of persuading the audience by presenting logical arguments and compelling evidence.")
-                .course(courses.get(0))
-                .build());
-        tasks.add(Task.builder()
-                .name("Debate")
-                .word("contradict")
-                .partOfSpeech("Verb")
-                .description("Engage in a discussion where you challenge or refute the arguments presented by your opponent.")
-                .course(courses.get(0))
-                .build());
-
-        tasks.add(Task.builder()
-                .name("Email Writing")
-                .word("concise")
-                .partOfSpeech("Adjective")
-                .description("Compose an email that effectively conveys complex information in a concise and clear manner.")
-                .course(courses.get(1))
-                .build());
-
-        tasks.add(Task.builder()
-                .name("Negotiation Scenario")
-                .word("compromise")
-                .partOfSpeech("Noun")
-                .description("Role-play a negotiation situation, aiming to find mutually acceptable solutions by making concessions.")
-                .course(courses.get(1))
-                .build());
-
-        tasks.add(Task.builder()
-                .name("Presentation Skills")
-                .word("engage")
-                .partOfSpeech("Verb")
-                .description("Demonstrate the ability to captivate and involve the audience during a presentation on a chosen topic.")
-                .course(courses.get(1))
-                .build());
-
-        tasks.add(Task.builder()
-                .name("Meeting Participation")
-                .word("collaborate")
-                .partOfSpeech("Verb")
-                .description("Collaborate and contribute actively in a simulated business meeting to foster teamwork and achieve shared goals.")
-                .course(courses.get(1))
-                .build());
-
-        tasks.add(Task.builder()
-                .name("Telephone Conversation")
-                .word("clarify")
-                .partOfSpeech("Verb")
-                .description("Engage in a phone conversation with a client or customer, seeking to ensure mutual understanding through requesting or providing additional information.")
-                .course(courses.get(1))
-                .build());
-
-        tasks.add(Task.builder()
-                .name("Ordering Food")
-                .word("appetizer")
-                .partOfSpeech("Noun")
-                .description("Role-play a scenario in a restaurant where you request a specific dish to commence your meal.")
-                .course(courses.get(2))
-                .build());
-
-        tasks.add(Task.builder()
-                .name("Asking for Directions")
-                .word("landmark")
-                .partOfSpeech("Noun")
-                .description("Approach someone and seek guidance to a particular location by referencing recognizable landmarks.")
-                .course(courses.get(2))
-                .build());
-
-        tasks.add(Task.builder()
-                .name("Reading Signs")
-                .word("exit")
-                .partOfSpeech("Noun")
-                .description("Analyze and interpret signs commonly found in public spaces to identify symbols or directions guiding travelers.")
-                .course(courses.get(2))
-                .build());
-
-        tasks.add(Task.builder()
-                .name("Shopping Interaction")
-                .word("bargain")
-                .partOfSpeech("Verb")
-                .description("Engage in a role-play where you discuss prices or negotiate a better deal with a shopkeeper.")
-                .course(courses.get(2))
-                .build());
-
-        tasks.add(Task.builder()
-                .name("Transportation Vocabulary")
-                .word("fare")
-                .partOfSpeech("Noun")
-                .description("Compile a list of words related to transportation, including terms associated with ticket purchase or payment.")
-                .course(courses.get(2))
-                .build());
-        taskRepository.saveAll(tasks);
-
-        // Create answers
-        ArrayList<Answer> answers = new ArrayList<>();
-        Random random = new Random();
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy'T'HH:mm:ss");
-
-        for (int i = 0; i < 10; i++) {
-            Task randomTask = tasks.get(random.nextInt(tasks.size()));
-            User randomUser = users.get(random.nextInt(users.size()));
-
-            LocalDateTime currentTime = LocalDateTime.now();
-            String formattedFinishTime = currentTime.format(formatter);
-
-            Answer randomAnswer = Answer.builder()
-                    .content("Random answer content " + i)
-                    .finishTime(LocalDateTime.parse(formattedFinishTime, formatter))
-                    .task(randomTask)
-                    .user(randomUser)
-                    .build();
-
-            answers.add(randomAnswer);
-        }
-        answerRepository.saveAll(answers);
     }
 
 

@@ -33,18 +33,6 @@ export default function Navbar() {
             {role && (
               <>
                 <li className='nav-item me-1'>
-                  <Link className='btn btn-outline-light' to='/courseItems'>
-                    Course items
-                  </Link>
-                </li>
-                <li className='nav-item me-1'>
-                  <Link
-                    className='btn btn-outline-light'
-                    to='/courseItemDetails'>
-                    Courses item details
-                  </Link>
-                </li>
-                <li className='nav-item me-1'>
                   <Link className='btn btn-outline-light' to='/courses'>
                     Courses
                   </Link>

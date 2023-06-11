@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 public interface UserRepository extends JpaRepository<User, Long> {
@@ -17,6 +18,4 @@ public interface UserRepository extends JpaRepository<User, Long> {
     Optional<User> findByLogin(String login);
     Boolean existsByEmail(String email);
 
-    @Query("SELECT c FROM User u JOIN Course c WHERE LOWER(c.level) LIKE LOWER(CONCAT('%', :levelName, '%'))")
-    ArrayList<Course> findByLevelName(@Param("levelName") String levelName);
 }

@@ -10,16 +10,23 @@ export default function EditUser() {
 
   const { id } = useParams();
 
+  const LevelEnum = {
+    BEGINNER: 'BEGINNER',
+    INTERMEDIATE: 'INTERMEDIATE',
+    ADVANCED: 'ADVANCED',
+  };
+
   const [course, setCourse] = useState({
     name: '',
     description: '',
-    level: '',
+    level: LevelEnum.BEGINNER,
   });
 
   const { name, description, level } = course;
 
   const onInputChange = (e) => {
     setCourse({ ...course, [e.target.name]: e.target.value });
+    console.log(course);
   };
 
   useEffect(() => {
@@ -38,7 +45,10 @@ export default function EditUser() {
     e.preventDefault();
     try {
       if (name !== '' && description !== '' && level !== '') {
-        await request('PUT', `/api/courses/${id}`, course);
+        const updatedCourse = { ...course, level: LevelEnum[level] };
+        console.log(level);
+        console.log(updatedCourse);
+        await request('PUT', `/api/courses/${id}`, updatedCourse);
         navigate(url);
         toast.success('Course edited successfully');
       } else {

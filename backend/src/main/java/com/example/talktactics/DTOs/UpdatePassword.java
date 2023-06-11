@@ -1,4 +1,4 @@
-package com.example.talktactics.models;
+package com.example.talktactics.DTOs;
 
 import lombok.*;
 

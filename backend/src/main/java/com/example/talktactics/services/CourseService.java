@@ -1,13 +1,10 @@
 package com.example.talktactics.services;
 
 import com.example.talktactics.exceptions.CourseNotFoundException;
-import com.example.talktactics.models.Answer;
-import com.example.talktactics.models.Course;
-import com.example.talktactics.models.Task;
-import com.example.talktactics.repositories.AnswerRepository;
-import com.example.talktactics.repositories.CourseRepository;
-import com.example.talktactics.repositories.TaskRepository;
+import com.example.talktactics.models.*;
+import com.example.talktactics.repositories.*;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -16,14 +13,14 @@ import java.util.List;
 @AllArgsConstructor
 public class CourseService {
     private final CourseRepository courseRepository;
-    private final TaskRepository taskRepository;
-    private final AnswerRepository answerRepository;
+    private final MeaningRepository meaningRepository;
+    private final CourseItemRepository courseItemRepository;
 
     public Course createCourse(Course course) {
         return courseRepository.save(course);
     }
     public List<Course> getCourses() {
-        return courseRepository.findAll();
+        return courseRepository.findAll(Sort.by("id"));
     }
     public Course getCourseById(Long id) {
         return courseRepository.findById(id).orElseThrow(() -> new CourseNotFoundException(id));
@@ -44,13 +41,6 @@ public class CourseService {
         if (!courseRepository.existsById(id)) {
             throw new CourseNotFoundException(id);
         }
-
-        Course course = courseRepository.findById(id).orElseThrow(() -> new CourseNotFoundException(id));
-
-        List<Task> tasks = taskRepository.findByCourse(course);
-        List<Answer> answers = answerRepository.findByTaskIn(tasks);
-        answerRepository.deleteAll(answers);
-        taskRepository.deleteAll(tasks);
         courseRepository.deleteById(id);
     }
 
