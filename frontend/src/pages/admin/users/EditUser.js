@@ -1,9 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
-import { toast } from 'react-toastify';
-import { request } from '../../../api/AxiosHelper';
+import { request } from 'api/AxiosHelper';
+import CustomToast, {
+  TOAST_AUTOCLOSE_SHORT,
+  TOAST_ERROR,
+  TOAST_SUCCESS,
+} from 'components/CustomToast/CustomToast';
+import { useTranslation } from 'react-i18next';
 
 export default function EditUser() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const url = '/admin?isUserDisplayed=true';
   const roles = [{ value: 'ADMIN' }, { value: 'USER' }];
@@ -55,10 +61,18 @@ export default function EditUser() {
     try {
       console.log(updateData);
       await request('PUT', `/api/update_user`, updateData);
-      toast.success('User edited successfully');
+      CustomToast(
+        TOAST_SUCCESS,
+        t('toast.success.edit.user'),
+        TOAST_AUTOCLOSE_SHORT
+      );
       navigate(url);
     } catch (error) {
-      toast.error('Something went wrong');
+      CustomToast(
+        TOAST_ERROR,
+        t('toast.error.edit.user'),
+        TOAST_AUTOCLOSE_SHORT
+      );
       console.log(error);
     }
   };
@@ -70,9 +84,11 @@ export default function EditUser() {
           <Link
             className='btn btn-primary position-absolute end-0 me-4'
             to={url}>
-            Back
+            {t('admin.users.edit_user.back')}
           </Link>
-          <h2 className='text-center m-4'>Edit User</h2>
+          <h2 className='text-center m-4'>
+            {t('admin.users.edit_user.title')}
+          </h2>
 
           <form onSubmit={(e) => onSubmit(e)}>
             <div className='mb-3'>
@@ -82,7 +98,7 @@ export default function EditUser() {
               <input
                 type={'text'}
                 className='form-control'
-                placeholder='Enter your login'
+                placeholder={t('admin.users.edit_user.form.login_placeholder')}
                 name='login'
                 value={login}
                 onChange={(e) => onInputChange(e)}
@@ -90,12 +106,14 @@ export default function EditUser() {
             </div>
             <div className='mb-3'>
               <label htmlFor='FirstName' className='form-label'>
-                First name
+                {t('admin.users.edit_user.form.first_name')}
               </label>
               <input
                 type={'text'}
                 className='form-control'
-                placeholder='Enter your first name'
+                placeholder={t(
+                  'admin.users.edit_user.form.first_name_placeholder'
+                )}
                 name='firstName'
                 value={firstName}
                 onChange={(e) => onInputChange(e)}
@@ -103,12 +121,14 @@ export default function EditUser() {
             </div>
             <div className='mb-3'>
               <label htmlFor='LastName' className='form-label'>
-                Last name
+                {t('admin.users.edit_user.form.last_name')}
               </label>
               <input
                 type={'text'}
                 className='form-control'
-                placeholder='Enter your last name'
+                placeholder={t(
+                  'admin.users.edit_user.form.last_name_placeholder'
+                )}
                 name='lastName'
                 value={lastName}
                 onChange={(e) => onInputChange(e)}
@@ -121,7 +141,7 @@ export default function EditUser() {
               <input
                 type={'email'}
                 className='form-control'
-                placeholder='Enter your email'
+                placeholder={t('admin.users.edit_user.form.email_placeholder')}
                 name='email'
                 value={email}
                 onChange={(e) => onInputChange(e)}
@@ -144,10 +164,10 @@ export default function EditUser() {
               </select>
             </div>
             <button type='submit' className='btn btn-outline-primary'>
-              Submit
+              {t('admin.users.edit_user.form.submit')}
             </button>
             <Link className='btn btn-outline-danger mx-2' to={url}>
-              Cancel
+              {t('admin.users.edit_user.form.cancel')}
             </Link>
           </form>
         </div>

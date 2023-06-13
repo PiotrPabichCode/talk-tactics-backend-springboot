@@ -13,8 +13,6 @@ import java.util.List;
 @AllArgsConstructor
 public class CourseService {
     private final CourseRepository courseRepository;
-    private final MeaningRepository meaningRepository;
-    private final CourseItemRepository courseItemRepository;
 
     public Course createCourse(Course course) {
         return courseRepository.save(course);

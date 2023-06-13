@@ -3,8 +3,10 @@ import { Link } from 'react-router-dom';
 import SearchIcon from '@mui/icons-material/Search';
 import { useLoadUsers } from './hooks/useLoadUsers';
 import { useSearchUsers } from './hooks/useSearchUsers';
+import { useTranslation } from 'react-i18next';
 
 export default function Users() {
+  const { t } = useTranslation();
   const [username, setUsername] = useState('');
   const users = useLoadUsers();
   const searchedUsers = useSearchUsers(username);
@@ -23,7 +25,7 @@ export default function Users() {
             <th scope='col'>Login</th>
             <th scope='col'>Email</th>
             <th scope='col'>Admin</th>
-            <th scope='col'>Action</th>
+            <th scope='col'>{t('admin.users.users.action')}</th>
           </tr>
         </thead>
         <tbody>
@@ -37,12 +39,12 @@ export default function Users() {
                 <Link
                   className='btn btn-primary mx-2'
                   to={`/viewuser/${user.id}`}>
-                  More details
+                  {t('admin.users.users.details')}
                 </Link>
                 <Link
                   className='btn btn-outline-primary mx-2'
                   to={`/edituser/${user.id}`}>
-                  Edit
+                  {t('admin.users.users.edit')}
                 </Link>
               </td>
             </tr>
@@ -55,14 +57,14 @@ export default function Users() {
   return (
     <div className='container-fluid'>
       <div className='py-3'>
-        <h1 className='text-light'>Users</h1>
+        <h1 className='text-light'>{t('admin.users.users.title')}</h1>
         <form className='d-flex my-3'>
           <input
             className='form-control me-1'
             type='search'
             value={username}
             onChange={handleInputChange}
-            placeholder='Search by login'
+            placeholder={t('admin.users.users.search_placeholder')}
             aria-label='Search'
           />
           <button className='btn btn-primary' type='button'>

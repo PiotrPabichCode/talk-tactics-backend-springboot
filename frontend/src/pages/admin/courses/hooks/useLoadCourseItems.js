@@ -1,8 +1,13 @@
 import { useEffect, useState } from 'react';
-import { request } from '../../../../api/AxiosHelper';
-import { toast } from 'react-toastify';
+import { request } from 'api/AxiosHelper';
+import CustomToast, {
+  TOAST_AUTOCLOSE_SHORT,
+  TOAST_ERROR,
+} from 'components/CustomToast/CustomToast';
+import { useTranslation } from 'react-i18next';
 
 export default function useLoadCourseItems(id) {
+  const { t } = useTranslation();
   const [courseItems, setCourseItems] = useState([]);
 
   useEffect(() => {
@@ -14,12 +19,12 @@ export default function useLoadCourseItems(id) {
         );
         setCourseItems(response.data);
       } catch (error) {
-        toast.error('Something went wrong');
+        CustomToast(TOAST_ERROR, t('toast.load_error'), TOAST_AUTOCLOSE_SHORT);
         console.log(error);
       }
     };
     loadCourseItems();
-  }, []);
+  }, [id]);
 
   return [courseItems, setCourseItems];
 }

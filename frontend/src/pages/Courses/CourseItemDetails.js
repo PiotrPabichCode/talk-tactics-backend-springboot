@@ -9,17 +9,27 @@ import TableRow from '@mui/material/TableRow';
 import { Card, CardContent, TableSortLabel, Typography } from '@mui/material';
 import { Link, useParams, useNavigate } from 'react-router-dom';
 import useCourseItemDetails from './hooks/useCourseItemDetails';
-
-const columns = [
-  { id: 'id', label: 'ID', minWidth: 50 },
-  { id: 'definition', label: 'Definition', minWidth: 250 },
-  { id: 'example', label: 'Example', minWidth: 250 },
-];
+import { useTranslation } from 'react-i18next';
 
 export default function CourseItemDetails(id) {
+  const { t } = useTranslation();
   const { itemID } = useParams();
   const itemDetails = useCourseItemDetails(itemID);
   const navigate = useNavigate();
+
+  const columns = [
+    { id: 'id', label: 'ID', minWidth: 50 },
+    {
+      id: 'definition',
+      label: t('courses.course_item_details.header_definition'),
+      minWidth: 250,
+    },
+    {
+      id: 'example',
+      label: t('courses.course_item_details.header_example'),
+      minWidth: 250,
+    },
+  ];
 
   return (
     itemDetails.course && (
@@ -29,7 +39,7 @@ export default function CourseItemDetails(id) {
             <button
               className='btn btn-primary m-2'
               onClick={() => navigate(-1)}>
-              Back
+              {t('courses.course_item_details.back')}
             </button>
           </div>
           <CardContent>

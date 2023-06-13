@@ -4,9 +4,14 @@ import SearchIcon from '@mui/icons-material/Search';
 import useLoadCourses from './hooks/useLoadCourses';
 import useSearchCourses from './hooks/useSearchCourses';
 import deleteCourse from './hooks/deleteCourse';
-import { toast } from 'react-toastify';
+import CustomToast, {
+  TOAST_AUTOCLOSE_SHORT,
+  TOAST_ERROR,
+} from 'components/CustomToast/CustomToast';
+import { useTranslation } from 'react-i18next';
 
 const Courses = () => {
+  const { t } = useTranslation();
   const [level, setLevel] = useState('');
   const searchedCourses = useSearchCourses(level);
   const [courses, setCourses] = useLoadCourses();
@@ -23,7 +28,11 @@ const Courses = () => {
       });
     } catch (error) {
       console.log(error);
-      toast.error('Something went wrong');
+      CustomToast(
+        TOAST_ERROR,
+        t('toast.error.delete.course'),
+        TOAST_AUTOCLOSE_SHORT
+      );
     }
   };
 
@@ -34,9 +43,9 @@ const Courses = () => {
         <thead>
           <tr>
             <th>ID</th>
-            <th>Name</th>
-            <th>Level</th>
-            <th>Action</th>
+            <th>{t('admin.courses.courses.header_name')}</th>
+            <th>{t('admin.courses.courses.header_level')}</th>
+            <th>{t('admin.courses.courses.header_action')}</th>
           </tr>
         </thead>
         <tbody>
@@ -49,17 +58,17 @@ const Courses = () => {
                 <Link
                   className='btn btn-primary mx-2'
                   to={`/viewcourse/${course.id}`}>
-                  More details
+                  {t('admin.courses.courses.more_details')}
                 </Link>
                 <Link
                   className='btn btn-outline-primary mx-2'
                   to={`/editcourse/${course.id}`}>
-                  Edit
+                  {t('admin.courses.courses.edit')}
                 </Link>
                 <button
                   className='btn btn-danger mx-2'
                   onClick={() => handleDeleteAction(course.id)}>
-                  Delete
+                  {t('admin.courses.courses.delete')}
                 </button>
               </td>
             </tr>
@@ -72,11 +81,13 @@ const Courses = () => {
   return (
     <div className='container-fluid'>
       <div className='py-3'>
-        <h1 className='text-light'>Courses</h1>
+        <h1 className='text-light'>{t('admin.courses.courses.title')}</h1>
         <div className='row my-3'>
           <div className='col'>
             <Link to={'/addcourse'}>
-              <button className='btn btn-primary w-100'>Add new course</button>
+              <button className='btn btn-primary w-100'>
+                {t('admin.courses.courses.add')}
+              </button>
             </Link>
           </div>
           <div className='col'>
@@ -86,7 +97,7 @@ const Courses = () => {
                 type='search'
                 value={level}
                 onChange={handleInputChange}
-                placeholder='Search course level'
+                placeholder={t('admin.courses.courses.search_placeholder')}
                 aria-label='Search'
               />
               <button className='btn btn-primary' type='button'>

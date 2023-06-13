@@ -1,8 +1,13 @@
 import { useEffect, useState } from 'react';
-import { request } from '../../../../api/AxiosHelper';
-import { toast } from 'react-toastify';
+import { request } from 'api/AxiosHelper';
+import CustomToast, {
+  TOAST_AUTOCLOSE_SHORT,
+  TOAST_ERROR,
+} from 'components/CustomToast/CustomToast';
+import { useTranslation } from 'react-i18next';
 
 export default function useLoadUsersCourses() {
+  const { t } = useTranslation();
   const [userCourses, setUserCourses] = useState([]);
 
   useEffect(() => {
@@ -11,7 +16,7 @@ export default function useLoadUsersCourses() {
         const response = await request('GET', '/api/user-courses');
         setUserCourses(response.data);
       } catch (error) {
-        toast.error('Something went wrong');
+        CustomToast(TOAST_ERROR, t('toast.load_error'), TOAST_AUTOCLOSE_SHORT);
         console.log(error);
       }
     };

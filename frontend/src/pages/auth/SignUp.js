@@ -1,10 +1,16 @@
 import React, { useState } from 'react';
 import './LoginRegister.css';
 import { Link, useNavigate } from 'react-router-dom';
-import { request, setUserData } from '../../api/AxiosHelper';
-import { toast } from 'react-toastify';
+import { request, setUserData } from 'api/AxiosHelper';
+import CustomToast, {
+  TOAST_AUTOCLOSE_SHORT,
+  TOAST_ERROR,
+  TOAST_SUCCESS,
+} from 'components/CustomToast/CustomToast';
+import { useTranslation } from 'react-i18next';
 
 const SignUp = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
 
   const [user, setUser] = useState({
@@ -33,11 +39,11 @@ const SignUp = () => {
         firstName: '',
         lastName: '',
       });
-      toast.success('Sign up successfully');
+      CustomToast(TOAST_SUCCESS, 'Sign up successfully', TOAST_AUTOCLOSE_SHORT);
       navigate('/');
       window.location.reload(); // TODO: Change to use Context
     } catch (error) {
-      toast.error(error.response.data);
+      CustomToast(TOAST_ERROR, error.response.data, TOAST_AUTOCLOSE_SHORT);
       console.log(error.response);
     }
   };
@@ -48,7 +54,7 @@ const SignUp = () => {
         <h2 className='fw-bold mb-2 text-uppercase'>TalkTactics</h2>
         <div className='mb-3'>
           <label htmlFor='firstName' className='form-label'>
-            First name
+            {t('auth.sign_up.form.first_name')}
           </label>
           <input
             type='text'
@@ -57,12 +63,12 @@ const SignUp = () => {
             name='firstName'
             value={user.firstName}
             onChange={handleChange}
-            placeholder='First name'
+            placeholder={t('auth.sign_up.form.first_name_placeholder')}
           />
         </div>
         <div className='mb-3'>
           <label htmlFor='lastName' className='form-label'>
-            Last name
+            {t('auth.sign_up.form.last_name')}
           </label>
           <input
             type='text'
@@ -71,7 +77,7 @@ const SignUp = () => {
             name='lastName'
             value={user.lastName}
             onChange={handleChange}
-            placeholder='Last name'
+            placeholder={t('auth.sign_up.form.last_name_placeholder')}
           />
         </div>
         <div className='mb-3'>
@@ -85,7 +91,7 @@ const SignUp = () => {
             name='email'
             value={user.email}
             onChange={handleChange}
-            placeholder='email@xyz.com'
+            placeholder={t('auth.sign_up.form.email_placeholder')}
           />
         </div>
         <div className='mb-3'>
@@ -99,12 +105,12 @@ const SignUp = () => {
             name='login'
             value={user.login}
             onChange={handleChange}
-            placeholder='Login'
+            placeholder={t('auth.sign_up.form.login_placeholder')}
           />
         </div>
         <div className='mb-3'>
           <label htmlFor='password' className='form-label '>
-            Password
+            {t('auth.sign_up.form.password')}
           </label>
           <input
             type='password'
@@ -118,7 +124,7 @@ const SignUp = () => {
         </div>
         <div className='mb-3'>
           <label htmlFor='repeatPassword' className='form-label'>
-            Repeat password
+            {t('auth.sign_up.form.repeat_password')}
           </label>
           <input
             type='password'
@@ -132,7 +138,7 @@ const SignUp = () => {
         </div>
         <div className='d-grid'>
           <button className='btn btn-outline-dark' type='submit'>
-            Sign up
+            {t('auth.sign_up.form.submit')}
           </button>
         </div>
       </form>
@@ -149,9 +155,9 @@ const SignUp = () => {
                 {renderRegisterForm()}
                 <div>
                   <p className='mb-0 text-center'>
-                    Do you have an account?{' '}
+                    {t('auth.sign_up.question')}
                     <Link to='/login' className='text-primary fw-bold'>
-                      Sign in
+                      {t('auth.sign_up.link')}
                     </Link>
                   </p>
                 </div>

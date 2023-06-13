@@ -1,10 +1,16 @@
 import React, { useState } from 'react';
 import './LoginRegister.css';
 import { Link, useNavigate } from 'react-router-dom';
-import { request, setUserData } from '../../api/AxiosHelper';
-import { toast } from 'react-toastify';
+import { request, setUserData } from 'api/AxiosHelper';
+import CustomToast, {
+  TOAST_AUTOCLOSE_SHORT,
+  TOAST_ERROR,
+  TOAST_SUCCESS,
+} from 'components/CustomToast/CustomToast';
+import { useTranslation } from 'react-i18next';
 
 const SignIn = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [user, setUser] = useState({
     login: '',
@@ -18,16 +24,18 @@ const SignIn = () => {
   const handleLoginForm = async (e) => {
     e.preventDefault();
     try {
-      console.log(user);
       const response = await request('POST', '/api/auth/authenticate', user);
-      console.log(response.data);
       setUserData(response.data);
-      toast.success('Sign in successfully');
+      CustomToast(TOAST_SUCCESS, 'Sign in successfully', TOAST_AUTOCLOSE_SHORT);
       setUser({ login: '', password: '' });
       navigate('/');
       window.location.reload(); // TODO: Change to use Context
     } catch (error) {
-      toast.error('Something went wrong');
+      CustomToast(
+        TOAST_ERROR,
+        t('toast.database_error'),
+        TOAST_AUTOCLOSE_SHORT
+      );
       console.log(error);
     }
   };
@@ -47,12 +55,12 @@ const SignIn = () => {
             name='login'
             value={user.login}
             onChange={handleChange}
-            placeholder='Username'
+            placeholder={t('auth.sign_in.form.login_placeholder')}
           />
         </div>
         <div className='mb-3'>
           <label htmlFor='password' className='form-label '>
-            Password
+            {t('auth.sign_in.form.password')}
           </label>
           <input
             type='password'
@@ -66,7 +74,7 @@ const SignIn = () => {
         </div>
         <div className='d-grid'>
           <button className='btn btn-outline-dark' type='submit'>
-            Sign in
+            {t('auth.sign_in.form.submit')}
           </button>
         </div>
       </form>
@@ -84,9 +92,9 @@ const SignIn = () => {
                   {renderLoginForm()}
                   <div>
                     <p className='mb-0 text-center'>
-                      Don't have an account?{' '}
+                      {t('auth.sign_in.question')}
                       <Link to='/register' className='text-primary fw-bold'>
-                        Sign up
+                        {t('auth.sign_in.link')}
                       </Link>
                     </p>
                   </div>

@@ -1,5 +1,6 @@
 package com.example.talktactics.controllers;
 
+import com.example.talktactics.DTOs.CourseItemDTO;
 import com.example.talktactics.models.CourseItem;
 import com.example.talktactics.services.CourseItemService;
 import lombok.AllArgsConstructor;
@@ -16,10 +17,16 @@ public class CourseItemController {
 
     private final CourseItemService courseItemService;
 
-    @PreAuthorize("hasRole(ADMIN)")
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/course-items")
     List<CourseItem> getAll() {
         return courseItemService.getAll();
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @GetMapping("/admin/course-items")
+    List<CourseItemDTO> getAllCourseItemsDTO() {
+        return courseItemService.getAllCourseItemsDTO();
     }
 
     @GetMapping("/course-items/{id}")
@@ -29,8 +36,8 @@ public class CourseItemController {
 
 
     @GetMapping("/courses/{id}/course-items")
-    List<CourseItem> getByCourseId(@PathVariable int id) {
-        return courseItemService.getByCourseId(id);
+    List<CourseItemDTO> getByCourseId(@PathVariable int id) {
+        return courseItemService.getAllCourseItemsDTOByCourseId(id);
     }
 
     @PreAuthorize("hasRole('ADMIN')")
@@ -38,14 +45,4 @@ public class CourseItemController {
     void deleteCourseItem(@PathVariable Long id) {
         courseItemService.deleteCourseItem(id);
     }
-
-//    @GetMapping("/courses/{courseID}/item/{itemID}")
-//    CourseItem getCourseItemByCourseIdAndId(@PathVariable Long courseID, @PathVariable int itemID) {
-//        return courseItemService.getCourseItemsByCourseIdAndItemId(courseID, itemID);
-//    }
-
-//    @GetMapping("/users/{userID}/courses/{courseID}/course-items")
-//    List<CourseItem> getCourseItemsByCourseId(@PathVariable Long userID, @PathVariable int courseID) {
-//        return courseItemService.getUserCourseItemsByCourseId(userID, courseID);
-//    }
 }

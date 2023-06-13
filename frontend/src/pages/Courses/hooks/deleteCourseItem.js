@@ -1,12 +1,24 @@
-import { request } from '../../../api/AxiosHelper';
-import { toast } from 'react-toastify';
+import { request } from 'api/AxiosHelper';
+import CustomToast, {
+  TOAST_AUTOCLOSE_SHORT,
+  TOAST_ERROR,
+  TOAST_SUCCESS,
+} from 'components/CustomToast/CustomToast';
 
 export default async function deleteCourseItem(id) {
   try {
     await request('DELETE', `/api/course-items/${id}`);
-    toast.success('Course item has been deleted');
+    CustomToast(
+      TOAST_SUCCESS,
+      'Course item deleted successfully',
+      TOAST_AUTOCLOSE_SHORT
+    );
   } catch (error) {
+    CustomToast(
+      TOAST_ERROR,
+      'Unable to delete course item',
+      TOAST_AUTOCLOSE_SHORT
+    );
     console.log(error);
-    toast.error('Something went wrong');
   }
 }

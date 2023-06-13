@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
-import { request } from '../../../api/AxiosHelper';
-import { getUsername } from '../../../api/AxiosHelper';
+import { request, getUsername } from 'api/AxiosHelper';
 
 const useSearchUserCourses = (level) => {
   const [searchedCourses, setSearchedCourses] = useState([]);

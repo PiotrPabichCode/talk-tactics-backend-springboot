@@ -1,9 +1,13 @@
 import { useEffect, useState } from 'react';
-import { request } from '../../../api/AxiosHelper';
-import { toast } from 'react-toastify';
-import { getUsername } from '../../../api/AxiosHelper';
+import { getUsername, request } from 'api/AxiosHelper';
+import CustomToast, {
+  TOAST_AUTOCLOSE_SHORT,
+  TOAST_ERROR,
+} from 'components/CustomToast/CustomToast';
+import { useTranslation } from 'react-i18next';
 
 export default function useLoadUserCourses() {
+  const { t } = useTranslation();
   const [userCourses, setUserCourses] = useState([]);
   const login = getUsername();
 
@@ -18,7 +22,7 @@ export default function useLoadUserCourses() {
         console.log(response.data);
         setUserCourses(response.data);
       } catch (error) {
-        toast.error('Something went wrong');
+        CustomToast(TOAST_ERROR, t('toast.load_error'), TOAST_AUTOCLOSE_SHORT);
         console.log(error);
       }
     };

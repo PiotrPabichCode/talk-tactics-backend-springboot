@@ -11,16 +11,13 @@ import useLoadCourses from '../admin/courses/hooks/useLoadCourses';
 import { Box, Button, TableSortLabel } from '@mui/material';
 import { Add } from '@mui/icons-material';
 import { visuallyHidden } from '@mui/utils';
-import { getUsername, request } from '../../api/AxiosHelper';
-import { toast } from 'react-toastify';
-
-const columns = [
-  { id: 'id', label: 'ID', minWidth: 50 },
-  { id: 'name', label: 'Name', minWidth: 250 },
-  { id: 'description', label: 'Description', minWidth: 250 },
-  { id: 'level', label: 'Level', minWidth: 170 },
-  { id: 'add', label: 'Add course', minWidth: 150 },
-];
+import { getUsername, request } from 'api/AxiosHelper';
+import CustomToast, {
+  TOAST_AUTOCLOSE_SHORT,
+  TOAST_ERROR,
+  TOAST_SUCCESS,
+} from 'components/CustomToast/CustomToast';
+import { useTranslation } from 'react-i18next';
 
 function descendingComparator(a, b, orderBy) {
   if (b[orderBy] < a[orderBy]) {
@@ -51,6 +48,24 @@ function stableSort(array, comparator) {
 }
 
 export default function Courses() {
+  const { t } = useTranslation();
+
+  const columns = [
+    { id: 'id', label: 'ID', minWidth: 50 },
+    { id: 'name', label: t('courses.courses.header_name'), minWidth: 250 },
+    {
+      id: 'description',
+      label: t('courses.courses.header_description'),
+      minWidth: 250,
+    },
+    {
+      id: 'level',
+      label: t('courses.courses.header_level'),
+      minWidth: 170,
+    },
+    { id: 'add', label: t('courses.courses.header_action'), minWidth: 150 },
+  ];
+
   const [courses, setCourses] = useLoadCourses();
 
   const [page, setPage] = React.useState(0);
@@ -75,10 +90,18 @@ export default function Courses() {
         login: getUsername(),
       };
       await request('PUT', `/api/user-courses`, requestData);
-      toast.success('Course added successfully');
+      CustomToast(
+        TOAST_SUCCESS,
+        t('toast.success.add.course'),
+        TOAST_AUTOCLOSE_SHORT
+      );
     } catch (error) {
+      CustomToast(
+        TOAST_ERROR,
+        'You already have this course',
+        TOAST_AUTOCLOSE_SHORT
+      );
       console.log(error);
-      toast.error('You already have this course');
     }
   };
 
@@ -122,7 +145,7 @@ export default function Courses() {
                             variant='contained'
                             endIcon={<Add />}
                             onClick={(e) => handleAddCourse(e, course.id)}>
-                            Add
+                            {t('courses.courses.add')}
                           </Button>
                         </TableCell>
                       </TableRow>

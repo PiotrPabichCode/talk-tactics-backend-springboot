@@ -20,15 +20,12 @@ import { visuallyHidden } from '@mui/utils';
 import { getUserRole, getUsername, request } from '../../api/AxiosHelper';
 import { Link, useParams, useNavigate } from 'react-router-dom';
 import { CheckBox, Delete } from '@mui/icons-material';
-import { toast } from 'react-toastify';
 import deleteCourseItem from './hooks/deleteCourseItem';
-
-const columns = [
-  { id: 'id', label: 'ID', minWidth: 50 },
-  { id: 'word', label: 'Word', minWidth: 250 },
-  { id: 'course', label: 'Course', minWidth: 250 },
-  { id: 'action', label: 'Action', minWidth: 1 },
-];
+import CustomToast, {
+  TOAST_AUTOCLOSE_SHORT,
+  TOAST_ERROR,
+} from 'components/CustomToast/CustomToast';
+import { useTranslation } from 'react-i18next';
 
 function descendingComparator(a, b, orderBy) {
   if (b[orderBy] < a[orderBy]) {
@@ -59,10 +56,27 @@ function stableSort(array, comparator) {
 }
 
 export default function CourseItems() {
+  const { t } = useTranslation();
   const { courseID, userID } = useParams();
   const navigate = useNavigate();
   const [courseItems, setCourseItems] = React.useState([]);
   const [userCourseItems, setUserCourseItems] = React.useState([]);
+
+  const columns = [
+    { id: 'id', label: 'ID', minWidth: 50 },
+    { id: 'word', label: t('courses.course_items.header_word'), minWidth: 250 },
+    {
+      id: 'course',
+      label: t('courses.course_items.header_course'),
+      minWidth: 250,
+    },
+    {
+      id: 'action',
+      label: t('courses.course_items.header_action'),
+      minWidth: 320,
+    },
+  ];
+
   const handleCheckboxChange = async (id) => {
     try {
       request('POST', `/api/user-course-items/${id}/isLearned`);
@@ -94,7 +108,7 @@ export default function CourseItems() {
           );
           setCourseItems(response.data);
         } else {
-          const response = await request('GET', `/api/course-items`);
+          const response = await request('GET', `/api/admin/course-items`);
           setCourseItems(response.data);
         }
       } catch (error) {
@@ -123,8 +137,12 @@ export default function CourseItems() {
         return prevCourses.filter((course) => course.id !== id);
       });
     } catch (error) {
+      CustomToast(
+        TOAST_ERROR,
+        t('toast.error.delete.course_item'),
+        TOAST_AUTOCLOSE_SHORT
+      );
       console.log(error);
-      toast.error('Something went wrong');
     }
   };
 
@@ -149,7 +167,7 @@ export default function CourseItems() {
                       component={Link}
                       to={`/courses/${item.courseItem.course.id}/items/${item.courseItem.id}`}
                       endIcon={<ReadMoreIcon />}>
-                      Show details
+                      {t('courses.course_items.details')}
                     </Button>
                     <Checkbox
                       checked={item.learned}
@@ -177,15 +195,19 @@ export default function CourseItems() {
                     {index + 1 + (page * rowsPerPage, page * rowsPerPage)}
                   </TableCell>
                   <TableCell>{item.word}</TableCell>
-                  <TableCell>{item.course.name}</TableCell>
+                  <TableCell>
+                    {courseID ? item.course.name : item.courseName}
+                  </TableCell>
                   <TableCell>
                     <Button
                       size='small'
                       variant='outlined'
                       component={Link}
-                      to={`/courses/${item.course.id}/items/${item.id}`}
+                      to={`/courses/${
+                        courseID ? item.course.id : item.id
+                      }/items/${item.id}`}
                       endIcon={<ReadMoreIcon />}>
-                      Show details
+                      {t('courses.course_items.details')}
                     </Button>
                     {getUserRole() === 'ADMIN' && (
                       <Button
@@ -194,7 +216,7 @@ export default function CourseItems() {
                         variant='contained'
                         endIcon={<Delete />}
                         onClick={(e) => handleDeleteAction(e, item.id)}>
-                        Delete
+                        {t('courses.course_items.delete')}
                       </Button>
                     )}
                   </TableCell>
@@ -206,50 +228,55 @@ export default function CourseItems() {
   };
 
   return (
-    <div className='d-flex justify-content-center m-5'>
-      <Card>
-        <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-          <button className='btn btn-primary m-2' onClick={() => navigate(-1)}>
-            Back
-          </button>
+    <>
+      {(userCourseItems || courseItems) && (
+        <div className='d-flex justify-content-center m-5'>
+          <Card>
+            <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+              <button
+                className='btn btn-primary m-2'
+                onClick={() => navigate(-1)}>
+                {t('courses.course_items.back')}
+              </button>
+            </div>
+            <CardContent>
+              <Paper sx={{ width: '100%', overflow: 'hidden' }}>
+                <TableContainer sx={{ maxHeight: 440 }}>
+                  <Table stickyHeader aria-label='sticky table'>
+                    <TableHead>
+                      <TableRow>
+                        {columns.map((column) => (
+                          <TableCell
+                            key={column.id}
+                            style={{ minWidth: column.minWidth }}>
+                            <TableSortLabel>{column.label}</TableSortLabel>
+                          </TableCell>
+                        ))}
+                      </TableRow>
+                    </TableHead>
+                    {userCourseItems.length > 0
+                      ? renderUserCourseItems()
+                      : renderCourseItems()}
+                  </Table>
+                </TableContainer>
+                <TablePagination
+                  rowsPerPageOptions={[5, 25, 100]}
+                  component='div'
+                  count={
+                    userCourseItems.length > 0
+                      ? userCourseItems.length
+                      : courseItems.length
+                  }
+                  rowsPerPage={rowsPerPage}
+                  page={page}
+                  onPageChange={handleChangePage}
+                  onRowsPerPageChange={handleChangeRowsPerPage}
+                />
+              </Paper>
+            </CardContent>
+          </Card>
         </div>
-        <CardContent>
-          <Paper sx={{ width: '100%', overflow: 'hidden' }}>
-            <TableContainer sx={{ maxHeight: 440 }}>
-              <Table stickyHeader aria-label='sticky table'>
-                <TableHead>
-                  <TableRow>
-                    {columns.map((column) => (
-                      <TableCell
-                        key={column.id}
-                        align={column.align}
-                        style={{ minWidth: column.minWidth }}>
-                        <TableSortLabel>{column.label}</TableSortLabel>
-                      </TableCell>
-                    ))}
-                  </TableRow>
-                </TableHead>
-                {userCourseItems.length > 0
-                  ? renderUserCourseItems()
-                  : renderCourseItems()}
-              </Table>
-            </TableContainer>
-            <TablePagination
-              rowsPerPageOptions={[5, 25, 100]}
-              component='div'
-              count={
-                userCourseItems.length > 0
-                  ? userCourseItems.length
-                  : courseItems.length
-              }
-              rowsPerPage={rowsPerPage}
-              page={page}
-              onPageChange={handleChangePage}
-              onRowsPerPageChange={handleChangeRowsPerPage}
-            />
-          </Paper>
-        </CardContent>
-      </Card>
-    </div>
+      )}
+    </>
   );
 }

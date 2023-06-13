@@ -1,10 +1,16 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
-import { toast } from 'react-toastify';
-import { request } from '../../../api/AxiosHelper';
+import { request } from 'api/AxiosHelper';
 import { levels } from './utils/levels';
+import CustomToast, {
+  TOAST_AUTOCLOSE_SHORT,
+  TOAST_ERROR,
+  TOAST_SUCCESS,
+} from 'components/CustomToast/CustomToast';
+import { useTranslation } from 'react-i18next';
 
 export default function EditUser() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const url = '/admin?isCoursesDisplayed=true';
 
@@ -46,16 +52,26 @@ export default function EditUser() {
     try {
       if (name !== '' && description !== '' && level !== '') {
         const updatedCourse = { ...course, level: LevelEnum[level] };
-        console.log(level);
-        console.log(updatedCourse);
         await request('PUT', `/api/courses/${id}`, updatedCourse);
         navigate(url);
-        toast.success('Course edited successfully');
+        CustomToast(
+          TOAST_SUCCESS,
+          t('toast.success.edit.course'),
+          TOAST_AUTOCLOSE_SHORT
+        );
       } else {
-        toast.error('Something went wrong');
+        CustomToast(
+          TOAST_ERROR,
+          t('toast.error.edit.course'),
+          TOAST_AUTOCLOSE_SHORT
+        );
       }
     } catch (error) {
-      toast.error('Something went wrong');
+      CustomToast(
+        TOAST_ERROR,
+        t('toast.database_error'),
+        TOAST_AUTOCLOSE_SHORT
+      );
       console.log(error);
     }
   };
@@ -64,19 +80,21 @@ export default function EditUser() {
     <div className='container-fluid'>
       <div className='col-md-6 text-light offset-md-3 bg-dark opacity-100 border rounded p-4 mt-2 shadow position-relative'>
         <Link className='btn btn-primary position-absolute end-0 me-4' to={url}>
-          Back
+          {t('admin.courses.edit_course.back')}
         </Link>
-        <h2 className='text-center m-4'>Edit Course</h2>
+        <h2 className='text-center m-4'>
+          {t('admin.courses.edit_course.title')}
+        </h2>
 
         <form onSubmit={(e) => onSubmit(e)}>
           <div className='mb-3'>
             <label htmlFor='Name' className='form-label'>
-              Name
+              {t('admin.courses.edit_course.form.name')}
             </label>
             <input
               type={'text'}
               className='form-control'
-              placeholder='Enter task name'
+              placeholder={t('admin.courses.edit_course.form.name_placeholder')}
               name='name'
               value={name}
               onChange={(e) => onInputChange(e)}
@@ -84,12 +102,14 @@ export default function EditUser() {
           </div>
           <div className='mb-3'>
             <label htmlFor='Description' className='form-label'>
-              Description
+              {t('admin.courses.edit_course.form.description')}
             </label>
             <input
               type={'text'}
               className='form-control'
-              placeholder='Enter task description'
+              placeholder={t(
+                'admin.courses.edit_course.form.description_placeholder'
+              )}
               name='description'
               value={description}
               onChange={(e) => onInputChange(e)}
@@ -97,7 +117,7 @@ export default function EditUser() {
           </div>
           <div className='mb-3'>
             <label htmlFor='Level' className='form-label'>
-              Level
+              {t('admin.courses.edit_course.form.level')}
             </label>
             <select
               className='form-control'
@@ -112,10 +132,10 @@ export default function EditUser() {
             </select>
           </div>
           <button type='submit' className='btn btn-outline-primary'>
-            Submit
+            {t('admin.courses.edit_course.form.submit')}
           </button>
           <Link className='btn btn-outline-danger mx-2' to={url}>
-            Cancel
+            {t('admin.courses.edit_course.form.cancel')}
           </Link>
         </form>
       </div>

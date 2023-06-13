@@ -1,10 +1,16 @@
 import { useState } from 'react';
-import { toast } from 'react-toastify';
-import { request } from '../../../api/AxiosHelper';
+import { request } from 'api/AxiosHelper';
 import { useNavigate, Link } from 'react-router-dom';
 import { levels } from './utils/levels';
+import CustomToast, {
+  TOAST_AUTOCLOSE_SHORT,
+  TOAST_ERROR,
+  TOAST_SUCCESS,
+} from 'components/CustomToast/CustomToast';
+import { useTranslation } from 'react-i18next';
 
 const AddCourse = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const url = '/admin?isCoursesDisplayed=true';
 
@@ -25,14 +31,26 @@ const AddCourse = () => {
     try {
       if (name !== '' && description !== '' && level !== '') {
         request('POST', `/api/courses`, course);
-        toast.success('Course added successfully');
+        CustomToast(
+          TOAST_SUCCESS,
+          t('toast.success.add.course'),
+          TOAST_AUTOCLOSE_SHORT
+        );
         navigate(url);
       } else {
-        toast.error('Something went wrong');
+        CustomToast(
+          TOAST_ERROR,
+          t('toast.error.add.course'),
+          TOAST_AUTOCLOSE_SHORT
+        );
       }
     } catch (error) {
       console.log(error);
-      toast.error('Something went wrong');
+      CustomToast(
+        TOAST_ERROR,
+        t('toast.database_error'),
+        TOAST_AUTOCLOSE_SHORT
+      );
     }
   };
 
@@ -43,19 +61,23 @@ const AddCourse = () => {
           <Link
             className='btn btn-primary position-absolute end-0 me-4'
             to={url}>
-            Back
+            {t('admin.courses.add_course.back')}
           </Link>
-          <h2 className='text-center m-4'>Add Course</h2>
+          <h2 className='text-center m-4'>
+            {t('admin.courses.add_course.title')}
+          </h2>
 
           <form onSubmit={onSubmit}>
             <div className='mb-3'>
               <label htmlFor='Name' className='form-label'>
-                Name
+                {t('admin.courses.add_course.form.name')}
               </label>
               <input
                 type='text'
                 className='form-control'
-                placeholder='Enter task name'
+                placeholder={t(
+                  'admin.courses.add_course.form.name_placeholder'
+                )}
                 name='name'
                 value={name}
                 onChange={onInputChange}
@@ -63,12 +85,14 @@ const AddCourse = () => {
             </div>
             <div className='mb-3'>
               <label htmlFor='Description' className='form-label'>
-                Description
+                {t('admin.courses.add_course.form.description')}
               </label>
               <input
                 type='text'
                 className='form-control'
-                placeholder='Enter task description'
+                placeholder={t(
+                  'admin.courses.add_course.form.description_placeholder'
+                )}
                 name='description'
                 value={description}
                 onChange={onInputChange}
@@ -76,7 +100,7 @@ const AddCourse = () => {
             </div>
             <div className='mb-3'>
               <label htmlFor='Level' className='form-label'>
-                Level
+                {t('admin.courses.add_course.form.level')}
               </label>
               <select
                 defaultValue={''}
@@ -84,7 +108,9 @@ const AddCourse = () => {
                 name='level'
                 value={level}
                 onChange={onInputChange}>
-                <option value={''}>Choose level...</option>
+                <option value={''}>
+                  {t('admin.courses.add_course.form.level_placeholder')}
+                </option>
                 {levels.map((item, index) => (
                   <option key={index} value={item.value}>
                     {item.value}
@@ -93,10 +119,10 @@ const AddCourse = () => {
               </select>
             </div>
             <button type='submit' className='btn btn-outline-primary'>
-              Submit
+              {t('admin.courses.add_course.form.submit')}
             </button>
             <Link className='btn btn-outline-danger mx-2' to={url}>
-              Cancel
+              {t('admin.courses.add_course.form.cancel')}
             </Link>
           </form>
         </div>

@@ -1,10 +1,16 @@
 import React, { useEffect, useState } from 'react';
-import { getUsername, request } from '../../api/AxiosHelper';
+import { getUsername, request } from 'api/AxiosHelper';
 import { Edit } from '@mui/icons-material';
-import { IconButton, styled } from '@mui/material';
-import { toast } from 'react-toastify';
+import { styled } from '@mui/material';
+import CustomToast, {
+  TOAST_AUTOCLOSE_SHORT,
+  TOAST_ERROR,
+  TOAST_SUCCESS,
+} from 'components/CustomToast/CustomToast';
+import { useTranslation } from 'react-i18next';
 
 const AccountDetails = () => {
+  const { t } = useTranslation();
   useEffect(() => {
     const username = getUsername();
     const loadUserDetails = async () => {
@@ -93,11 +99,19 @@ const AccountDetails = () => {
     try {
       await request('PUT', `/api/users/${userID}/firstName`, newFirstName);
       setFirstName(newFirstName);
-      toast.success('First name updated');
+      CustomToast(
+        TOAST_SUCCESS,
+        t('toast.success.edit.first_name'),
+        TOAST_AUTOCLOSE_SHORT
+      );
       resetNewFirstNameField(event);
     } catch (error) {
+      CustomToast(
+        TOAST_ERROR,
+        t('toast.error.edit.first_name'),
+        TOAST_AUTOCLOSE_SHORT
+      );
       console.log(error);
-      toast.error('Unable to update first name');
     }
   };
 
@@ -106,11 +120,19 @@ const AccountDetails = () => {
     try {
       await request('PUT', `/api/users/${userID}/lastName`, newLastName);
       setLastName(newLastName);
-      toast.success('Last name updated');
+      CustomToast(
+        TOAST_SUCCESS,
+        t('toast.success.edit.last_name'),
+        TOAST_AUTOCLOSE_SHORT
+      );
       resetNewLastNameField(event);
     } catch (error) {
+      CustomToast(
+        TOAST_ERROR,
+        t('toast.error.edit.last_name'),
+        TOAST_AUTOCLOSE_SHORT
+      );
       console.log(error);
-      toast.error('Unable to update last name');
     }
   };
 
@@ -119,11 +141,19 @@ const AccountDetails = () => {
     try {
       await request('PUT', `/api/users/${userID}/email`, newEmail);
       setEmail(newEmail);
-      toast.success('Email updated');
+      CustomToast(
+        TOAST_SUCCESS,
+        t('toast.success.edit.email'),
+        TOAST_AUTOCLOSE_SHORT
+      );
       resetNewEmailField(event);
     } catch (error) {
+      CustomToast(
+        TOAST_ERROR,
+        t('toast.error.edit.email'),
+        TOAST_AUTOCLOSE_SHORT
+      );
       console.log(error);
-      toast.error('Unable to update email');
     }
   };
 
@@ -139,11 +169,19 @@ const AccountDetails = () => {
     try {
       await request('PUT', `/api/users/${userID}/password`, newPasswordObj);
       setNewPassword(newPassword);
-      toast.success('Password updated');
+      CustomToast(
+        TOAST_SUCCESS,
+        t('toast.success.edit.password'),
+        TOAST_AUTOCLOSE_SHORT
+      );
       resetNewPasswordFields(event);
     } catch (error) {
+      CustomToast(
+        TOAST_ERROR,
+        t('toast.error.edit.password'),
+        TOAST_AUTOCLOSE_SHORT
+      );
       console.log(error);
-      toast.error('Unable to update password');
     }
   };
 
@@ -164,6 +202,9 @@ const AccountDetails = () => {
                 className='form-control'
                 type='text'
                 value={newFirstName}
+                placeholder={t(
+                  'user.account_details.form.first_name_placeholder'
+                )}
                 onChange={(e) => setNewFirstName(e.target.value)}
                 required
               />
@@ -172,12 +213,12 @@ const AccountDetails = () => {
               <button
                 className='btn btn-danger'
                 onClick={(e) => resetNewFirstNameField(e)}>
-                Cancel
+                {t('user.account_details.form.cancel')}
               </button>
             </div>
             <div className='col-sm-1'>
               <button className='btn btn-success' type='submit'>
-                Submit
+                {t('user.account_details.form.submit')}
               </button>
             </div>
           </div>
@@ -210,6 +251,9 @@ const AccountDetails = () => {
                 className='form-control'
                 type='text'
                 value={newLastName}
+                placeholder={t(
+                  'user.account_details.form.last_name_placeholder'
+                )}
                 onChange={(e) => setNewLastName(e.target.value)}
                 required
               />
@@ -218,12 +262,12 @@ const AccountDetails = () => {
               <button
                 className='btn btn-danger'
                 onClick={(e) => resetNewLastNameField(e)}>
-                Cancel
+                {t('user.account_details.form.cancel')}
               </button>
             </div>
             <div className='col-sm-1'>
               <button className='btn btn-success' type='submit'>
-                Submit
+                {t('user.account_details.form.submit')}
               </button>
             </div>
           </div>
@@ -256,6 +300,7 @@ const AccountDetails = () => {
                 className='form-control'
                 type='email'
                 value={newEmail}
+                placeholder={t('user.account_details.form.email_placeholder')}
                 onChange={(e) => setNewEmail(e.target.value)}
                 required
               />
@@ -264,12 +309,12 @@ const AccountDetails = () => {
               <button
                 className='btn btn-danger'
                 onClick={(e) => resetNewEmailField(e)}>
-                Cancel
+                {t('user.account_details.form.cancel')}
               </button>
             </div>
             <div className='col-sm-1'>
               <button className='btn btn-success' type='submit'>
-                Submit
+                {t('user.account_details.form.submit')}
               </button>
             </div>
           </div>
@@ -301,7 +346,7 @@ const AccountDetails = () => {
               className='form-control'
               type='password'
               value={oldPassword}
-              placeholder='Write old password'
+              placeholder={t('user.account_details.form.password_old')}
               onChange={(e) => setOldPassword(e.target.value)}
               required
             />
@@ -311,7 +356,7 @@ const AccountDetails = () => {
               className='form-control'
               type='password'
               value={newPassword}
-              placeholder='Write new password'
+              placeholder={t('user.account_details.form.password_new')}
               onChange={(e) => setNewPassword(e.target.value)}
               required
             />
@@ -321,7 +366,7 @@ const AccountDetails = () => {
               className='form-control'
               type='password'
               value={repeatNewPassword}
-              placeholder='Repeat new password'
+              placeholder={t('user.account_details.form.password_new_repeat')}
               onChange={(e) => setRepeatNewPassword(e.target.value)}
               required
             />
@@ -330,12 +375,12 @@ const AccountDetails = () => {
             <button
               className='btn btn-danger'
               onClick={(e) => resetNewPasswordFields(e)}>
-              Cancel
+              {t('user.account_details.form.cancel')}
             </button>
           </div>
           <div className='col-sm-1'>
             <button className='btn btn-success' type='submit'>
-              Submit
+              {t('user.account_details.form.submit')}
             </button>
           </div>
         </form>
@@ -362,11 +407,11 @@ const AccountDetails = () => {
       <div className='container'>
         <div className='py-4'>
           <div className='card mb-4'>
-            <div className='card-header'>Account details</div>
+            <div className='card-header'>{t('user.account_details.title')}</div>
             <div className='card-body'>
               <div className='row align-items-center'>
                 <div className='col-sm-3'>
-                  <p className='mb-0'>First name</p>
+                  <p className='mb-0'>{t('user.account_details.first_name')}</p>
                 </div>
                 {displayFirstName
                   ? renderFirstNameEdit()
@@ -375,7 +420,7 @@ const AccountDetails = () => {
               <hr />
               <div className='row align-items-center'>
                 <div className='col-sm-3'>
-                  <p className='mb-0'>Last name</p>
+                  <p className='mb-0'>{t('user.account_details.last_name')}</p>
                 </div>
                 {displayLastName ? renderLastNameEdit() : renderLastNameField()}
               </div>
@@ -389,7 +434,7 @@ const AccountDetails = () => {
               <hr />
               <div className='row align-items-center'>
                 <div className='col-sm-3'>
-                  <p className='mb-0'>Password</p>
+                  <p className='mb-0'>{t('user.account_details.password')}</p>
                 </div>
                 {displayPassword ? renderPasswordEdit() : renderPasswordField()}
               </div>

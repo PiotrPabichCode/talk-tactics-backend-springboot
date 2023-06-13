@@ -3,9 +3,11 @@ import { Link } from 'react-router-dom';
 import SearchIcon from '@mui/icons-material/Search';
 import useLoadUserCourses from './hooks/useLoadUserCourses';
 import useSearchUserCourses from './hooks/useSearchUserCourses';
-import { getUserID } from '../../api/AxiosHelper';
+import { getUserID } from 'api/AxiosHelper';
+import { useTranslation } from 'react-i18next';
 
 const UserCourses = () => {
+  const { t } = useTranslation();
   const [level, setLevel] = useState('');
   const [userCourses, setUserCourses] = useLoadUserCourses();
   const [searchedCourses, setSearchedCourses] = useState([]);
@@ -31,11 +33,11 @@ const UserCourses = () => {
         <thead>
           <tr>
             <th>ID</th>
-            <th>Name</th>
-            <th>Level</th>
-            <th>Progress</th>
-            <th>Completed</th>
-            <th>Action</th>
+            <th>{t('user.user_courses.header_name')}</th>
+            <th>{t('user.user_courses.header_level')}</th>
+            <th>{t('user.user_courses.header_progress')}</th>
+            <th>{t('user.user_courses.header_completed')}</th>
+            <th>{t('user.user_courses.header_action')}</th>
           </tr>
         </thead>
         <tbody>
@@ -46,12 +48,16 @@ const UserCourses = () => {
               <td>{userCourse.course.name}</td>
               <td>{userCourse.course.level}</td>
               <td>{userCourse.progress.toFixed(2)}%</td>
-              <td>{userCourse.completed ? 'Yes' : 'No'}</td>
+              <td>
+                {userCourse.completed
+                  ? t('user.user_courses.yes')
+                  : t('user.user_courses.no')}
+              </td>
               <td>
                 <Link
                   className='btn btn-primary mx-2'
                   to={`/users/${userCourse.user.id}/user-courses/${userCourse.id}`}>
-                  Open course
+                  {t('user.user_courses.open')}
                 </Link>
               </td>
             </tr>
@@ -64,7 +70,7 @@ const UserCourses = () => {
   return (
     <div className='container-fluid'>
       <div className='py-3'>
-        <h1 className='text-light'>Courses</h1>
+        <h1 className='text-light'>{t('user.user_courses.title')}</h1>
         <div className='row my-3'>
           <div className='col'>
             <form className='d-flex'>
@@ -73,7 +79,7 @@ const UserCourses = () => {
                 type='search'
                 value={level}
                 onChange={handleInputChange}
-                placeholder='Search course level'
+                placeholder={t('user.user_courses.search_placeholder')}
                 aria-label='Search'
               />
               <button className='btn btn-primary' type='button'>

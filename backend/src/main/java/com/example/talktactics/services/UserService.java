@@ -57,7 +57,6 @@ public class UserService {
         validateRoleChange(user, updateUser);
         validateUpdateUserFields(updateUser);
         updateUserData(user, updateUser);
-        updatePassword(user, updateUser);
 
         return userRepository.save(user);
     }
@@ -78,19 +77,14 @@ public class UserService {
     }
 
     private void validateUpdateUserFields(UpdateUser updateUser) {
-        if (isEmptyString(updateUser.getLogin()) || isEmptyString(updateUser.getPassword()) ||
-                isEmptyString(updateUser.getRepeatPassword()) || isEmptyString(updateUser.getEmail()) ||
+        if (isEmptyString(updateUser.getLogin()) || isEmptyString(updateUser.getEmail()) ||
                 isEmptyString(updateUser.getFirstName()) || isEmptyString(updateUser.getLastName())) {
             throw new RuntimeException("Fields cannot be empty");
         }
 
-        if (userRepository.existsByEmail(updateUser.getEmail())) {
-            throw new RuntimeException("Email already used");
-        }
-
-        if (!updateUser.getPassword().equals(updateUser.getRepeatPassword())) {
-            throw new RuntimeException("Passwords must match each other");
-        }
+//        if (userRepository.existsByEmail(updateUser.getEmail())) {
+//            throw new RuntimeException("Email already used");
+//        }
     }
 
     private void updateUserData(User user, UpdateUser updateUser) {
@@ -99,16 +93,6 @@ public class UserService {
         user.setEmail(updateUser.getEmail());
         user.setFirstName(updateUser.getFirstName());
         user.setLastName(updateUser.getLastName());
-        user.setPassword(passwordEncoder.encode(updateUser.getPassword()));
-    }
-
-    private void updatePassword(User user, UpdateUser updateUser) {
-        if (!isEmptyString(updateUser.getOldPassword()) && !isEmptyString(updateUser.getPassword()) &&
-                !isEmptyString(updateUser.getRepeatPassword()) &&
-                updateUser.getOldPassword().equals(user.getPassword()) &&
-                updateUser.getPassword().equals(updateUser.getRepeatPassword())) {
-            user.setPassword(passwordEncoder.encode(updateUser.getPassword()));
-        }
     }
 
 

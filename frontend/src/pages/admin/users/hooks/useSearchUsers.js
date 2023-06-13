@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { request } from '../../../../api/AxiosHelper';
+import { request } from 'api/AxiosHelper';
 
 export const useSearchUsers = (username) => {
   const [searchedUsers, setSearchedUsers] = useState([]);

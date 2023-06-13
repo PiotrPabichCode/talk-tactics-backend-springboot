@@ -15,8 +15,10 @@ import {
   TableSortLabel,
 } from '@mui/material';
 import ReadMoreIcon from '@mui/icons-material/ReadMore';
+import { useTranslation } from 'react-i18next';
 
-export default function ViewUser() {
+export default function ViewCourse() {
+  const { t } = useTranslation();
   const url = '/admin?isCoursesDisplayed=true';
   const { id } = useParams();
   const courseDetails = useCourseDetails(id);
@@ -25,9 +27,17 @@ export default function ViewUser() {
 
   const columns = [
     { id: 'id', label: 'ID', minWidth: 50 },
-    { id: 'name', label: 'Name', minWidth: 250 },
-    { id: 'description', label: 'Description', minWidth: 250 },
-    { id: 'level', label: 'Level', minWidth: 170 },
+    { id: 'word', label: t('admin.courses.view_course.word'), minWidth: 250 },
+    {
+      id: 'course',
+      label: t('admin.courses.view_course.course'),
+      minWidth: 250,
+    },
+    {
+      id: 'action',
+      label: t('admin.courses.view_course.action'),
+      minWidth: 200,
+    },
   ];
 
   const [page, setPage] = React.useState(0);
@@ -52,15 +62,19 @@ export default function ViewUser() {
               isCoursesDisplayed: true,
             })
           }>
-          Back
+          {t('admin.courses.view_course.back')}
         </button>
-        <h2 className='text-center m-4 text-light'>Course Details</h2>
+        <h2 className='text-center m-4 text-light'>
+          {t('admin.courses.view_course.title')}
+        </h2>
         <div className='card mb-4'>
-          <div className='card-header'>Course details</div>
+          <div className='card-header'>
+            {t('admin.courses.view_course.title')}
+          </div>
           <div className='card-body'>
             <div className='row'>
               <div className='col-sm-3'>
-                <p className='mb-0'>Course name</p>
+                <p className='mb-0'>{t('admin.courses.view_course.name')}</p>
               </div>
               <div className='col-sm-9'>
                 <p className='text-muted mb-0'>{courseDetails.name}</p>
@@ -69,7 +83,7 @@ export default function ViewUser() {
             <hr />
             <div className='row'>
               <div className='col-sm-3'>
-                <p className='mb-0'>Level</p>
+                <p className='mb-0'>{t('admin.courses.view_course.level')}</p>
               </div>
               <div className='col-sm-9'>
                 <p className='text-muted mb-0'>{courseDetails.level}</p>
@@ -78,7 +92,9 @@ export default function ViewUser() {
             <hr />
             <div className='row'>
               <div className='col-sm-3'>
-                <p className='mb-0'>Description</p>
+                <p className='mb-0'>
+                  {t('admin.courses.view_course.description')}
+                </p>
               </div>
               <div className='col-sm-9'>
                 <p className='text-muted mb-0'>{courseDetails.description}</p>
@@ -120,15 +136,15 @@ export default function ViewUser() {
                                   (page * rowsPerPage, page * rowsPerPage)}
                               </TableCell>
                               <TableCell>{item.word}</TableCell>
-                              <TableCell>{item.course.name}</TableCell>
+                              <TableCell>{item.courseName}</TableCell>
                               <TableCell>
                                 <Button
                                   size='small'
                                   variant='outlined'
                                   component={Link}
-                                  to={`/courses/${item.course.id}/items/${item.id}`}
+                                  to={`/courses/${courseDetails.id}/items/${item.id}`}
                                   endIcon={<ReadMoreIcon />}>
-                                  Show details
+                                  {t('admin.courses.view_course.details')}
                                 </Button>
                               </TableCell>
                             </TableRow>

@@ -1,5 +1,6 @@
 package com.example.talktactics.models;
 
+import com.example.talktactics.DTOs.CourseItemDTO;
 import com.fasterxml.jackson.annotation.*;
 import jakarta.persistence.*;
 import lombok.*;
@@ -24,7 +25,8 @@ public class CourseItem {
     @JsonIgnoreProperties("course")
     @OneToMany(mappedBy = "courseItem",
             cascade = CascadeType.ALL,
-            orphanRemoval = true)
+            orphanRemoval = true,
+            fetch = FetchType.LAZY)
     private List<Meaning> meanings;
 
     @JsonIgnoreProperties({"courseItems", "userCourses"})
@@ -36,4 +38,8 @@ public class CourseItem {
     @ManyToOne
     @JoinColumn(name = "user_course_item_id")
     private UserCourseItem userCourseItem;
+
+    public CourseItemDTO toDTO() {
+        return new CourseItemDTO(this.id, this.word, this.course.getName());
+    }
 }

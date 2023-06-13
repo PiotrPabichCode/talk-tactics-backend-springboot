@@ -3,7 +3,8 @@ import { useLocation } from 'react-router-dom';
 import Users from './users/Users';
 import Courses from './courses/Courses';
 import UserCourses from './user_courses/UserCourses';
-import CourseItems from '../Courses/CourseItems';
+import CourseItems from 'pages/Courses/CourseItems';
+import { useTranslation } from 'react-i18next';
 
 export default function Admin() {
   const [isUsersDisplayed, setIsUsersDisplayed] = useState(false);
@@ -12,6 +13,7 @@ export default function Admin() {
   const [isUserCoursesDisplayed, setIsUserCoursesDisplayed] = useState(false);
 
   const location = useLocation();
+  const { t } = useTranslation();
 
   useEffect(() => {
     const searchParams = new URLSearchParams(location.search);
@@ -62,28 +64,30 @@ export default function Admin() {
       {/* Admin panel */}
       <section className='container-fluid p-4'>
         <div className='container-fluid rounded bg-dark py-3'>
-          <h4 className='display-4 text-center text-light'>Admin panel</h4>
+          <h4 className='display-4 text-center text-light'>
+            {t('admin.title')}
+          </h4>
           <hr className='text-light'></hr>
           <br />
           <button
             className='btn btn-outline-light me-2'
             onClick={handleUsersDisplay}>
-            Users
+            {t('admin.nav.users')}
           </button>
           <button
             className='btn btn-outline-light me-2'
             onClick={handleCoursesDisplay}>
-            Courses
+            {t('admin.nav.courses')}
           </button>
           <button
             className='btn btn-outline-light me-2'
             onClick={handleCourseItemsDisplay}>
-            Course items
+            {t('admin.nav.course_items')}
           </button>
           <button
             className='btn btn-outline-light me-2'
             onClick={handleUserCoursesDisplay}>
-            User courses
+            {t('admin.nav.user_courses')}
           </button>
           {isUsersDisplayed && <Users />}
           {isCoursesDisplayed && <Courses />}

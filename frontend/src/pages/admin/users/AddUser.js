@@ -1,9 +1,14 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { request } from '../../../api/AxiosHelper';
-import { toast } from 'react-toastify';
+import { request } from 'api/AxiosHelper';
+import CustomToast, {
+  TOAST_AUTOCLOSE_SHORT,
+  TOAST_SUCCESS,
+} from 'components/CustomToast/CustomToast';
+import { useTranslation } from 'react-i18next';
 
 export default function AddUser() {
+  const { t } = useTranslation();
   let navigate = useNavigate();
 
   const [user, setUser] = useState({
@@ -22,7 +27,11 @@ export default function AddUser() {
     e.preventDefault();
     try {
       await request('POST', '/api/users', user);
-      toast.success('User added successfully');
+      CustomToast(
+        TOAST_SUCCESS,
+        t('toast.success.add.user'),
+        TOAST_AUTOCLOSE_SHORT
+      );
       navigate('/');
     } catch (error) {
       console.log(error);

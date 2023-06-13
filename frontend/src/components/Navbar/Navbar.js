@@ -1,8 +1,10 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { getUserRole } from '../../api/AxiosHelper';
+import { getUserRole } from 'api/AxiosHelper';
+import { useTranslation } from 'react-i18next';
 
 export default function Navbar() {
+  const { t } = useTranslation();
   const logoutUser = () => {
     localStorage.clear();
     window.location.reload(); // TODO: Change to use Context
@@ -20,12 +22,12 @@ export default function Navbar() {
               <>
                 <li className='nav-item me-1'>
                   <Link className='btn btn-outline-light' to='/login'>
-                    Login
+                    {t('nav.login')}
                   </Link>
                 </li>
                 <li className='nav-item me-1'>
                   <Link className='btn btn-outline-light' to='/register'>
-                    Register
+                    {t('nav.register')}
                   </Link>
                 </li>
               </>
@@ -34,14 +36,14 @@ export default function Navbar() {
               <>
                 <li className='nav-item me-1'>
                   <Link className='btn btn-outline-light' to='/courses'>
-                    Courses
+                    {t('nav.courses')}
                   </Link>
                 </li>
                 <li className='nav-item me-1'>
                   <Link
                     className='btn btn-outline-light'
                     to={role === 'USER' ? '/user' : '/admin'}>
-                    Account
+                    {t('nav.account')}
                   </Link>
                 </li>
                 <li className='nav-item'>
@@ -49,15 +51,12 @@ export default function Navbar() {
                     className='btn btn-outline-light'
                     onClick={logoutUser}
                     to='/'>
-                    Logout
+                    {t('nav.logout')}
                   </Link>
                 </li>
               </>
             )}
           </ul>
-          {/* <Link className="btn btn-outline-light" to="/adduser">
-            Add User
-          </Link> */}
         </div>
       </nav>
     </div>
