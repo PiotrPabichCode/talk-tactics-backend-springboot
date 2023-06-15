@@ -1,0 +1,278 @@
+{
+  "language": "Language",
+  "nav": {
+    "login": "Log in",
+    "register": "Register",
+    "courses": "Courses",
+    "account": "Your Account",
+    "logout": "Log out"
+  },
+  "admin": {
+    "title": "Admin Panel",
+    "nav": {
+      "users": "Users",
+      "courses": "Courses",
+      "course_items": "Course Items",
+      "user_courses": "User Courses"
+    },
+    "courses": {
+      "levels": {
+        "beginner": "Beginner",
+        "intermediate": "Intermediate",
+        "advanced": "Advanced"
+      },
+      "courses": {
+        "title": "Courses",
+        "header_name": "Course Name",
+        "header_level": "Difficulty Level",
+        "header_action": "Action",
+        "more_details": "More Details",
+        "edit": "Edit",
+        "delete": "Delete",
+        "add": "Add New Course",
+        "search_placeholder": "Search by difficulty level"
+      },
+      "add_course": {
+        "back": "Back",
+        "title": "Add New Course",
+        "form": {
+          "name": "Course Name",
+          "name_placeholder": "Enter course name",
+          "description": "Course Description",
+          "description_placeholder": "Enter course description",
+          "level": "Difficulty Level",
+          "level_placeholder": "Select difficulty level...",
+          "submit": "Add",
+          "cancel": "Cancel"
+        }
+      },
+      "edit_course": {
+        "back": "Back",
+        "title": "Edit Course",
+        "form": {
+          "name": "Course Name",
+          "name_placeholder": "Enter course name",
+          "description": "Course Description",
+          "description_placeholder": "Enter course description",
+          "level": "Difficulty Level",
+          "level_placeholder": "Select difficulty level...",
+          "submit": "Save Changes",
+          "cancel": "Cancel Changes"
+        }
+      },
+      "view_course": {
+        "back": "Back",
+        "title": "Course Details",
+        "name": "Course Name",
+        "level": "Difficulty Level",
+        "description": "Course Description",
+        "details": "Show Details",
+        "word": "Word",
+        "course": "Course",
+        "action": "Action"
+      }
+    },
+    "user_courses": {
+      "user_courses": {
+        "title": "User Courses",
+        "search_placeholder": "Search by difficulty level",
+        "name": "User Course Name",
+        "level": "Difficulty Level",
+        "progress": "Completion Progress",
+        "completed": "Completed",
+        "action": "Action",
+        "details": "More Details",
+        "delete": "Delete"
+      }
+    },
+    "users": {
+      "users": {
+        "title": "Users",
+        "search_placeholder": "Search by username",
+        "action": "Action",
+        "details": "More Details",
+        "edit": "Edit",
+        "true": "Yes",
+        "false": "No"
+      },
+      "view_user": {
+        "first_name": "First Name",
+        "last_name": "Last Name",
+        "true": "Yes",
+        "false": "No",
+        "back": "Back",
+        "title": "User Information"
+      },
+      "edit_user": {
+        "back": "Back",
+        "title": "Edit User",
+        "form": {
+          "login_placeholder": "Enter user login",
+          "first_name": "First Name",
+          "first_name_placeholder": "Enter user first name",
+          "last_name": "Last Name",
+          "last_name_placeholder": "Enter user last name",
+          "email_placeholder": "Enter user email",
+          "submit": "Save Changes",
+          "cancel": "Cancel Changes"
+        }
+      }
+    }
+  },
+  "auth": {
+    "success": {
+      "sign_in": "Successfully signed in",
+      "sign_up": "Successfully signed up",
+      "logout": "You have been logged out"
+    },
+    "error": {
+      "sign_in": "An error occured while signing in",
+      "sign_up": "An error occured while signing up"
+    },
+    "sign_in": {
+      "form": {
+        "login_placeholder": "Enter login",
+        "password": "Password",
+        "submit": "Log in"
+      },
+      "question": "Don't have an account? ",
+      "link": "Register"
+    },
+    "sign_up": {
+      "form": {
+        "first_name": "First Name",
+        "first_name_placeholder": "Enter first name",
+        "last_name": "Last Name",
+        "last_name_placeholder": "Enter last name",
+        "email_placeholder": "Enter email",
+        "login_placeholder": "Enter login",
+        "password": "Password",
+        "repeat_password": "Repeat Password",
+        "submit": "Register"
+      },
+      "question": "Already have an account? ",
+      "link": "Log in"
+    }
+  },
+  "courses": {
+    "courses": {
+      "header_name": "Course Name",
+      "header_description": "Course Description",
+      "header_level": "Difficulty Level",
+      "header_action": "Add Course",
+      "search_placeholder": "Find course by a course name",
+      "add": "Add",
+      "exists": "You already have this course"
+    },
+    "course_items": {
+      "back": "Back",
+      "details": "More Details",
+      "delete": "Delete",
+      "header_word": "Word",
+      "header_course": "Course Name",
+      "header_action": "Action"
+    },
+    "course_item_details": {
+      "header_definition": "Definition",
+      "header_example": "Usage Example",
+      "back": "Back"
+    }
+  },
+  "home": {
+    "question": "Do you want to learn English but don't know where to start?",
+    "start_now": "Start Now",
+    "welcome_message": "Welcome to TalkTactics - your source of knowledge for foreign language learning!",
+    "information": "Our website offers comprehensive educational materials, online language courses, and valuable tips and advice for learning English. Regardless of your proficiency level, our website will help you achieve your language goals!"
+  },
+  "user": {
+    "title": "User Panel",
+    "nav": {
+      "account_details": "Account Information",
+      "courses": "Your Courses"
+    },
+    "user_courses": {
+      "title": "Your Courses",
+      "header_name": "Course Name",
+      "header_level": "Difficulty Level",
+      "header_progress": "Completion Progress",
+      "header_completed": "Completed",
+      "header_action": "Action",
+      "open": "Open Course",
+      "search_placeholder": "Search by difficulty level",
+      "no": "No",
+      "yes": "Yes",
+      "beginner": "Beginner",
+      "intermediate": "Intermediate",
+      "advanced": "Advanced"
+    },
+    "account_details": {
+      "title": "Account Information",
+      "first_name": "First Name",
+      "last_name": "Last Name",
+      "password": "Password",
+      "form": {
+        "first_name_placeholder": "Enter first name",
+        "last_name_placeholder": "Enter last name",
+        "email_placeholder": "Enter email",
+        "password_old": "Enter old password",
+        "password_new": "Enter new password",
+        "password_new_repeat": "Repeat new password",
+        "cancel": "Cancel",
+        "submit": "Save"
+      }
+    }
+  },
+
+  "toast": {
+    "success": {
+      "add": {
+        "course": "Added a new course",
+        "course_item": "Added a new course item",
+        "user_course": "Added a new user course",
+        "user": "Added a new user"
+      },
+      "delete": {
+        "course": "Deleted a course",
+        "course_item": "Deleted a new course item",
+        "user_course": "Deleted a user course",
+        "user": "Deleted a user"
+      },
+      "edit": {
+        "course": "Successfully edited a course",
+        "course_item": "Successfully edited a new course item",
+        "user_course": "Successfully edited a user course",
+        "user": "Successfully edited a user",
+        "first_name": "Successfully edited a first name",
+        "last_name": "Successfully edited a last name",
+        "email": "Successfully edited an email",
+        "password": "Successfully edited a password"
+      }
+    },
+    "error": {
+      "add": {
+        "course": "Failed to add a new course",
+        "course_item": "Failed to add a new course item",
+        "user_course": "Failed to add a new user course",
+        "user": "Failed to add a new user"
+      },
+      "delete": {
+        "course": "Failed to delete a course",
+        "course_item": "Failed to delete a course item",
+        "user_course": "Failed to delete a user course",
+        "user": "Failed to delete a user"
+      },
+      "edit": {
+        "course": "An error occurred while editing a course",
+        "course_item": "An error occured while editing a course item",
+        "user_course": "An error occurred while editing a user course",
+        "user": "An error occurred while editing a user",
+        "first_name": "An error occured while editing a first name",
+        "last_name": "An error occured while editing a last name",
+        "email": "An error occured while editing an email",
+        "password": "An error occured while editing a password"
+      }
+    },
+    "database_error": "Something went wrong",
+    "load_error": "Failed to load data"
+  }
+}

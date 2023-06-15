@@ -1,0 +1,278 @@
+{
+  "language": "Język",
+  "nav": {
+    "login": "Zaloguj się",
+    "register": "Zarejestruj się",
+    "courses": "Kursy",
+    "account": "Twoje konto",
+    "logout": "Wyloguj się"
+  },
+  "admin": {
+    "title": "Panel admina",
+    "nav": {
+      "users": "Użytkownicy",
+      "courses": "Kursy",
+      "course_items": "Przedmioty kursów",
+      "user_courses": "Kursy użytkowników"
+    },
+    "courses": {
+      "levels": {
+        "beginner": "Początkujący",
+        "intermediate": "Średnio-zaawansowany",
+        "advanced": "Zaawansowany"
+      },
+      "courses": {
+        "title": "Kursy",
+        "header_name": "Nazwa kursu",
+        "header_level": "Poziom trudności",
+        "header_action": "Akcja",
+        "more_details": "Więcej szczegółów",
+        "edit": "Edycja",
+        "delete": "Usuń",
+        "add": "Dodaj nowy kurs",
+        "search_placeholder": "Szukaj po poziomie trudności"
+      },
+      "add_course": {
+        "back": "Powrót",
+        "title": "Dodaj nowy kurs",
+        "form": {
+          "name": "Nazwa kursu",
+          "name_placeholder": "Wpisz nazwę kursu",
+          "description": "Opis kursu",
+          "description_placeholder": "Wpisz opis kursu",
+          "level": "Poziom trudności",
+          "level_placeholder": "Wybierz poziom trudności...",
+          "submit": "Dodaj",
+          "cancel": "Anuluj"
+        }
+      },
+      "edit_course": {
+        "back": "Powrót",
+        "title": "Edycja kursu",
+        "form": {
+          "name": "Nazwa kursu",
+          "name_placeholder": "Podaj nazwę kursu",
+          "description": "Opis kursu",
+          "description_placeholder": "Podaj opis kursu",
+          "level": "Poziom trudności",
+          "level_placeholder": "Wybierz poziom trudności...",
+          "submit": "Zapisz zmiany",
+          "cancel": "Anuluj zmiany"
+        }
+      },
+      "view_course": {
+        "back": "Powrót",
+        "title": "Szczegóły kursu",
+        "name": "Nazwa kursu",
+        "level": "Poziom trudności",
+        "description": "Opis kursu",
+        "details": "Pokaż szczegóły",
+        "word": "Słowo",
+        "course": "Kurs",
+        "action": "Akcja"
+      }
+    },
+    "user_courses": {
+      "user_courses": {
+        "title": "Kursy użytkowników",
+        "search_placeholder": "Szukaj po poziomie trudności",
+        "name": "Nazwa kursu użytkownika",
+        "level": "Poziom trudności",
+        "progress": "Postęp ukończenia",
+        "completed": "Ukończony",
+        "action": "Akcja",
+        "details": "Więcej szczegółów",
+        "delete": "Usuń"
+      }
+    },
+    "users": {
+      "users": {
+        "title": "Użytkownicy",
+        "search_placeholder": "Szukaj po loginie",
+        "action": "Akcja",
+        "details": "Więcej szczegółów",
+        "edit": "Edytuj",
+        "true": "Tak",
+        "false": "Nie"
+      },
+      "view_user": {
+        "first_name": "Imię",
+        "last_name": "Nazwisko",
+        "true": "Tak",
+        "false": "Nie",
+        "back": "Powrót",
+        "title": "Informacje o użytkowniku"
+      },
+      "edit_user": {
+        "back": "Powrót",
+        "title": "Edycja użytkownika",
+        "form": {
+          "login_placeholder": "Podaj login użytkownika",
+          "first_name": "Imię",
+          "first_name_placeholder": "Podaj imię użytkownika",
+          "last_name": "Nazwisko",
+          "last_name_placeholder": "Podaj nazwisko użytkownika",
+          "email_placeholder": "Podaj email użytkownika",
+          "submit": "Zapisz zmiany",
+          "cancel": "Anuluj zmiany"
+        }
+      }
+    }
+  },
+  "auth": {
+    "success": {
+      "sign_in": "Pomyślnie zalogowano",
+      "sign_up": "Pomyślnie zarejestrowano",
+      "logout": "Zostałeś wylogowany"
+    },
+    "error": {
+      "sign_in": "Wystąpił błąd podczas logowania",
+      "sign_up": "Wystąpił błąd podczas rejestracji"
+    },
+    "sign_in": {
+      "form": {
+        "login_placeholder": "Podaj login",
+        "password": "Hasło",
+        "submit": "Zaloguj się"
+      },
+      "question": "Nie masz konta? ",
+      "link": "Zarejestruj się"
+    },
+    "sign_up": {
+      "form": {
+        "first_name": "Imię",
+        "first_name_placeholder": "Podaj imię",
+        "last_name": "Nazwisko",
+        "last_name_placeholder": "Podaj nazwisko",
+        "email_placeholder": "Podaj email",
+        "login_placeholder": "Podaj login",
+        "password": "Hasło",
+        "repeat_password": "Powtórz hasło",
+        "submit": "Zarejestruj się"
+      },
+      "question": "Masz już konto? ",
+      "link": "Zaloguj się"
+    }
+  },
+  "courses": {
+    "courses": {
+      "header_name": "Nazwa kursu",
+      "header_description": "Opis kursu",
+      "header_level": "Poziom trudności",
+      "header_action": "Dodaj kurs",
+      "search_placeholder": "Szukaj kursu po nazwie",
+      "add": "Dodaj",
+      "exists": "Posiadasz już ten kurs"
+    },
+    "course_items": {
+      "back": "Powrót",
+      "details": "Więcej szczegółów",
+      "delete": "Usuń",
+      "header_word": "Słowo",
+      "header_course": "Nazwa kursu",
+      "header_action": "Akcja"
+    },
+    "course_item_details": {
+      "header_definition": "Definicja",
+      "header_example": "Przykład użycia",
+      "back": "Powrót"
+    }
+  },
+  "home": {
+    "question": "Chcesz nauczyć się języka angielskiego, ale nie wiesz od czego zacząć?",
+    "start_now": "Zacznij teraz",
+    "welcome_message": "Witaj w TalkTactics - twoim źródle wiedzy na temat nauki języków obcych!",
+    "information": "Nasza strona oferuje kompleksowe materiały edukacyjne, kursy językowe online oraz cenne wskazówki i porady dotyczące nauki języka angielskiego. Niezależnie od Twojego poziomu zaawansowania, nasza strona pomoże Ci osiągnąć Twoje cele językowe!"
+  },
+  "user": {
+    "title": "Panel użytkownika",
+    "nav": {
+      "account_details": "Informacje o koncie",
+      "courses": "Twoje kursy"
+    },
+    "user_courses": {
+      "title": "Twoje kursy",
+      "header_name": "Nazwa kursu",
+      "header_level": "Poziom trudności",
+      "header_progress": "Postęp ukończenia",
+      "header_completed": "Ukończony",
+      "header_action": "Akcja",
+      "open": "Otwórz kurs",
+      "search_placeholder": "Szukaj po poziomie trudności",
+      "no": "Nie",
+      "yes": "Tak",
+      "beginner": "Początkujący",
+      "intermediate": "Średnio-zaawansowany",
+      "advanced": "Zaawansowany"
+    },
+    "account_details": {
+      "title": "Informacje o koncie",
+      "first_name": "Imię",
+      "last_name": "Nazwisko",
+      "password": "Hasło",
+      "form": {
+        "first_name_placeholder": "Podaj imię",
+        "last_name_placeholder": "Podaj nazwisko",
+        "email_placeholder": "Podaj email",
+        "password_old": "Podaj stare hasło",
+        "password_new": "Podaj nowe hasło",
+        "password_new_repeat": "Powtórz nowe hasło",
+        "cancel": "Anuluj",
+        "submit": "Zapisz"
+      }
+    }
+  },
+
+  "toast": {
+    "success": {
+      "add": {
+        "course": "Dodano nowy kurs",
+        "course_item": "Dodano nowe słowo",
+        "user_course": "Dodano nowy kurs użytkownika",
+        "user": "Dodano nowego użytkownika"
+      },
+      "delete": {
+        "course": "Usunięto kurs",
+        "course_item": "Usunięto słowo z kursu",
+        "user_course": "Usunięto kurs użytkownika",
+        "user": "Usunięto użytkownika"
+      },
+      "edit": {
+        "course": "Edycja kursu przebiegła pomyślnie",
+        "course_item": "Edycja słowa przebiegła pomyślnie",
+        "user_course": "Edycja kursu użytkownika przebiegła pomyślnie",
+        "user": "Edycja użytkownika przebiegła pomyślnie",
+        "first_name": "Edycja imienia przebiegła pomyślnie",
+        "last_name": "Edycja nazwiska przebiegła pomyślnie",
+        "email": "Edycja emaila przebiegła pomyślnie",
+        "password": "Edycja hasła przebiegła pomyślnie"
+      }
+    },
+    "error": {
+      "add": {
+        "course": "Nie udało się dodać nowego kursu",
+        "course_item": "Nie udało się dodać nowego słowa",
+        "user_course": "Nie udało się dodać nowego kursu użytkownika",
+        "user": "Nie udało sie dodać nowego użytkownika"
+      },
+      "delete": {
+        "course": "Nie udało się usunąć kursu",
+        "course_item": "Nie udało się usunąć słowa z kursu",
+        "user_course": "Nie udało się usunąć kursu użytkownika",
+        "user": "Nie udało się usunąć użytkownika"
+      },
+      "edit": {
+        "course": "Wystąpił błąd podczas edycji kursu",
+        "course_item": "Wystąpił błąd podczas edycji słowa",
+        "user_course": "Wystąpił błąd podczas edycji kursu użytkownika",
+        "user": "Wystąpił błąd podczas edycji użytkownika",
+        "first_name": "Nie udało się zmienić imienia",
+        "last_name": "Nie udało się zmienić nazwiska",
+        "email": "Nie udało się zmienić emaila",
+        "password": "Nie udało się zmienić hasła"
+      }
+    },
+    "database_error": "Coś poszło nie tak",
+    "load_error": "Nie udało się załadować danych"
+  }
+}
