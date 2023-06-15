@@ -3,7 +3,7 @@ import { useLocation } from 'react-router-dom';
 import Users from './users/Users';
 import Courses from './courses/Courses';
 import UserCourses from './user_courses/UserCourses';
-import CourseItems from 'pages/Courses/CourseItems';
+import CourseItems from 'pages/courses/CourseItems';
 import { useTranslation } from 'react-i18next';
 
 export default function Admin() {

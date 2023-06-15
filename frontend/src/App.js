@@ -6,7 +6,7 @@ import { ToastContainer } from 'react-toastify';
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 import RequireAuth from 'api/RequireAuth';
 import RedirectRoute from 'api/RedirectRoute';
-import Home from 'pages/Home/Home';
+import Home from 'pages/home/Home';
 import Navbar from 'components/Navbar/Navbar';
 import SignIn from 'pages/auth/SignIn';
 import SignUp from 'pages/auth/SignUp';
@@ -20,9 +20,9 @@ import User from 'pages/user/User';
 import AddCourse from 'pages/admin/courses/AddCourse';
 import AccountDetails from 'pages/user/AccountDetails';
 import Footer from 'components/Footer/Footer';
-import Courses from 'pages/Courses/Courses';
-import CourseItemDetails from 'pages/Courses/CourseItemDetails';
-import CourseItems from 'pages/Courses/CourseItems';
+import Courses from 'pages/courses/Courses';
+import CourseItemDetails from 'pages/courses/CourseItemDetails';
+import CourseItems from 'pages/courses/CourseItems';
 import { AuthProvider } from 'context/AuthContext';
 
 function App() {
