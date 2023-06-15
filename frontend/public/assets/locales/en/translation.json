@@ -1,4 +1,5 @@
 {
+  "language": "Language",
   "nav": {
     "login": "Log in",
     "register": "Register",
@@ -15,6 +16,11 @@
       "user_courses": "User Courses"
     },
     "courses": {
+      "levels": {
+        "beginner": "Beginner",
+        "intermediate": "Intermediate",
+        "advanced": "Advanced"
+      },
       "courses": {
         "title": "Courses",
         "header_name": "Course Name",
@@ -63,7 +69,7 @@
         "details": "Show Details",
         "word": "Word",
         "course": "Course",
-        "action": "Akcja"
+        "action": "Action"
       }
     },
     "user_courses": {
@@ -85,7 +91,9 @@
         "search_placeholder": "Search by username",
         "action": "Action",
         "details": "More Details",
-        "edit": "Edit"
+        "edit": "Edit",
+        "true": "Yes",
+        "false": "No"
       },
       "view_user": {
         "first_name": "First Name",
@@ -112,6 +120,15 @@
     }
   },
   "auth": {
+    "success": {
+      "sign_in": "Successfully signed in",
+      "sign_up": "Successfully signed up",
+      "logout": "You have been logged out"
+    },
+    "error": {
+      "sign_in": "An error occured while signing in",
+      "sign_up": "An error occured while signing up"
+    },
     "sign_in": {
       "form": {
         "login_placeholder": "Enter login",
@@ -143,7 +160,9 @@
       "header_description": "Course Description",
       "header_level": "Difficulty Level",
       "header_action": "Add Course",
-      "add": "Add"
+      "search_placeholder": "Find course by a course name",
+      "add": "Add",
+      "exists": "You already have this course"
     },
     "course_items": {
       "back": "Back",
@@ -208,36 +227,52 @@
     "success": {
       "add": {
         "course": "Added a new course",
+        "course_item": "Added a new course item",
         "user_course": "Added a new user course",
         "user": "Added a new user"
       },
       "delete": {
         "course": "Deleted a course",
+        "course_item": "Deleted a new course item",
         "user_course": "Deleted a user course",
         "user": "Deleted a user"
       },
       "edit": {
         "course": "Successfully edited a course",
+        "course_item": "Successfully edited a new course item",
         "user_course": "Successfully edited a user course",
-        "user": "Successfully edited a user"
+        "user": "Successfully edited a user",
+        "first_name": "Successfully edited a first name",
+        "last_name": "Successfully edited a last name",
+        "email": "Successfully edited an email",
+        "password": "Successfully edited a password"
       }
     },
     "error": {
       "add": {
         "course": "Failed to add a new course",
+        "course_item": "Failed to add a new course item",
         "user_course": "Failed to add a new user course",
         "user": "Failed to add a new user"
       },
       "delete": {
         "course": "Failed to delete a course",
+        "course_item": "Failed to delete a course item",
         "user_course": "Failed to delete a user course",
         "user": "Failed to delete a user"
       },
       "edit": {
         "course": "An error occurred while editing a course",
+        "course_item": "An error occured while editing a course item",
         "user_course": "An error occurred while editing a user course",
-        "user": "An error occurred while editing a user"
+        "user": "An error occurred while editing a user",
+        "first_name": "An error occured while editing a first name",
+        "last_name": "An error occured while editing a last name",
+        "email": "An error occured while editing an email",
+        "password": "An error occured while editing a password"
       }
-    }
+    },
+    "database_error": "Something went wrong",
+    "load_error": "Failed to load data"
   }
 }

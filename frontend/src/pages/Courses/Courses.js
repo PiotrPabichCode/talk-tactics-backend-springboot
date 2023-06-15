@@ -8,9 +8,8 @@ import TableHead from '@mui/material/TableHead';
 import TablePagination from '@mui/material/TablePagination';
 import TableRow from '@mui/material/TableRow';
 import useLoadCourses from '../admin/courses/hooks/useLoadCourses';
-import { Box, Button, TableSortLabel } from '@mui/material';
+import { Button, Card, TableSortLabel, TextField } from '@mui/material';
 import { Add } from '@mui/icons-material';
-import { visuallyHidden } from '@mui/utils';
 import { getUsername, request } from 'api/AxiosHelper';
 import CustomToast, {
   TOAST_AUTOCLOSE_SHORT,
@@ -18,34 +17,7 @@ import CustomToast, {
   TOAST_SUCCESS,
 } from 'components/CustomToast/CustomToast';
 import { useTranslation } from 'react-i18next';
-
-function descendingComparator(a, b, orderBy) {
-  if (b[orderBy] < a[orderBy]) {
-    return -1;
-  }
-  if (b[orderBy] > a[orderBy]) {
-    return 1;
-  }
-  return 0;
-}
-
-function getComparator(order, orderBy) {
-  return order === 'desc'
-    ? (a, b) => descendingComparator(a, b, orderBy)
-    : (a, b) => -descendingComparator(a, b, orderBy);
-}
-
-function stableSort(array, comparator) {
-  const stabilizedThis = array.map((el, index) => [el, index]);
-  stabilizedThis.sort((a, b) => {
-    const order = comparator(a[0], b[0]);
-    if (order !== 0) {
-      return order;
-    }
-    return a[1] - b[1];
-  });
-  return stabilizedThis.map((el) => el[0]);
-}
+import { renderLevel } from 'pages/admin/courses/utils/levels';
 
 export default function Courses() {
   const { t } = useTranslation();
@@ -66,7 +38,9 @@ export default function Courses() {
     { id: 'add', label: t('courses.courses.header_action'), minWidth: 150 },
   ];
 
-  const [courses, setCourses] = useLoadCourses();
+  const [courses] = useLoadCourses();
+  const [filteredCourses, setFilteredCourses] = React.useState([]);
+  const [searchValue, setSearchValue] = React.useState('');
 
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
@@ -98,72 +72,100 @@ export default function Courses() {
     } catch (error) {
       CustomToast(
         TOAST_ERROR,
-        'You already have this course',
+        t('courses.courses.exists'),
         TOAST_AUTOCLOSE_SHORT
       );
       console.log(error);
     }
   };
 
+  const handleSearchAction = (event) => {
+    setSearchValue(event.target.value);
+  };
+
+  React.useEffect(() => {
+    const filterByCourseName = () => {
+      const filteredResults = courses.filter((course) =>
+        course.name.toLowerCase().includes(searchValue.toLowerCase())
+      );
+      setFilteredCourses(filteredResults);
+    };
+    filterByCourseName();
+  }, [searchValue, courses]);
+
+  const coursesList = searchValue ? filteredCourses : courses;
+
   return (
     <div className='d-flex justify-content-center m-5'>
-      <Paper sx={{ width: '100%', overflow: 'hidden' }}>
-        <TableContainer sx={{ maxHeight: 440 }}>
-          <Table stickyHeader aria-label='sticky table'>
-            <TableHead>
-              <TableRow>
-                {columns.map((column) => (
-                  <TableCell
-                    key={column.id}
-                    align={column.align}
-                    style={{ minWidth: column.minWidth }}>
-                    <TableSortLabel>{column.label}</TableSortLabel>
-                  </TableCell>
-                ))}
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {courses.length > 0 &&
-                courses
-                  .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                  .map((course, index) => {
-                    return (
-                      <TableRow
-                        hover
-                        role='checkbox'
-                        tabIndex={-1}
-                        key={course.id}>
-                        <TableCell>
-                          {index + 1 + (page * rowsPerPage, page * rowsPerPage)}
-                        </TableCell>
-                        <TableCell>{course.name}</TableCell>
-                        <TableCell>{course.description}</TableCell>
-                        <TableCell>{course.level}</TableCell>
-                        <TableCell>
-                          <Button
-                            size='small'
-                            variant='contained'
-                            endIcon={<Add />}
-                            onClick={(e) => handleAddCourse(e, course.id)}>
-                            {t('courses.courses.add')}
-                          </Button>
-                        </TableCell>
-                      </TableRow>
-                    );
-                  })}
-            </TableBody>
-          </Table>
-        </TableContainer>
-        <TablePagination
-          rowsPerPageOptions={[5, 10, 25]}
-          component='div'
-          count={courses.length}
-          rowsPerPage={rowsPerPage}
-          page={page}
-          onPageChange={handleChangePage}
-          onRowsPerPageChange={handleChangeRowsPerPage}
+      <Card>
+        <TextField
+          id='outlined-basic'
+          variant='outlined'
+          placeholder={t('courses.courses.search_placeholder')}
+          sx={{ width: '100%', overflow: 'hidden', padding: '2rem' }}
+          onChange={handleSearchAction}
         />
-      </Paper>
+        <Paper sx={{ width: '100%', overflow: 'hidden' }}>
+          <TableContainer sx={{ maxHeight: 440 }}>
+            <Table stickyHeader aria-label='sticky table'>
+              <TableHead>
+                <TableRow>
+                  {columns.map((column) => (
+                    <TableCell
+                      key={column.id}
+                      align={column.align}
+                      style={{ minWidth: column.minWidth }}>
+                      <TableSortLabel>{column.label}</TableSortLabel>
+                    </TableCell>
+                  ))}
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {coursesList.length > 0 &&
+                  coursesList
+                    .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                    .map((course, index) => {
+                      console.log(course);
+                      return (
+                        <TableRow
+                          hover
+                          role='checkbox'
+                          tabIndex={-1}
+                          key={course.id}>
+                          <TableCell>
+                            {index +
+                              1 +
+                              (page * rowsPerPage, page * rowsPerPage)}
+                          </TableCell>
+                          <TableCell>{course.name}</TableCell>
+                          <TableCell>{course.description}</TableCell>
+                          <TableCell>{renderLevel(course.level, t)}</TableCell>
+                          <TableCell>
+                            <Button
+                              size='small'
+                              variant='contained'
+                              endIcon={<Add />}
+                              onClick={(e) => handleAddCourse(e, course.id)}>
+                              {t('courses.courses.add')}
+                            </Button>
+                          </TableCell>
+                        </TableRow>
+                      );
+                    })}
+              </TableBody>
+            </Table>
+          </TableContainer>
+          <TablePagination
+            rowsPerPageOptions={[5, 10, 25]}
+            component='div'
+            count={courses.length}
+            rowsPerPage={rowsPerPage}
+            page={page}
+            onPageChange={handleChangePage}
+            onRowsPerPageChange={handleChangeRowsPerPage}
+          />
+        </Paper>
+      </Card>
     </div>
   );
 }

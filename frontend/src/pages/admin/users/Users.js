@@ -34,7 +34,11 @@ export default function Users() {
               <td>{index + 1}</td>
               <td>{user.login}</td>
               <td>{user.email}</td>
-              <td>{user.role === 'ADMIN' ? 'True' : 'False'}</td>
+              <td>
+                {user.role === 'ADMIN'
+                  ? t('admin.users.users.true')
+                  : t('admin.users.users.false')}
+              </td>
               <td>
                 <Link
                   className='btn btn-primary mx-2'

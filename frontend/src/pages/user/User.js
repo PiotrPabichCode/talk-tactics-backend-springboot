@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Link, useLocation, useParams } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 import AccountDetails from './AccountDetails';
 import UserCourses from './UserCourses';
 import { useTranslation } from 'react-i18next';

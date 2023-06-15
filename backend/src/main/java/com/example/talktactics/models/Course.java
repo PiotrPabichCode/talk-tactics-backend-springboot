@@ -23,14 +23,12 @@ public class Course {
     private Level level;
 
     @JsonIgnore
-//    @JsonIgnoreProperties("course")
     @OneToMany(mappedBy = "course",
             cascade = CascadeType.ALL,
             orphanRemoval = true)
     private List<CourseItem> courseItems;
 
     @JsonIgnore
-//    @JsonIgnoreProperties("course")
     @OneToMany(mappedBy = "course",
             cascade = CascadeType.ALL,
             orphanRemoval = true)

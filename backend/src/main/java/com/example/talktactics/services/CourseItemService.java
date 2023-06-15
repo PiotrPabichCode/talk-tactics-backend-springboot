@@ -34,13 +34,6 @@ public class CourseItemService {
                 .map(CourseItem::toDTO)
                 .collect(Collectors.toList());
     }
-
-    public List<CourseItem> getByCourseId(int id) {
-        List<CourseItem> courseItems = courseItemRepository.findByCourseId(id);
-        courseItems.sort(Comparator.comparingInt(CourseItem::getId));
-        return courseItems;
-    }
-
     public Optional<CourseItem> findById(Long id) {
         return courseItemRepository.findById(id);
     }

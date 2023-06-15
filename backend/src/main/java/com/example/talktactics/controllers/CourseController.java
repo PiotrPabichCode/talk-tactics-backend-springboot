@@ -8,15 +8,12 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @AllArgsConstructor
 @RequestMapping("/api")
 public class CourseController {
     private final CourseService courseService;
-    private final CourseItemRepository courseItemRepository;
-    private final MeaningRepository meaningRepository;
 
     @PostMapping("/courses")
     Course createCourse(@RequestBody Course course) {
@@ -47,10 +44,5 @@ public class CourseController {
     @DeleteMapping("/courses/{id}")
     void deleteCourse(@PathVariable Long id) {
         courseService.deleteCourse(id);
-    }
-
-    @GetMapping("/meanings")
-    List<Meaning> getMeanings() {
-        return meaningRepository.findAll();
     }
 }

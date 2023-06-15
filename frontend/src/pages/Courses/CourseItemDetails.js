@@ -6,8 +6,8 @@ import TableCell from '@mui/material/TableCell';
 import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
-import { Card, CardContent, TableSortLabel, Typography } from '@mui/material';
-import { Link, useParams, useNavigate } from 'react-router-dom';
+import { Card, CardContent, Typography } from '@mui/material';
+import { useParams, useNavigate } from 'react-router-dom';
 import useCourseItemDetails from './hooks/useCourseItemDetails';
 import { useTranslation } from 'react-i18next';
 

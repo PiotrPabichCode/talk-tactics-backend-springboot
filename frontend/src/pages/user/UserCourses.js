@@ -2,14 +2,12 @@ import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import SearchIcon from '@mui/icons-material/Search';
 import useLoadUserCourses from './hooks/useLoadUserCourses';
-import useSearchUserCourses from './hooks/useSearchUserCourses';
-import { getUserID } from 'api/AxiosHelper';
 import { useTranslation } from 'react-i18next';
 
 const UserCourses = () => {
   const { t } = useTranslation();
   const [level, setLevel] = useState('');
-  const [userCourses, setUserCourses] = useLoadUserCourses();
+  const [userCourses] = useLoadUserCourses();
   const [searchedCourses, setSearchedCourses] = useState([]);
 
   useEffect(() => {

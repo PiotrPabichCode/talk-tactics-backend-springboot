@@ -8,9 +8,11 @@ import CustomToast, {
   TOAST_SUCCESS,
 } from 'components/CustomToast/CustomToast';
 import { useTranslation } from 'react-i18next';
+import { useAuth } from 'context/AuthContext';
 
 const SignIn = () => {
   const { t } = useTranslation();
+  const auth = useAuth();
   const navigate = useNavigate();
   const [user, setUser] = useState({
     login: '',
@@ -26,16 +28,16 @@ const SignIn = () => {
     try {
       const response = await request('POST', '/api/auth/authenticate', user);
       setUserData(response.data);
-      CustomToast(TOAST_SUCCESS, 'Sign in successfully', TOAST_AUTOCLOSE_SHORT);
-      setUser({ login: '', password: '' });
-      navigate('/');
-      window.location.reload(); // TODO: Change to use Context
-    } catch (error) {
       CustomToast(
-        TOAST_ERROR,
-        t('toast.database_error'),
+        TOAST_SUCCESS,
+        t('auth.success.sign_in'),
         TOAST_AUTOCLOSE_SHORT
       );
+      setUser({ login: '', password: '' });
+      auth.login();
+      navigate('/');
+    } catch (error) {
+      CustomToast(TOAST_ERROR, t('auth.error.sign_in'), TOAST_AUTOCLOSE_SHORT);
       console.log(error);
     }
   };

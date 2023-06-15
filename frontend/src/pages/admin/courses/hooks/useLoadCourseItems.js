@@ -24,7 +24,7 @@ export default function useLoadCourseItems(id) {
       }
     };
     loadCourseItems();
-  }, [id]);
+  }, [id, t]);
 
   return [courseItems, setCourseItems];
 }

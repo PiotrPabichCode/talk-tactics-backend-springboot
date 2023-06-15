@@ -12,10 +12,6 @@ import org.springframework.stereotype.Service;
 public class UserCourseItemService {
     private final UserCourseItemRepository userCourseItemRepository;
 
-    public UserCourseItem getUserCourseItemById(Long id) {
-        return userCourseItemRepository.findById(id).orElseThrow(() -> new UserCourseItemNotFoundException("User course item not found"));
-    }
-
     public void updateIsLearned(Long id) {
         UserCourseItem userCourseItem = userCourseItemRepository.findById(id).orElseThrow(() -> new UserCourseItemNotFoundException("User course item not found"));
         UserCourse userCourse = userCourseItem.getUserCourse();

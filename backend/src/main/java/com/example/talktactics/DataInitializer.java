@@ -95,9 +95,9 @@ public class DataInitializer implements ApplicationRunner {
     public void initData() {
         // create Users
         ArrayList<User> users = new ArrayList<>();
-        users.add(User.builder().login("admin").password(passwordEncoder.encode("admin")).email("235944@edu.p.lodz.pl").firstName("Piotr").lastName("Pabich").role(Role.ADMIN).build());
-        users.add(User.builder().login("user").password(passwordEncoder.encode("user")).email("user@edu.p.lodz.pl").firstName("Jan").lastName("Tomczyk").role(Role.USER).build());
-        users.add(User.builder().login("user1").password(passwordEncoder.encode("user1")).email("user1@edu.p.lodz.pl").firstName("Tomasz").lastName("Kukułka").role(Role.USER).build());
+        users.add(User.builder().login("admin").password(passwordEncoder.encode("admin")).email("email@gmail.com").firstName("Piotr").lastName("Pabich").role(Role.ADMIN).build());
+        users.add(User.builder().login("user").password(passwordEncoder.encode("user")).email("user@gmail.com").firstName("Jan").lastName("Tomczyk").role(Role.USER).build());
+        users.add(User.builder().login("user1").password(passwordEncoder.encode("user1")).email("user1@gmail.com").firstName("Tomasz").lastName("Kukułka").role(Role.USER).build());
         userRepository.saveAll(users);
         // create Course
         ArrayList<Course> courses = new ArrayList<>();

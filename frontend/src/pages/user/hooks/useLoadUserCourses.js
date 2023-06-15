@@ -27,7 +27,7 @@ export default function useLoadUserCourses() {
       }
     };
     loadUserCourses();
-  }, [login]);
+  }, [login, t]);
 
   return [userCourses, setUserCourses];
 }

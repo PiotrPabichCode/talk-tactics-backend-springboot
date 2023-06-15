@@ -8,7 +8,6 @@ import TableHead from '@mui/material/TableHead';
 import TablePagination from '@mui/material/TablePagination';
 import TableRow from '@mui/material/TableRow';
 import {
-  Box,
   Button,
   Card,
   CardContent,
@@ -16,44 +15,16 @@ import {
   TableSortLabel,
 } from '@mui/material';
 import ReadMoreIcon from '@mui/icons-material/ReadMore';
-import { visuallyHidden } from '@mui/utils';
-import { getUserRole, getUsername, request } from '../../api/AxiosHelper';
+import { getUserRole, request } from '../../api/AxiosHelper';
 import { Link, useParams, useNavigate } from 'react-router-dom';
-import { CheckBox, Delete } from '@mui/icons-material';
+import { Delete } from '@mui/icons-material';
 import deleteCourseItem from './hooks/deleteCourseItem';
+import { useTranslation } from 'react-i18next';
 import CustomToast, {
   TOAST_AUTOCLOSE_SHORT,
   TOAST_ERROR,
+  TOAST_SUCCESS,
 } from 'components/CustomToast/CustomToast';
-import { useTranslation } from 'react-i18next';
-
-function descendingComparator(a, b, orderBy) {
-  if (b[orderBy] < a[orderBy]) {
-    return -1;
-  }
-  if (b[orderBy] > a[orderBy]) {
-    return 1;
-  }
-  return 0;
-}
-
-function getComparator(order, orderBy) {
-  return order === 'desc'
-    ? (a, b) => descendingComparator(a, b, orderBy)
-    : (a, b) => -descendingComparator(a, b, orderBy);
-}
-
-function stableSort(array, comparator) {
-  const stabilizedThis = array.map((el, index) => [el, index]);
-  stabilizedThis.sort((a, b) => {
-    const order = comparator(a[0], b[0]);
-    if (order !== 0) {
-      return order;
-    }
-    return a[1] - b[1];
-  });
-  return stabilizedThis.map((el) => el[0]);
-}
 
 export default function CourseItems() {
   const { t } = useTranslation();
@@ -136,6 +107,11 @@ export default function CourseItems() {
       setCourseItems((prevCourses) => {
         return prevCourses.filter((course) => course.id !== id);
       });
+      CustomToast(
+        TOAST_SUCCESS,
+        t('toast.success.delete.course_item'),
+        TOAST_AUTOCLOSE_SHORT
+      );
     } catch (error) {
       CustomToast(
         TOAST_ERROR,

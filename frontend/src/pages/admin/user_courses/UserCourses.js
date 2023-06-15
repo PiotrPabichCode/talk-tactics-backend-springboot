@@ -4,11 +4,8 @@ import SearchIcon from '@mui/icons-material/Search';
 import { Link } from 'react-router-dom';
 import useLoadUsersCourses from './hooks/useLoadUsersCourses';
 import deleteUserCourse from './hooks/deleteUserCourse';
-import CustomToast, {
-  TOAST_AUTOCLOSE_SHORT,
-  TOAST_ERROR,
-} from 'components/CustomToast/CustomToast';
 import { useTranslation } from 'react-i18next';
+import { renderLevel } from '../courses/utils/levels';
 
 const UserCourses = () => {
   const { t } = useTranslation();
@@ -54,7 +51,7 @@ const UserCourses = () => {
                 <td>{index + 1}</td>
                 <td>{userCourse.user.login}</td>
                 <td>{userCourse.course.name}</td>
-                <td>{userCourse.course.level}</td>
+                <td>{renderLevel(userCourse.course.level, t)}</td>
                 <td>{userCourse.progress.toFixed(2)}%</td>
                 <td>{userCourse.completed ? 'Yes' : 'No'}</td>
                 <td>

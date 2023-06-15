@@ -8,10 +8,12 @@ import CustomToast, {
   TOAST_SUCCESS,
 } from 'components/CustomToast/CustomToast';
 import { useTranslation } from 'react-i18next';
+import { useAuth } from 'context/AuthContext';
 
 const SignUp = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const auth = useAuth();
 
   const [user, setUser] = useState({
     login: '',
@@ -39,11 +41,15 @@ const SignUp = () => {
         firstName: '',
         lastName: '',
       });
-      CustomToast(TOAST_SUCCESS, 'Sign up successfully', TOAST_AUTOCLOSE_SHORT);
+      CustomToast(
+        TOAST_SUCCESS,
+        t('auth.success.sign_up'),
+        TOAST_AUTOCLOSE_SHORT
+      );
+      auth.login();
       navigate('/');
-      window.location.reload(); // TODO: Change to use Context
     } catch (error) {
-      CustomToast(TOAST_ERROR, error.response.data, TOAST_AUTOCLOSE_SHORT);
+      CustomToast(TOAST_ERROR, t('auth.error.sign_up'), TOAST_AUTOCLOSE_SHORT);
       console.log(error.response);
     }
   };

@@ -88,7 +88,6 @@ export const request = async (method, url, data) => {
       } catch (error) {
         clearUserData();
         console.log('Refresh token has expired. Login required');
-        window.location.reload();
       }
     }
     throw error;

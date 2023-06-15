@@ -1,4 +1,5 @@
 {
+  "language": "Język",
   "nav": {
     "login": "Zaloguj się",
     "register": "Zarejestruj się",
@@ -15,6 +16,11 @@
       "user_courses": "Kursy użytkowników"
     },
     "courses": {
+      "levels": {
+        "beginner": "Początkujący",
+        "intermediate": "Średnio-zaawansowany",
+        "advanced": "Zaawansowany"
+      },
       "courses": {
         "title": "Kursy",
         "header_name": "Nazwa kursu",
@@ -62,7 +68,8 @@
         "description": "Opis kursu",
         "details": "Pokaż szczegóły",
         "word": "Słowo",
-        "course": "Kurs"
+        "course": "Kurs",
+        "action": "Akcja"
       }
     },
     "user_courses": {
@@ -84,7 +91,9 @@
         "search_placeholder": "Szukaj po loginie",
         "action": "Akcja",
         "details": "Więcej szczegółów",
-        "edit": "Edytuj"
+        "edit": "Edytuj",
+        "true": "Tak",
+        "false": "Nie"
       },
       "view_user": {
         "first_name": "Imię",
@@ -111,6 +120,15 @@
     }
   },
   "auth": {
+    "success": {
+      "sign_in": "Pomyślnie zalogowano",
+      "sign_up": "Pomyślnie zarejestrowano",
+      "logout": "Zostałeś wylogowany"
+    },
+    "error": {
+      "sign_in": "Wystąpił błąd podczas logowania",
+      "sign_up": "Wystąpił błąd podczas rejestracji"
+    },
     "sign_in": {
       "form": {
         "login_placeholder": "Podaj login",
@@ -142,7 +160,9 @@
       "header_description": "Opis kursu",
       "header_level": "Poziom trudności",
       "header_action": "Dodaj kurs",
-      "add": "Dodaj"
+      "search_placeholder": "Szukaj kursu po nazwie",
+      "add": "Dodaj",
+      "exists": "Posiadasz już ten kurs"
     },
     "course_items": {
       "back": "Powrót",
@@ -207,21 +227,21 @@
     "success": {
       "add": {
         "course": "Dodano nowy kurs",
+        "course_item": "Dodano nowe słowo",
         "user_course": "Dodano nowy kurs użytkownika",
-        "user": "Dodano nowego użytkownika",
-        "course_item": "Dodano nowe słowo"
+        "user": "Dodano nowego użytkownika"
       },
       "delete": {
         "course": "Usunięto kurs",
+        "course_item": "Usunięto słowo z kursu",
         "user_course": "Usunięto kurs użytkownika",
-        "user": "Usunięto użytkownika",
-        "course_item": "Usunięto słowo z kursu"
+        "user": "Usunięto użytkownika"
       },
       "edit": {
         "course": "Edycja kursu przebiegła pomyślnie",
+        "course_item": "Edycja słowa przebiegła pomyślnie",
         "user_course": "Edycja kursu użytkownika przebiegła pomyślnie",
         "user": "Edycja użytkownika przebiegła pomyślnie",
-        "course_item": "Edycja słowa przebiegła pomyślnie",
         "first_name": "Edycja imienia przebiegła pomyślnie",
         "last_name": "Edycja nazwiska przebiegła pomyślnie",
         "email": "Edycja emaila przebiegła pomyślnie",
@@ -231,21 +251,21 @@
     "error": {
       "add": {
         "course": "Nie udało się dodać nowego kursu",
+        "course_item": "Nie udało się dodać nowego słowa",
         "user_course": "Nie udało się dodać nowego kursu użytkownika",
-        "user": "Nie udało sie dodać nowego użytkownika",
-        "course_item": "Nie udało się dodać nowego słowa"
+        "user": "Nie udało sie dodać nowego użytkownika"
       },
       "delete": {
         "course": "Nie udało się usunąć kursu",
+        "course_item": "Nie udało się usunąć słowa z kursu",
         "user_course": "Nie udało się usunąć kursu użytkownika",
-        "user": "Nie udało się usunąć użytkownika",
-        "course_item": "Nie udało się usunąć słowa z kursu"
+        "user": "Nie udało się usunąć użytkownika"
       },
       "edit": {
         "course": "Wystąpił błąd podczas edycji kursu",
+        "course_item": "Wystąpił błąd podczas edycji słowa",
         "user_course": "Wystąpił błąd podczas edycji kursu użytkownika",
         "user": "Wystąpił błąd podczas edycji użytkownika",
-        "course_item": "Wystąpił błąd podczas edycji słowa",
         "first_name": "Nie udało się zmienić imienia",
         "last_name": "Nie udało się zmienić nazwiska",
         "email": "Nie udało się zmienić emaila",

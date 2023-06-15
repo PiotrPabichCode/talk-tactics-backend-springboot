@@ -21,7 +21,7 @@ export default function useLoadCourses() {
       }
     };
     loadCourses();
-  }, []);
+  }, [t]);
 
   return [courses, setCourses];
 }

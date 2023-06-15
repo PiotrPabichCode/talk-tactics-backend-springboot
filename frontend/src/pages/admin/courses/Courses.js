@@ -3,12 +3,14 @@ import { Link } from 'react-router-dom';
 import SearchIcon from '@mui/icons-material/Search';
 import useLoadCourses from './hooks/useLoadCourses';
 import useSearchCourses from './hooks/useSearchCourses';
-import deleteCourse from './hooks/deleteCourse';
 import CustomToast, {
   TOAST_AUTOCLOSE_SHORT,
   TOAST_ERROR,
+  TOAST_SUCCESS,
 } from 'components/CustomToast/CustomToast';
 import { useTranslation } from 'react-i18next';
+import { renderLevel } from './utils/levels';
+import deleteCourse from './hooks/deleteCourse';
 
 const Courses = () => {
   const { t } = useTranslation();
@@ -26,6 +28,11 @@ const Courses = () => {
       setCourses((prevCourses) => {
         return prevCourses.filter((course) => course.id !== id);
       });
+      CustomToast(
+        TOAST_SUCCESS,
+        t('toast.success.delete.course'),
+        TOAST_AUTOCLOSE_SHORT
+      );
     } catch (error) {
       console.log(error);
       CustomToast(
@@ -53,7 +60,7 @@ const Courses = () => {
             <tr key={course.id}>
               <td>{index + 1}</td>
               <td>{course.name}</td>
-              <td>{course.level}</td>
+              <td>{renderLevel(course.level, t)}</td>
               <td>
                 <Link
                   className='btn btn-primary mx-2'

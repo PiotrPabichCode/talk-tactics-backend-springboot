@@ -16,13 +16,13 @@ import {
 } from '@mui/material';
 import ReadMoreIcon from '@mui/icons-material/ReadMore';
 import { useTranslation } from 'react-i18next';
+import { renderLevel } from './utils/levels';
 
 export default function ViewCourse() {
   const { t } = useTranslation();
-  const url = '/admin?isCoursesDisplayed=true';
   const { id } = useParams();
   const courseDetails = useCourseDetails(id);
-  const [courseItems, setCourseItems] = useLoadCourseItems(id);
+  const [courseItems] = useLoadCourseItems(id);
   const navigate = useNavigate();
 
   const columns = [
@@ -86,7 +86,9 @@ export default function ViewCourse() {
                 <p className='mb-0'>{t('admin.courses.view_course.level')}</p>
               </div>
               <div className='col-sm-9'>
-                <p className='text-muted mb-0'>{courseDetails.level}</p>
+                <p className='text-muted mb-0'>
+                  {renderLevel(courseDetails.level, t)}
+                </p>
               </div>
             </div>
             <hr />

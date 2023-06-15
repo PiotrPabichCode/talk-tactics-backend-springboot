@@ -81,10 +81,6 @@ public class UserService {
                 isEmptyString(updateUser.getFirstName()) || isEmptyString(updateUser.getLastName())) {
             throw new RuntimeException("Fields cannot be empty");
         }
-
-//        if (userRepository.existsByEmail(updateUser.getEmail())) {
-//            throw new RuntimeException("Email already used");
-//        }
     }
 
     private void updateUserData(User user, UpdateUser updateUser) {
