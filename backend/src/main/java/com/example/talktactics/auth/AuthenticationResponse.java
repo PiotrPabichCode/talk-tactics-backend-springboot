@@ -1,7 +1,6 @@
 package com.example.talktactics.auth;
 
-import com.example.talktactics.models.Role;
-import com.example.talktactics.models.User;
+import com.example.talktactics.entity.Role;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

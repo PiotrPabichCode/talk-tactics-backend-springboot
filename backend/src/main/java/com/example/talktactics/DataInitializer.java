@@ -1,7 +1,7 @@
 package com.example.talktactics;
 
-import com.example.talktactics.models.*;
-import com.example.talktactics.repositories.*;
+import com.example.talktactics.entity.*;
+import com.example.talktactics.repository.*;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.transaction.Transactional;
@@ -13,13 +13,8 @@ import org.springframework.stereotype.Component;
 
 import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.Array;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.Random;
 
 @Component
 @Transactional
@@ -104,7 +99,7 @@ public class DataInitializer implements ApplicationRunner {
         for(int i = 0; i < 21; i++) {
             String name = String.format("Mastering Everyday English Vocabulary - Most frequently used words %d%%", (99 - i));
             String description = "The \"Mastering Everyday English Vocabulary\" course is a comprehensive program designed to enhance individuals' English language skills by expanding their vocabulary with commonly known words, enabling effective communication and improved reading and writing abilities.";
-            Level level = i < 5 ? Level.BEGINNER : i < 15 ? Level.INTERMEDIATE : Level.ADVANCED;
+            CourseLevel level = i < 5 ? CourseLevel.BEGINNER : i < 15 ? CourseLevel.INTERMEDIATE : CourseLevel.ADVANCED;
             courses.add(Course.builder().name(name).description(description).level(level).build());
         }
         courseRepository.saveAll(courses);
@@ -114,6 +109,6 @@ public class DataInitializer implements ApplicationRunner {
 
     @Override
     public void run(ApplicationArguments args) throws Exception {
-        initData();
+//        initData();
     }
 }

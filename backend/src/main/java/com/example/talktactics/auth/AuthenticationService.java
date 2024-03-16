@@ -1,16 +1,14 @@
 package com.example.talktactics.auth;
 
 import com.example.talktactics.config.JwtService;
-import com.example.talktactics.models.Role;
-import com.example.talktactics.models.User;
-import com.example.talktactics.repositories.UserRepository;
+import com.example.talktactics.entity.Role;
+import com.example.talktactics.entity.User;
+import com.example.talktactics.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
 
 @Service
 @RequiredArgsConstructor
