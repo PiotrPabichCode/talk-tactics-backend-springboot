@@ -34,6 +34,9 @@ public class AuthenticationService {
         return AuthenticationResponse.builder()
                 .id(user.getId())
                 .username(user.getUsername())
+                .firstName(user.getFirstName())
+                .lastName(user.getLastName())
+                .email(user.getEmail())
                 .role(user.getRole())
                 .token(jwtToken)
                 .refreshToken(jwtRefreshToken)
@@ -60,6 +63,7 @@ public class AuthenticationService {
     }
 
     public AuthenticationResponse authenticate(AuthenticationRequest request) {
+        System.out.println(request);
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         request.getLogin(),
@@ -73,6 +77,9 @@ public class AuthenticationService {
         return AuthenticationResponse.builder()
                 .id(user.getId())
                 .username(user.getUsername())
+                .firstName(user.getFirstName())
+                .lastName(user.getLastName())
+                .email(user.getEmail())
                 .role(user.getRole())
                 .token(jwtToken)
                 .refreshToken(jwtRefreshToken)
@@ -87,6 +94,9 @@ public class AuthenticationService {
         return AuthenticationResponse.builder()
                 .id(user.getId())
                 .username(user.getUsername())
+                .firstName(user.getFirstName())
+                .lastName(user.getLastName())
+                .email(user.getEmail())
                 .role(user.getRole())
                 .token(jwtToken)
                 .refreshToken(jwtRefreshToken)
