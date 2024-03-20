@@ -1,5 +1,7 @@
 package com.example.talktactics.service.course;
 
+import com.example.talktactics.dto.course.CourseDto;
+import com.example.talktactics.dto.course_item.CourseItemDto;
 import com.example.talktactics.exception.CourseNotFoundException;
 import com.example.talktactics.entity.*;
 import com.example.talktactics.repository.*;
@@ -7,7 +9,9 @@ import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
@@ -17,8 +21,11 @@ public class CourseService {
     public Course createCourse(Course course) {
         return courseRepository.save(course);
     }
-    public List<Course> getCourses() {
-        return courseRepository.findAll(Sort.by("id"));
+    public List<CourseDto> getCourses() {
+        List<Course> courses = courseRepository.findAll(Sort.by("id"));
+        return courses.stream()
+                .map(Course::toDTO)
+                .collect(Collectors.toList());
     }
     public Course getCourseById(Long id) {
         return courseRepository.findById(id).orElseThrow(() -> new CourseNotFoundException(id));
@@ -41,5 +48,4 @@ public class CourseService {
         }
         courseRepository.deleteById(id);
     }
-
 }

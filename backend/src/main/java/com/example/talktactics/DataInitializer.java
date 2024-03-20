@@ -33,7 +33,7 @@ public class DataInitializer implements ApplicationRunner {
 
     private void loadCourseItemsFromJson(List<Course> courses) {
         ObjectMapper objectMapper = new ObjectMapper();
-        File jsonFile = new File("src/main/java/com/example/talktactics/utils/long_words.json");
+        File jsonFile = new File("src/main/java/com/example/talktactics/util/long_words.json");
 
         int counter = 0;
         try {
@@ -97,8 +97,9 @@ public class DataInitializer implements ApplicationRunner {
         // create Course
         ArrayList<Course> courses = new ArrayList<>();
         for(int i = 0; i < 21; i++) {
-            String name = String.format("Mastering Everyday English Vocabulary - Most frequently used words %d%%", (99 - i));
-            String description = "The \"Mastering Everyday English Vocabulary\" course is a comprehensive program designed to enhance individuals' English language skills by expanding their vocabulary with commonly known words, enabling effective communication and improved reading and writing abilities.";
+            String name = String.format("Most frequently used english words - Top %d%%", (99 - i));
+            String description = "Comprehensive program designed to enhance individuals' English language skills by expanding their vocabulary with commonly known words.";
+//            String description = "The \"Mastering Everyday English Vocabulary\" course is a comprehensive program designed to enhance individuals' English language skills by expanding their vocabulary with commonly known words, enabling effective communication and improved reading and writing abilities.";
             CourseLevel level = i < 5 ? CourseLevel.BEGINNER : i < 15 ? CourseLevel.INTERMEDIATE : CourseLevel.ADVANCED;
             courses.add(Course.builder().name(name).description(description).level(level).build());
         }
@@ -109,6 +110,6 @@ public class DataInitializer implements ApplicationRunner {
 
     @Override
     public void run(ApplicationArguments args) throws Exception {
-//        initData();
+        initData();
     }
 }

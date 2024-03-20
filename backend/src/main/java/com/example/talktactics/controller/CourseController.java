@@ -1,5 +1,6 @@
 package com.example.talktactics.controller;
 
+import com.example.talktactics.dto.course.CourseDto;
 import com.example.talktactics.entity.*;
 import com.example.talktactics.service.course.CourseService;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -22,7 +23,7 @@ public class CourseController {
     }
 
     @GetMapping()
-    List<Course> getAllCourses() {
+    List<CourseDto> getAllCourses() {
         return courseService.getCourses();
     }
 
