@@ -21,37 +21,28 @@ public class UserController {
     private final UserService userService;
 
     @PostMapping()
-    public ResponseEntity<User> createUser(@RequestBody User user) {
+    public ResponseEntity<User> create(@RequestBody User user) {
         return ResponseEntity.ok(userService.createUser(user));
-    }
-
-    @GetMapping()
-    List<User> getAllUsers() {
-        return userService.getUsers();
-    }
-    @GetMapping("/login/{username}")
-    public List<User> filterUsersByUsername(@PathVariable String username) {
-        return userService.filterUsersByUsername(username);
     }
 
     @GetMapping("/{id}")
     User getUserById(@PathVariable Long id) {
         return userService.getUserById(id);
     }
-    @GetMapping("/by/login/{login}")
-    public Optional<User> findByLogin(@PathVariable String login) {
-        return userService.getUserByLogin(login);
+    @GetMapping("/username/{username}")
+    public Optional<User> findByUsername(@PathVariable String username) {
+        return userService.getUserByUsername(username);
     }
 
 //    Admin panel
     @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/update_user")
-    User updateUser(@RequestBody UpdateUserDto updateUserDto) {
-        return userService.updateUser(updateUserDto);
+    public ResponseEntity<User> updateUser(@RequestBody UpdateUserDto updateUserDto) {
+        return ResponseEntity.ok(userService.updateUser(updateUserDto));
     }
     @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{id}")
-    void deleteUser(@PathVariable Long id) {
+    public void deleteUser(@PathVariable Long id) {
         userService.deleteUser(id);
     }
 

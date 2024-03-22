@@ -90,9 +90,9 @@ public class DataInitializer implements ApplicationRunner {
     public void initData() {
         // create Users
         ArrayList<User> users = new ArrayList<>();
-        users.add(User.builder().login("admin").password(passwordEncoder.encode("admin")).email("email@gmail.com").firstName("Piotr").lastName("Pabich").role(Role.ADMIN).build());
-        users.add(User.builder().login("user").password(passwordEncoder.encode("user")).email("user@gmail.com").firstName("Jan").lastName("Tomczyk").role(Role.USER).build());
-        users.add(User.builder().login("user1").password(passwordEncoder.encode("user1")).email("user1@gmail.com").firstName("Tomasz").lastName("Kukułka").role(Role.USER).build());
+        users.add(User.builder().username("admin").password(passwordEncoder.encode("admin")).email("email@gmail.com").firstName("Piotr").lastName("Pabich").bio("Passionate about technology, design, and the power of innovation. Always seeking new challenges and ways to make an impact.").role(Role.ADMIN).build());
+        users.add(User.builder().username("user").password(passwordEncoder.encode("user")).email("user@gmail.com").firstName("Jan").lastName("Tomczyk").bio("Adventurous soul, chasing dreams one step at a time. Lover of art, nature, and good conversations. Here to make memories").role(Role.USER).build());
+        users.add(User.builder().username("user1").password(passwordEncoder.encode("user1")).email("user1@gmail.com").firstName("Tomasz").lastName("Kukułka").bio("Avid reader, passionate writer, and eternal optimist. Finding beauty in the little things and spreading positivity wherever I go.").role(Role.USER).build());
         userRepository.saveAll(users);
         // create Course
         ArrayList<Course> courses = new ArrayList<>();
@@ -101,7 +101,7 @@ public class DataInitializer implements ApplicationRunner {
             String description = "Comprehensive program designed to enhance individuals' English language skills by expanding their vocabulary with commonly known words.";
 //            String description = "The \"Mastering Everyday English Vocabulary\" course is a comprehensive program designed to enhance individuals' English language skills by expanding their vocabulary with commonly known words, enabling effective communication and improved reading and writing abilities.";
             CourseLevel level = i < 5 ? CourseLevel.BEGINNER : i < 15 ? CourseLevel.INTERMEDIATE : CourseLevel.ADVANCED;
-            courses.add(Course.builder().name(name).description(description).level(level).build());
+            courses.add(Course.builder().title(name).description(description).level(level).build());
         }
         courseRepository.saveAll(courses);
         loadCourseItemsFromJson(courses);

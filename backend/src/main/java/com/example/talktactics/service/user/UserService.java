@@ -32,10 +32,7 @@ public class UserService {
     public User getUserById(Long id) {
         return userRepository.findById(id).orElseThrow(() -> new UserNotFoundException(id));
     }
-    public Optional<User> getUserByLogin(String login) {
-        return userRepository.findByLogin(login);
-    }
-    public List<User> filterUsersByUsername(String username) {
+    public Optional<User> getUserByUsername(String username) {
         return userRepository.findByUsername(username);
     }
 
@@ -62,7 +59,7 @@ public class UserService {
     }
 
     private void validateCurrentUser(String currentUsername, UpdateUserDto updateUserDto, Authentication authentication) {
-        if (!currentUsername.equalsIgnoreCase(updateUserDto.getLogin()) &&
+        if (!currentUsername.equalsIgnoreCase(updateUserDto.getUsername()) &&
                 authentication.getAuthorities().stream()
                         .map(GrantedAuthority::getAuthority)
                         .anyMatch(role -> role.equalsIgnoreCase(Role.USER.toString()))) {
@@ -77,14 +74,14 @@ public class UserService {
     }
 
     private void validateUpdateUserFields(UpdateUserDto updateUserDto) {
-        if (isEmptyString(updateUserDto.getLogin()) || isEmptyString(updateUserDto.getEmail()) ||
+        if (isEmptyString(updateUserDto.getUsername()) || isEmptyString(updateUserDto.getEmail()) ||
                 isEmptyString(updateUserDto.getFirstName()) || isEmptyString(updateUserDto.getLastName())) {
             throw new RuntimeException("Fields cannot be empty");
         }
     }
 
     private void updateUserData(User user, UpdateUserDto updateUserDto) {
-        user.setLogin(updateUserDto.getLogin());
+        user.setUsername(updateUserDto.getUsername());
         user.setRole(updateUserDto.getRole());
         user.setEmail(updateUserDto.getEmail());
         user.setFirstName(updateUserDto.getFirstName());

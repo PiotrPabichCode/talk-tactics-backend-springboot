@@ -34,13 +34,13 @@ public class UserCourseService {
         User user = userRepository.findById(id).orElseThrow(() -> new UserNotFoundException(id));
         return user.getUserCourses();
     }
-    public List<UserCourse> getAllUserCoursesByLogin(String login) {
-        User user = userRepository.findByLogin(login).orElseThrow(() -> new UserNotFoundException("User %s not found".formatted(login)));
+    public List<UserCourse> getAllUserCoursesByUsername(String username) {
+        User user = userRepository.findByUsername(username).orElseThrow(() -> new UserNotFoundException("User %s not found".formatted(username)));
         return user.getUserCourses();
     }
 
-    public UserCourse getByCourseNameAndLogin(String name, String login) {
-        return userCourseRepository.findByCourseNameAndUserLogin(name, login);
+    public UserCourse getByCourseNameAndUsername(String name, String username) {
+        return userCourseRepository.findByCourseTitleAndUserUsername(name, username);
     }
 
     public UserCourse getById(Long id) {
@@ -48,11 +48,11 @@ public class UserCourseService {
     }
 
     public void addUserCourse(UserCourseRequestDto userCourseRequestDto, User user) {
-        if (userCourseRepository.existsByCourseNameAndUserLogin(userCourseRequestDto.getCourseName(), userCourseRequestDto.getLogin())) {
+        if (userCourseRepository.existsByCourseTitleAndUserUsername(userCourseRequestDto.getCourseName(), userCourseRequestDto.getUsername())) {
             throw new UserCourseExistsException("UserCourse already exists");
         }
         // find course
-        Course course = courseRepository.findByName(userCourseRequestDto.getCourseName());
+        Course course = courseRepository.findByTitle(userCourseRequestDto.getCourseName());
 
         UserCourse userCourse = UserCourse.builder().completed(false)
                 .progress(0.0).user(user).course(course).build();

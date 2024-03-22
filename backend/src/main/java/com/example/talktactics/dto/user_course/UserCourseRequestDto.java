@@ -9,5 +9,5 @@ import lombok.*;
 @NoArgsConstructor
 public class UserCourseRequestDto {
     private String courseName;
-    private String login;
+    private String username;
 }

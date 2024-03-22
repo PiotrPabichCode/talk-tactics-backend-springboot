@@ -33,14 +33,14 @@ public class UserCourseController {
         return userCourseService.getAllCoursesByUserId(userID);
     }
 
-    @GetMapping("/users/login/{login}")
-    public List<UserCourse> getUserCoursesByLogin(@PathVariable String login) {
-        return userCourseService.getAllUserCoursesByLogin(login);
+    @GetMapping("/users/username/{username}")
+    public List<UserCourse> getUserCoursesByUsername(@PathVariable String username) {
+        return userCourseService.getAllUserCoursesByUsername(username);
     }
 
     @GetMapping("/user-course-request")
-    public UserCourse getUserCourseByCourseNameAndLogin(@RequestBody UserCourseRequestDto userCourseRequestDto) {
-        return userCourseService.getByCourseNameAndLogin(userCourseRequestDto.getCourseName(), userCourseRequestDto.getLogin());
+    public UserCourse getUserCourseByCourseNameAndUsername(@RequestBody UserCourseRequestDto userCourseRequestDto) {
+        return userCourseService.getByCourseNameAndUsername(userCourseRequestDto.getCourseName(), userCourseRequestDto.getUsername());
     }
 
     @GetMapping("/{id}")
@@ -50,8 +50,8 @@ public class UserCourseController {
 
     @PutMapping("")
     public void addCourseToUser(@RequestBody UserCourseRequestDto userCourseRequestDto) {
-        User user = userService.getUserByLogin(userCourseRequestDto.getLogin())
-                .orElseThrow(() -> new UserNotFoundException("User %s not found".formatted(userCourseRequestDto.getLogin())));
+        User user = userService.getUserByUsername(userCourseRequestDto.getUsername())
+                .orElseThrow(() -> new UserNotFoundException("User %s not found".formatted(userCourseRequestDto.getUsername())));
         userCourseService.addUserCourse(userCourseRequestDto, user);
     }
 

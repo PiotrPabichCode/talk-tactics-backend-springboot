@@ -10,6 +10,6 @@ import lombok.*;
 @NoArgsConstructor
 public class AddCourseUserDto {
     Course course;
-    String login;
+    String username;
 }
 

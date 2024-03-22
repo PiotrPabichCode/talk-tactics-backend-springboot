@@ -10,7 +10,7 @@ import lombok.*;
 @NoArgsConstructor
 public class UpdateUserDto {
     Long id;
-    String login;
+    String username;
     String firstName;
     String lastName;
     String email;

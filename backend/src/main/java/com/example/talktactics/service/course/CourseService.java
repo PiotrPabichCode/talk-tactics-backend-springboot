@@ -1,7 +1,6 @@
 package com.example.talktactics.service.course;
 
 import com.example.talktactics.dto.course.CourseDto;
-import com.example.talktactics.dto.course_item.CourseItemDto;
 import com.example.talktactics.exception.CourseNotFoundException;
 import com.example.talktactics.entity.*;
 import com.example.talktactics.repository.*;
@@ -9,7 +8,6 @@ import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -38,7 +36,7 @@ public class CourseService {
                 .map(course -> {
                     course.setDescription(newCourse.getDescription());
                     course.setLevel(newCourse.getLevel());
-                    course.setName(newCourse.getName());
+                    course.setTitle(newCourse.getTitle());
                     return courseRepository.save(course);
                 }).orElseThrow(() -> new CourseNotFoundException(id));
     }
