@@ -1,16 +1,14 @@
 package com.example.talktactics.auth;
 
 import com.example.talktactics.config.JwtService;
-import com.example.talktactics.models.Role;
-import com.example.talktactics.models.User;
-import com.example.talktactics.repositories.UserRepository;
+import com.example.talktactics.entity.Role;
+import com.example.talktactics.entity.User;
+import com.example.talktactics.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
 
 @Service
 @RequiredArgsConstructor
@@ -23,7 +21,7 @@ public class AuthenticationService {
     public AuthenticationResponse register(RegisterRequest request) {
         validateNewUser(request);
         var user = User.builder()
-                .login(request.getLogin())
+                .username(request.getUsername())
                 .password(passwordEncoder.encode(request.getPassword()))
                 .email(request.getEmail())
                 .firstName(request.getFirstName())
@@ -46,12 +44,12 @@ public class AuthenticationService {
         return value == null || value.isEmpty();
     }
     private void validateNewUser(RegisterRequest request) {
-        if(isEmpty(request.getLogin()) || isEmpty(request.getPassword()) || isEmpty(request.getRepeatPassword())
+        if(isEmpty(request.getUsername()) || isEmpty(request.getPassword()) || isEmpty(request.getRepeatPassword())
                 || isEmpty(request.getEmail()) || isEmpty(request.getFirstName()) || isEmpty(request.getLastName())) {
             throw new RuntimeException("Fields cannot be empty");
         }
-        if(repository.existsByLogin(request.getLogin())) {
-            throw new RuntimeException("Login exists");
+        if(repository.existsByUsername(request.getUsername())) {
+            throw new RuntimeException("Username exists");
         }
         if(repository.existsByEmail(request.getEmail())) {
             throw new RuntimeException("Email already used");
@@ -62,13 +60,14 @@ public class AuthenticationService {
     }
 
     public AuthenticationResponse authenticate(AuthenticationRequest request) {
+        System.out.println(request);
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
-                        request.getLogin(),
+                        request.getUsername(),
                         request.getPassword()
                 )
         );
-        var user = repository.findByLogin(request.getLogin())
+        var user = repository.findByUsername(request.getUsername())
                 .orElseThrow();
         var jwtToken = jwtService.generateToken(user);
         var jwtRefreshToken = jwtService.generateRefreshToken(user);
@@ -82,7 +81,7 @@ public class AuthenticationService {
     }
 
     public AuthenticationResponse reauthenticate(RefreshTokenRequest request) {
-        var user = repository.findByLogin(request.getLogin())
+        var user = repository.findByUsername(request.getUsername())
                 .orElseThrow();
         var jwtToken = jwtService.generateToken(user);
         var jwtRefreshToken = jwtService.generateRefreshToken(user);
