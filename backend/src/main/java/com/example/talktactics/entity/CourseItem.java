@@ -41,6 +41,6 @@ public class CourseItem extends CommonEntity {
     private UserCourseItem userCourseItem;
 
     public CourseItemDto toDTO() {
-        return new CourseItemDto(this.getId(), this.word, this.course.getTitle());
+        return new CourseItemDto(this.getId(), this.word, this.partOfSpeech, this.phonetic, this.course.getTitle());
     }
 }

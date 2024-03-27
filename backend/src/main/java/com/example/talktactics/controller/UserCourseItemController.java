@@ -1,9 +1,13 @@
 package com.example.talktactics.controller;
 
+import com.example.talktactics.dto.user_course_item.req.GetUserCourseItemsPreviewDtoRequest;
+import com.example.talktactics.dto.user_course_item.res.GetUserCourseItemPreviewDtoResponse;
 import com.example.talktactics.service.user_course_item.UserCourseItemService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @AllArgsConstructor
@@ -13,8 +17,13 @@ public class UserCourseItemController {
 
     private final UserCourseItemService userCourseItemService;
 
-    @PostMapping("/{id}/isLearned")
+    @PostMapping("/{id}/learn")
     public void updateIsLearned(@PathVariable Long id) {
         userCourseItemService.updateIsLearned(id);
+    }
+
+    @PostMapping("/preview")
+    public GetUserCourseItemPreviewDtoResponse getAllByUserIdAndCourseId(@RequestBody GetUserCourseItemsPreviewDtoRequest request) {
+        return userCourseItemService.getUserCourseItemPreviewDtoResponse(request);
     }
 }
