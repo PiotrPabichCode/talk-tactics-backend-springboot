@@ -1,5 +1,8 @@
 package com.example.talktactics.service.user_course;
 
+import com.example.talktactics.dto.user_course.UserCourseDeleteDto;
+import com.example.talktactics.dto.user_course.UserCourseGetDto;
+import com.example.talktactics.dto.user_course.UserCoursePreviewDto;
 import com.example.talktactics.dto.user_course.UserCourseRequestDto;
 import com.example.talktactics.exception.CourseNotFoundException;
 import com.example.talktactics.exception.UserCourseExistsException;
@@ -10,8 +13,10 @@ import com.example.talktactics.repository.CourseRepository;
 import com.example.talktactics.repository.UserCourseItemRepository;
 import com.example.talktactics.repository.UserCourseRepository;
 import com.example.talktactics.repository.UserRepository;
+import com.example.talktactics.service.user.UserService;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -25,18 +30,22 @@ public class UserCourseService {
     private final UserCourseRepository userCourseRepository;
     private final UserRepository userRepository;
     private final CourseRepository courseRepository;
+    private final UserService userService;
 
     public List<UserCourse> getAllUserCourses() {
         return userCourseRepository.findAll(Sort.by("id"));
     }
 
-    public List<UserCourse> getAllCoursesByUserId(Long id) {
-        User user = userRepository.findById(id).orElseThrow(() -> new UserNotFoundException(id));
-        return user.getUserCourses();
+    public List<UserCourse> getAllUserCoursesByUserId(Long id) {
+        return userService.getUserById(id).getUserCourses();
     }
     public List<UserCourse> getAllUserCoursesByUsername(String username) {
         User user = userRepository.findByUsername(username).orElseThrow(() -> new UserNotFoundException("User %s not found".formatted(username)));
         return user.getUserCourses();
+    }
+
+    public List<UserCoursePreviewDto> getUserCoursesPreviewListByUserId(Long id) {
+        return userService.getUserById(id).getUserCourses().stream().map(UserCourse::toUserCoursePreviewDto).toList();
     }
 
     public UserCourse getByCourseNameAndUsername(String name, String username) {
@@ -47,12 +56,14 @@ public class UserCourseService {
         return userCourseRepository.findById(id).orElseThrow(() -> new UserCourseNotFoundException(id));
     }
 
-    public void addUserCourse(UserCourseRequestDto userCourseRequestDto, User user) {
-        if (userCourseRepository.existsByCourseTitleAndUserUsername(userCourseRequestDto.getCourseName(), userCourseRequestDto.getUsername())) {
+    public void addUserCourse(UserCourseRequestDto userCourseRequestDto) {
+        User user = userService.getUserById(userCourseRequestDto.getUserId());
+
+        if (userCourseRepository.existsByCourseIdAndUserId(userCourseRequestDto.getCourseId(), userCourseRequestDto.getUserId())) {
             throw new UserCourseExistsException("UserCourse already exists");
         }
         // find course
-        Course course = courseRepository.findByTitle(userCourseRequestDto.getCourseName());
+        Course course = courseRepository.findById(userCourseRequestDto.getCourseId()).orElseThrow(() -> new CourseNotFoundException(userCourseRequestDto.getCourseId()));
 
         UserCourse userCourse = UserCourse.builder().completed(false)
                 .progress(0.0).user(user).course(course).build();
@@ -65,10 +76,12 @@ public class UserCourseService {
         userCourseItemRepository.saveAll(userCourseItems);
     }
 
-    public void deleteUserCourse(Long id) {
-        if (!userCourseRepository.existsById(id)) {
-            throw new CourseNotFoundException(id);
-        }
-        userCourseRepository.deleteById(id);
+    public void deleteUserCourse(UserCourseDeleteDto userCourseDeleteDto) {
+        UserCourse userCourse = userCourseRepository.findByCourseIdAndUserId(userCourseDeleteDto.getCourseId(), userCourseDeleteDto.getUserId());
+        userCourseRepository.delete(userCourse);
+    }
+
+    public UserCourse getByUserIdAndCourseId(UserCourseGetDto userCourseGetDto) {
+        return userCourseRepository.findByCourseIdAndUserId(userCourseGetDto.getCourseId(), userCourseGetDto.getUserId());
     }
 }

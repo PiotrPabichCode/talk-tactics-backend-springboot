@@ -1,8 +1,9 @@
 package com.example.talktactics.controller;
 
+import com.example.talktactics.dto.user_course.UserCourseGetDto;
+import com.example.talktactics.dto.user_course.UserCourseDeleteDto;
+import com.example.talktactics.dto.user_course.UserCoursePreviewDto;
 import com.example.talktactics.dto.user_course.UserCourseRequestDto;
-import com.example.talktactics.exception.UserNotFoundException;
-import com.example.talktactics.entity.User;
 import com.example.talktactics.entity.UserCourse;
 import com.example.talktactics.service.user_course.UserCourseService;
 import com.example.talktactics.service.user.UserService;
@@ -28,19 +29,19 @@ public class UserCourseController {
         return userCourseService.getAllUserCourses();
     }
 
-    @GetMapping("/users/{userID}")
-    public List<UserCourse> getAllUserCoursesByUserId(@PathVariable Long userID) {
-        return userCourseService.getAllCoursesByUserId(userID);
+    @GetMapping("/preview/user-id/{userID}")
+    public List<UserCoursePreviewDto> getUserCoursesPreviewByUserId(@PathVariable Long userID) {
+        return userCourseService.getUserCoursesPreviewListByUserId(userID);
     }
 
-    @GetMapping("/users/username/{username}")
+    @GetMapping("/username/{username}")
     public List<UserCourse> getUserCoursesByUsername(@PathVariable String username) {
         return userCourseService.getAllUserCoursesByUsername(username);
     }
 
-    @GetMapping("/user-course-request")
-    public UserCourse getUserCourseByCourseNameAndUsername(@RequestBody UserCourseRequestDto userCourseRequestDto) {
-        return userCourseService.getByCourseNameAndUsername(userCourseRequestDto.getCourseName(), userCourseRequestDto.getUsername());
+    @PostMapping()
+    public UserCourse getByUserIdAndCourseId(@RequestBody UserCourseGetDto userCourseGetDto) {
+        return userCourseService.getByUserIdAndCourseId(userCourseGetDto);
     }
 
     @GetMapping("/{id}")
@@ -48,16 +49,13 @@ public class UserCourseController {
         return userCourseService.getById(id);
     }
 
-    @PutMapping("")
+    @PutMapping()
     public void addCourseToUser(@RequestBody UserCourseRequestDto userCourseRequestDto) {
-        User user = userService.getUserByUsername(userCourseRequestDto.getUsername())
-                .orElseThrow(() -> new UserNotFoundException("User %s not found".formatted(userCourseRequestDto.getUsername())));
-        userCourseService.addUserCourse(userCourseRequestDto, user);
+        userCourseService.addUserCourse(userCourseRequestDto);
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
-    @DeleteMapping("/{id}")
-    void deleteUserCourse(@PathVariable Long id) {
-        userCourseService.deleteUserCourse(id);
+    @DeleteMapping()
+    void deleteUserCourse(@RequestBody UserCourseDeleteDto userCourseDeleteDto) {
+        userCourseService.deleteUserCourse(userCourseDeleteDto);
     }
 }

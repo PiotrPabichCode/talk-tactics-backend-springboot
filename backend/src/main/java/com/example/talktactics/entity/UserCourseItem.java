@@ -1,6 +1,8 @@
 package com.example.talktactics.entity;
 
 import com.example.talktactics.common.CommonEntity;
+import com.example.talktactics.dto.user_course.UserCoursePreviewDto;
+import com.example.talktactics.dto.user_course_item.UserCourseItemPreviewDto;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.Entity;
@@ -30,4 +32,8 @@ public class UserCourseItem extends CommonEntity {
     @ManyToOne
     @JoinColumn(name = "user_course_id")
     private UserCourse userCourse;
+
+    public UserCourseItemPreviewDto toUserCourseItemPreviewDto() {
+        return new UserCourseItemPreviewDto(this.getId(), this.getCourseItem().getWord(), this.getCourseItem().getPartOfSpeech(), this.getCourseItem().getPhonetic(), this.isLearned);
+    }
 }
