@@ -7,14 +7,16 @@ import com.example.talktactics.entity.*;
 import com.example.talktactics.repository.UserRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.util.ReflectionUtils;
 
+import java.lang.reflect.Field;
 import java.util.*;
 
 import static com.example.talktactics.util.EmailValidator.isValidEmail;
+import static com.example.talktactics.util.Utils.getJsonPropertyFieldMap;
 import static com.example.talktactics.util.Utils.isEmptyString;
 
 @Service
@@ -44,81 +46,51 @@ public class UserService {
         userRepository.deleteById(id);
     }
 
-    public User updateUser(UpdateUserDto updateUserDto) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String currentUsername = authentication.getName();
-        User user = userRepository.findById(updateUserDto.getId())
-                .orElseThrow(() -> new UserNotFoundException(updateUserDto.getId()));
+    public User getUserByUsernameAndValidateCredentials(String username) {
+        User user = getUserByUsername(username).orElseThrow(() -> new UserNotFoundException("User %s not found".formatted(username)));;
+        validateCredentials(user);
+        return user;
+    }
 
-        validateCurrentUser(currentUsername, updateUserDto, authentication);
-        validateRoleChange(user, updateUserDto);
-        validateUpdateUserFields(updateUserDto);
-        updateUserData(user, updateUserDto);
+    public User updateUser(Long id, Map<String, Object> fields) {
+        System.out.println(fields);
+        User user = userRepository.findById(id).orElseThrow(() -> new UserNotFoundException(id));
+        validateCredentials(user);
+        validateFields(fields);
+
+        Map<String, String> fieldMap = getJsonPropertyFieldMap(UpdateUserDto.class);
+
+        fields.forEach((key, value) -> {
+            String fieldName = fieldMap.get(key);
+            if (fieldName == null) {
+                throw new IllegalStateException("Illegal fields given: " + key);
+            }
+            Field field = ReflectionUtils.findField(User.class, fieldName);
+            if (field == null) {
+                throw new IllegalStateException("Field not found: " + fieldName);
+            }
+            field.setAccessible(true);
+            ReflectionUtils.setField(field, user, value);
+        });
 
         return userRepository.save(user);
     }
 
-    private void validateCurrentUser(String currentUsername, UpdateUserDto updateUserDto, Authentication authentication) {
-        if (!currentUsername.equalsIgnoreCase(updateUserDto.getUsername()) &&
-                authentication.getAuthorities().stream()
-                        .map(GrantedAuthority::getAuthority)
-                        .anyMatch(role -> role.equalsIgnoreCase(Role.USER.toString()))) {
+    private void validateCredentials(User user) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = authentication.getName();
+        if(user.getRole() != Role.ADMIN && !user.getUsername().equals(username)) {
             throw new IllegalStateException("Not enough authorities");
         }
     }
 
-    private void validateRoleChange(User user, UpdateUserDto updateUserDto) {
-        if (user.getRole() == Role.ADMIN && updateUserDto.getRole() == Role.USER) {
-            throw new IllegalStateException("Cannot downgrade admin user to regular user.");
+    public void validateFields(Map<String, Object> fields) {
+        if(fields.containsKey("email")) {
+            String email = (String) fields.get("email");
+            if(!isValidEmail(email)) {
+                throw new IllegalArgumentException("Email has forbidden characters");
+            }
         }
-    }
-
-    private void validateUpdateUserFields(UpdateUserDto updateUserDto) {
-        if (isEmptyString(updateUserDto.getUsername()) || isEmptyString(updateUserDto.getEmail()) ||
-                isEmptyString(updateUserDto.getFirstName()) || isEmptyString(updateUserDto.getLastName())) {
-            throw new RuntimeException("Fields cannot be empty");
-        }
-    }
-
-    private void updateUserData(User user, UpdateUserDto updateUserDto) {
-        user.setUsername(updateUserDto.getUsername());
-        user.setRole(updateUserDto.getRole());
-        user.setEmail(updateUserDto.getEmail());
-        user.setFirstName(updateUserDto.getFirstName());
-        user.setLastName(updateUserDto.getLastName());
-    }
-
-
-//    User panel - Update
-
-    public User updateFirstName(Long id, String firstName) {
-        if(isEmptyString(firstName)) {
-            throw new IllegalArgumentException("First name cannot be empty");
-        }
-        User user = userRepository.findById(id).orElseThrow(() -> new UserNotFoundException(id));
-        user.setFirstName(firstName);
-        return userRepository.save(user);
-    }
-
-    public User updateLastName(Long id, String lastName) {
-        if(isEmptyString(lastName)) {
-            throw new IllegalArgumentException("Last name cannot be empty");
-        }
-        User user = userRepository.findById(id).orElseThrow(() -> new UserNotFoundException(id));
-        user.setLastName(lastName);
-        return userRepository.save(user);
-    }
-
-    public User updateEmail(Long id, String email) {
-        if(isEmptyString(email)) {
-            throw new IllegalArgumentException("Email cannot be empty");
-        }
-        if(!isValidEmail(email)) {
-            throw new IllegalArgumentException("Email has forbidden characters");
-        }
-        User user = userRepository.findById(id).orElseThrow(() -> new UserNotFoundException(id));
-        user.setEmail(email);
-        return userRepository.save(user);
     }
 
     private boolean validatePassword(UpdatePasswordDto updatePasswordDto) {

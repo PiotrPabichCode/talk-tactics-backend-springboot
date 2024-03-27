@@ -39,6 +39,7 @@ public class User extends CommonEntity implements UserDetails {
     @Enumerated(EnumType.STRING)
     private Role role;
 
+    @JsonIgnore
     @JsonIgnoreProperties("user")
     @OneToMany(mappedBy = "user",
             cascade = CascadeType.ALL,
