@@ -13,24 +13,24 @@ import java.util.List;
 @RestController
 @AllArgsConstructor
 @RequestMapping("/api/v1/courses")
-@CrossOrigin(origins = {"http://localhost:3000", "https://talk-tactics-frontend.vercel.app/"})
+@CrossOrigin(origins = {"http://localhost:3000", "https://talk-tactics-frontend.vercel.app/"}, allowCredentials = "true")
 @Tag(name = "Courses", description = "Courses management APIs")
 public class CourseController {
     private final CourseService courseService;
 
     @PreAuthorize("hasRole('ADMIN')")
-    @PostMapping("")
-    Course createCourse(@RequestBody Course course) {
+    @PostMapping()
+    public Course createCourse(@RequestBody Course course) {
         return courseService.createCourse(course);
     }
 
-    @GetMapping("")
-    List<CourseDto> getAllCourses() {
+    @GetMapping()
+    public List<CourseDto> getAllCourses() {
         return courseService.getCourses();
     }
 
     @GetMapping("/{id}")
-    Course getCourseById(@PathVariable Long id) {
+    public Course getCourseById(@PathVariable Long id) {
         return courseService.getCourseById(id);
     }
     @GetMapping("/level/{level}")
@@ -40,7 +40,7 @@ public class CourseController {
 
     @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/{id}")
-    Course updateCourse(@PathVariable Long id, @RequestBody Course newCourse) {
+    public Course updateCourse(@PathVariable Long id, @RequestBody Course newCourse) {
         return courseService.updateCourse(id, newCourse);
     }
 

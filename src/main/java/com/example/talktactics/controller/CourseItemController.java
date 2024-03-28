@@ -14,38 +14,38 @@ import java.util.Optional;
 @RestController
 @AllArgsConstructor
 @RequestMapping("/api/v1/course-items")
-@CrossOrigin(origins = {"http://localhost:3000", "https://talk-tactics-frontend.vercel.app/"})
+@CrossOrigin(origins = {"http://localhost:3000", "https://talk-tactics-frontend.vercel.app/"}, allowCredentials = "true")
 @Tag(name = "Course items", description = "Course items management APIs")
 public class CourseItemController {
 
     private final CourseItemService courseItemService;
 
     @PreAuthorize("hasRole('ADMIN')")
-    @GetMapping("")
-    List<CourseItem> getAll() {
+    @GetMapping()
+    public List<CourseItem> getAll() {
         return courseItemService.getAll();
     }
 
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/admin/course-items")
-    List<CourseItemDto> getAllCourseItemsDTO() {
+    public List<CourseItemDto> getAllCourseItemsDTO() {
         return courseItemService.getAllCourseItemsDTO();
     }
 
     @GetMapping("/{id}")
-    Optional<CourseItem> getCourseItemDetailsById(@PathVariable Long id) {
+    public Optional<CourseItem> getCourseItemDetailsById(@PathVariable Long id) {
         return courseItemService.findById(id);
     }
 
 
     @GetMapping("/courses/{id}/course-items")
-    List<CourseItemDto> getByCourseId(@PathVariable int id) {
+    public List<CourseItemDto> getByCourseId(@PathVariable int id) {
         return courseItemService.getAllCourseItemsDTOByCourseId(id);
     }
 
     @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{id}")
-    void deleteCourseItem(@PathVariable Long id) {
+    public void deleteCourseItem(@PathVariable Long id) {
         courseItemService.deleteCourseItem(id);
     }
 }

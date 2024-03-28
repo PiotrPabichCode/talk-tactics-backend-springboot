@@ -10,6 +10,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ReflectionUtils;
 
 import java.lang.reflect.Field;
@@ -20,6 +21,7 @@ import static com.example.talktactics.util.Utils.getJsonPropertyFieldMap;
 import static com.example.talktactics.util.Utils.isEmptyString;
 
 @Service
+@Transactional
 @AllArgsConstructor
 public class UserService {
     private final UserRepository userRepository;

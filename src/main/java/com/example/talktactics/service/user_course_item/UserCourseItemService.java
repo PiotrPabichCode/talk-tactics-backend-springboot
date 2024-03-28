@@ -10,6 +10,7 @@ import com.example.talktactics.repository.UserCourseItemRepository;
 import com.example.talktactics.service.course.CourseService;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -17,6 +18,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @AllArgsConstructor
+@Transactional
 @Service
 public class UserCourseItemService {
     private final UserCourseItemRepository userCourseItemRepository;

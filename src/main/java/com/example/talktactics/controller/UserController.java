@@ -17,23 +17,23 @@ import java.util.Optional;
 @RestController
 @AllArgsConstructor
 @RequestMapping("/api/v1/users")
-@CrossOrigin(origins = {"http://localhost:3000", "https://talk-tactics-frontend.vercel.app/"})
+@CrossOrigin(origins = {"http://localhost:3000", "https://talk-tactics-frontend.vercel.app/"}, allowCredentials = "true")
 @Tag(name = "Users", description = "Users management APIs")
 public class UserController {
     private final UserService userService;
 
-    @PostMapping("")
+    @PostMapping()
     public ResponseEntity<User> create(@RequestBody User user) {
         return ResponseEntity.ok(userService.createUser(user));
     }
 
-    @GetMapping("")
+    @GetMapping()
     public ResponseEntity<List<User>> getUsers() {
         return ResponseEntity.ok(userService.getUsers());
     }
 
     @GetMapping("/{id}")
-    User getUserById(@PathVariable Long id) {
+    public User getUserById(@PathVariable Long id) {
         return userService.getUserById(id);
     }
     @GetMapping("/username/{username}")
