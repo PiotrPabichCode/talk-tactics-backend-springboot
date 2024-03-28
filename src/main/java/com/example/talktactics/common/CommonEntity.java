@@ -11,7 +11,6 @@ import java.util.Date;
 
 @MappedSuperclass
 @Data
-@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 public abstract class CommonEntity implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

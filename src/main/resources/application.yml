@@ -8,8 +8,9 @@ spring:
     driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:
-      ddl-auto: create-drop
+      ddl-auto: create
     show-sql: false
+    open-in-view: false
     database: postgresql
     database-platform: org.hibernate.dialect.PostgreSQLDialect
 
