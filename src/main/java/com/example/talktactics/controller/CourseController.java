@@ -19,12 +19,12 @@ public class CourseController {
     private final CourseService courseService;
 
     @PreAuthorize("hasRole('ADMIN')")
-    @PostMapping()
+    @PostMapping("")
     Course createCourse(@RequestBody Course course) {
         return courseService.createCourse(course);
     }
 
-    @GetMapping()
+    @GetMapping("")
     List<CourseDto> getAllCourses() {
         return courseService.getCourses();
     }

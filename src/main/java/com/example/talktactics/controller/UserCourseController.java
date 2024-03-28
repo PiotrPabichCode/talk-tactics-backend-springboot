@@ -25,7 +25,7 @@ public class UserCourseController {
     private final UserService userService;
 
     @PreAuthorize("hasRole('ADMIN')")
-    @GetMapping()
+    @GetMapping("")
     public List<UserCourse> getAllUserCourses() {
         return userCourseService.getAllUserCourses();
     }
@@ -40,7 +40,7 @@ public class UserCourseController {
         return userCourseService.getAllUserCoursesByUsername(username);
     }
 
-    @PostMapping()
+    @PostMapping("")
     public UserCourse getByUserIdAndCourseId(@RequestBody UserCourseGetDto userCourseGetDto) {
         return userCourseService.getByUserIdAndCourseId(userCourseGetDto);
     }
@@ -50,12 +50,12 @@ public class UserCourseController {
         return userCourseService.getById(id);
     }
 
-    @PutMapping()
+    @PutMapping("")
     public void addCourseToUser(@RequestBody UserCourseRequestDto userCourseRequestDto) {
         userCourseService.addUserCourse(userCourseRequestDto);
     }
 
-    @DeleteMapping()
+    @DeleteMapping("")
     void deleteUserCourse(@RequestBody UserCourseDeleteDto userCourseDeleteDto) {
         userCourseService.deleteUserCourse(userCourseDeleteDto);
     }

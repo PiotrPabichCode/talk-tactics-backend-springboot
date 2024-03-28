@@ -21,7 +21,7 @@ public class CourseItemController {
     private final CourseItemService courseItemService;
 
     @PreAuthorize("hasRole('ADMIN')")
-    @GetMapping()
+    @GetMapping("")
     List<CourseItem> getAll() {
         return courseItemService.getAll();
     }

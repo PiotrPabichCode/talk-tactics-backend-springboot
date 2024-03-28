@@ -22,12 +22,12 @@ import java.util.Optional;
 public class UserController {
     private final UserService userService;
 
-    @PostMapping()
+    @PostMapping("")
     public ResponseEntity<User> create(@RequestBody User user) {
         return ResponseEntity.ok(userService.createUser(user));
     }
 
-    @GetMapping()
+    @GetMapping("")
     public ResponseEntity<List<User>> getUsers() {
         return ResponseEntity.ok(userService.getUsers());
     }
