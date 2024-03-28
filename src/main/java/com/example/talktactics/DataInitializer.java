@@ -101,31 +101,31 @@ public class DataInitializer implements ApplicationRunner {
         users.add(User.builder().username("user1").password(passwordEncoder.encode("user1")).email("user1@gmail.com").firstName("Tomasz").lastName("Kukułka").bio("Avid reader, passionate writer, and eternal optimist. Finding beauty in the little things and spreading positivity wherever I go.").role(Role.USER).build());
         userRepository.saveAll(users);
         // create Course
-//        ArrayList<Course> courses = new ArrayList<>();
-//        for(int i = 0; i < 21; i++) {
-//            String name = String.format("Most frequently used english words - Top %d%%", (99 - i));
-//            String description = "Comprehensive program designed to enhance individuals' English language skills by expanding their vocabulary with commonly known words.";
-////            String description = "The \"Mastering Everyday English Vocabulary\" course is a comprehensive program designed to enhance individuals' English language skills by expanding their vocabulary with commonly known words, enabling effective communication and improved reading and writing abilities.";
-//            CourseLevel level = i < 5 ? CourseLevel.BEGINNER : i < 15 ? CourseLevel.INTERMEDIATE : CourseLevel.ADVANCED;
-//            courses.add(Course.builder().title(name).description(description).level(level).build());
-//        }
-//        courseRepository.saveAll(courses);
-//        loadCourseItemsFromJson(courses);
-//        ArrayList<UserCourse> userCourses = new ArrayList<>();
-//        for(User user: users) {
-//            new Random().ints(0, courses.size()).limit(5).forEach(value -> {
-//                Course course = courses.get(value);
-//                UserCourse userCourse = UserCourse.builder().completed(false)
-//                        .progress(0.0).user(user).course(course).build();
-//                List<UserCourseItem> userCourseItems = new ArrayList<>();
-//                for(CourseItem courseItem: course.getCourseItems()) {
-//                    userCourseItems.add(UserCourseItem.builder().courseItem(courseItem).isLearned(false).userCourse(userCourse).build());
-//                }
-//                userCourse.setUserCourseItems(userCourseItems);
-//                userCourses.add(userCourse);
-//            });
-//        }
-//        userCourseRepository.saveAll(userCourses);
+        ArrayList<Course> courses = new ArrayList<>();
+        for(int i = 0; i < 21; i++) {
+            String name = String.format("Most frequently used english words - Top %d%%", (99 - i));
+            String description = "Comprehensive program designed to enhance individuals' English language skills by expanding their vocabulary with commonly known words.";
+//            String description = "The \"Mastering Everyday English Vocabulary\" course is a comprehensive program designed to enhance individuals' English language skills by expanding their vocabulary with commonly known words, enabling effective communication and improved reading and writing abilities.";
+            CourseLevel level = i < 5 ? CourseLevel.BEGINNER : i < 15 ? CourseLevel.INTERMEDIATE : CourseLevel.ADVANCED;
+            courses.add(Course.builder().title(name).description(description).level(level).build());
+        }
+        courseRepository.saveAll(courses);
+        loadCourseItemsFromJson(courses);
+        ArrayList<UserCourse> userCourses = new ArrayList<>();
+        for(User user: users) {
+            new Random().ints(0, courses.size()).limit(5).forEach(value -> {
+                Course course = courses.get(value);
+                UserCourse userCourse = UserCourse.builder().completed(false)
+                        .progress(0.0).user(user).course(course).build();
+                List<UserCourseItem> userCourseItems = new ArrayList<>();
+                for(CourseItem courseItem: course.getCourseItems()) {
+                    userCourseItems.add(UserCourseItem.builder().courseItem(courseItem).isLearned(false).userCourse(userCourse).build());
+                }
+                userCourse.setUserCourseItems(userCourseItems);
+                userCourses.add(userCourse);
+            });
+        }
+        userCourseRepository.saveAll(userCourses);
     }
 
 

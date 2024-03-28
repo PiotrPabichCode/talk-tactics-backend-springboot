@@ -17,6 +17,7 @@ import java.util.List;
 public class CourseController {
     private final CourseService courseService;
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping()
     Course createCourse(@RequestBody Course course) {
         return courseService.createCourse(course);

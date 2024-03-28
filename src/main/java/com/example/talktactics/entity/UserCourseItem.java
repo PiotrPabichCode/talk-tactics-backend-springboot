@@ -34,6 +34,6 @@ public class UserCourseItem extends CommonEntity {
     private UserCourse userCourse;
 
     public UserCourseItemPreviewDto toUserCourseItemPreviewDto() {
-        return new UserCourseItemPreviewDto(this.getId(), this.getCourseItem().getWord(), this.getCourseItem().getPartOfSpeech(), this.getCourseItem().getPhonetic(), this.isLearned);
+        return new UserCourseItemPreviewDto(this.getId(), this.getCourseItem().getId(), this.getCourseItem().getWord(), this.getCourseItem().getPartOfSpeech(), this.getCourseItem().getPhonetic(), this.isLearned);
     }
 }

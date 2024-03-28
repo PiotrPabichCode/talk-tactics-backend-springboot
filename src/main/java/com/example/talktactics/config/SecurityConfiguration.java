@@ -20,7 +20,8 @@ public class SecurityConfiguration {
 
     private static final String[] PERMITTED_ENDPOINTS = {
             "/api/v1/auth/**",
-            "/api/v1/courses",
+            "/api/v1/courses/**",
+            "/api/v1/course-items/**",
             "/v2/api-docs",
             "/v3/api-docs",
             "/v3/api-docs/**",

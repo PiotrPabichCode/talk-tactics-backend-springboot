@@ -12,6 +12,8 @@ import lombok.*;
 @RequiredArgsConstructor
 public class UserCourseItemPreviewDto {
     int id;
+    @JsonProperty("course_item_id")
+    int courseItemId;
     String word;
     @JsonProperty("part_of_speech")
     String partOfSpeech;
