@@ -13,6 +13,7 @@ import java.util.List;
 @RestController
 @AllArgsConstructor
 @RequestMapping("/api/v1/courses")
+@CrossOrigin(origins = {"http://localhost:3000", "https://talk-tactics-frontend.vercel.app/"}, allowCredentials = "true")
 @Tag(name = "Courses", description = "Courses management APIs")
 public class CourseController {
     private final CourseService courseService;
