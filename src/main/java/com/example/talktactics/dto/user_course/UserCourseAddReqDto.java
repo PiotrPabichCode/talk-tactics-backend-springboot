@@ -8,7 +8,7 @@ import lombok.*;
 @ToString
 @AllArgsConstructor
 @NoArgsConstructor
-public class UserCourseRequestDto {
+public class UserCourseAddReqDto {
     @JsonProperty("course_id")
     private Long courseId;
     @JsonProperty("user_id")

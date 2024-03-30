@@ -1,35 +1,44 @@
 package com.example.talktactics.service.user_course_item;
 
 import com.example.talktactics.dto.user_course_item.UserCourseItemPreviewDto;
-import com.example.talktactics.dto.user_course_item.req.GetUserCourseItemsPreviewDtoRequest;
+import com.example.talktactics.dto.user_course_item.req.GetUserCourseItemsPreviewDtoReq;
 import com.example.talktactics.dto.user_course_item.res.GetUserCourseItemPreviewDtoResponse;
-import com.example.talktactics.exception.UserCourseItemNotFoundException;
+import com.example.talktactics.entity.User;
+import com.example.talktactics.exception.UserCourseItemRuntimeException;
 import com.example.talktactics.entity.UserCourse;
 import com.example.talktactics.entity.UserCourseItem;
+import com.example.talktactics.exception.UserCourseRuntimeException;
 import com.example.talktactics.repository.UserCourseItemRepository;
 import com.example.talktactics.service.course.CourseService;
+import com.example.talktactics.service.user.UserService;
+import com.example.talktactics.util.Constants;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@AllArgsConstructor
-@Transactional
 @Service
+@Transactional
+@Slf4j
+@AllArgsConstructor
 public class UserCourseItemService {
     private final UserCourseItemRepository userCourseItemRepository;
     private final CourseService courseService;
+    private final UserService userService;
 
     public UserCourseItem getById(Long id) {
-        return userCourseItemRepository.findById(id).orElseThrow(() -> new UserCourseItemNotFoundException("User course item not found [id]: [%d]".formatted(id)));
+        UserCourseItem userCourseItem = userCourseItemRepository.findById(id).orElseThrow(() -> new UserCourseItemRuntimeException(Constants.USER_COURSE_ITEM_NOT_FOUND_EXCEPTION));
+        User user = userCourseItem.getUserCourse().getUser();
+        userService.validateCredentials(user);
+        return userCourseItem;
     }
 
     public void updateIsLearned(Long id) {
-        UserCourseItem userCourseItem = userCourseItemRepository.findById(id).orElseThrow(() -> new UserCourseItemNotFoundException("User course item not found"));
+        UserCourseItem userCourseItem = getById(id);
         UserCourse userCourse = userCourseItem.getUserCourse();
         double value = 100.0 / userCourse.getUserCourseItems().size();
         userCourse.setProgress(userCourse.getProgress() + (!userCourseItem.isLearned() ? value : -value));
@@ -41,16 +50,19 @@ public class UserCourseItemService {
     }
 
     private List<UserCourseItemPreviewDto> getAllByUserIdAndCourseId(Long userId, Long courseId) {
-        return userCourseItemRepository.findAllByUserCourseCourseIdAndUserCourseUserId(courseId, userId).stream().map(UserCourseItem::toUserCourseItemPreviewDto).collect(Collectors.toList());
-    }
-
-    public GetUserCourseItemPreviewDtoResponse getUserCourseItemPreviewDtoResponse(GetUserCourseItemsPreviewDtoRequest request) {
-        List<UserCourseItemPreviewDto> items = getAllByUserIdAndCourseId(request.getUserId(), request.getCourseId());
-        if(items.size() == 0) {
-            throw new UserCourseItemNotFoundException("User course item does not exists [UserId, CourseId]: [%d, %d]".formatted(request.getUserId(), request.getCourseId()));
+        User user = userService.getUserById(userId);
+        userService.validateCredentials(user);
+        List<UserCourseItemPreviewDto> items = userCourseItemRepository.findAllByUserCourseCourseIdAndUserCourseUserId(courseId, userId).stream().map(UserCourseItem::toUserCourseItemPreviewDto).collect(Collectors.toList());
+        if(items.isEmpty()) {
+            throw new UserCourseRuntimeException(Constants.USER_COURSE_ITEM_NOT_FOUND_EXCEPTION);
         }
         items.sort(Comparator.comparingInt(UserCourseItemPreviewDto::getId));
-        String courseName = courseService.getCourseById(request.getCourseId()).getTitle();
+        return items;
+    }
+
+    public GetUserCourseItemPreviewDtoResponse getUserCourseItemPreviewDtoResponse(GetUserCourseItemsPreviewDtoReq req) {
+        List<UserCourseItemPreviewDto> items = getAllByUserIdAndCourseId(req.getUserId(), req.getCourseId());
+        String courseName = courseService.getById(req.getCourseId()).getTitle();
         return new GetUserCourseItemPreviewDtoResponse(courseName, items);
     }
 }
