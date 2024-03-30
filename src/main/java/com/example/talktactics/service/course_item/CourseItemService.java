@@ -30,8 +30,8 @@ public class CourseItemService {
                 .stream()
                 .map(CourseItem::toDTO).toList();
     }
-    public CourseItemPreviewDto findById(Long id) throws CourseItemRuntimeException {
-        return courseItemRepository.findById(id).map(CourseItem::toDTO).orElseThrow(() -> new CourseItemRuntimeException(Constants.COURSE_ITEM_NOT_FOUND_EXCEPTION));
+    public CourseItem findById(Long id) throws CourseItemRuntimeException {
+        return courseItemRepository.findById(id).orElseThrow(() -> new CourseItemRuntimeException(Constants.COURSE_ITEM_NOT_FOUND_EXCEPTION));
     }
 
     public void deleteById(Long id) throws CourseItemRuntimeException {

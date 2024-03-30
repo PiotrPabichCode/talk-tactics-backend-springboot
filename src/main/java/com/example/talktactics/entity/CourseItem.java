@@ -27,7 +27,7 @@ public class CourseItem extends CommonEntity {
     @OneToMany(mappedBy = "courseItem",
             cascade = CascadeType.ALL,
             orphanRemoval = true,
-            fetch = FetchType.LAZY)
+            fetch = FetchType.EAGER)
     private List<Meaning> meanings;
 
     @JsonIgnoreProperties({"courseItems", "userCourses"})

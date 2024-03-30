@@ -1,6 +1,7 @@
 package com.example.talktactics.controller;
 
 import com.example.talktactics.dto.course_item.CourseItemPreviewDto;
+import com.example.talktactics.entity.CourseItem;
 import com.example.talktactics.exception.CourseItemRuntimeException;
 import com.example.talktactics.service.course_item.CourseItemService;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -32,7 +33,7 @@ public class CourseItemController {
     }
 
     @GetMapping("/id/{id}")
-    public ResponseEntity<CourseItemPreviewDto> getById(@PathVariable Long id) {
+    public ResponseEntity<CourseItem> getById(@PathVariable Long id) {
         try {
             return ResponseEntity.ok(courseItemService.findById(id));
         } catch(CourseItemRuntimeException e) {
