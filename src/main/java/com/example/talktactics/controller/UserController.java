@@ -1,14 +1,15 @@
 package com.example.talktactics.controller;
 
-import com.example.talktactics.dto.user.UpdatePasswordDto;
-import com.example.talktactics.dto.user.UpdateUserDto;
+import com.example.talktactics.dto.user.req.UpdatePasswordReqDto;
 import com.example.talktactics.entity.*;
+import com.example.talktactics.exception.UserRuntimeException;
 import com.example.talktactics.service.user.UserService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.Map;
@@ -22,38 +23,65 @@ import java.util.Optional;
 public class UserController {
     private final UserService userService;
 
-    @PostMapping()
+    @PostMapping("/create")
     public ResponseEntity<User> create(@RequestBody User user) {
-        return ResponseEntity.ok(userService.createUser(user));
+        try {
+            return ResponseEntity.ok(userService.createUser(user));
+        } catch(UserRuntimeException e) {
+            throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, e.getMessage());
+        }
     }
 
-    @GetMapping()
+    @GetMapping("/all")
     public ResponseEntity<List<User>> getUsers() {
-        return ResponseEntity.ok(userService.getUsers());
+        try {
+            return ResponseEntity.ok(userService.getUsers());
+        } catch(UserRuntimeException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
+        }
     }
 
-    @GetMapping("/{id}")
-    public User getUserById(@PathVariable Long id) {
-        return userService.getUserById(id);
+    @GetMapping("/id/{id}")
+    public ResponseEntity<User> getUserById(@PathVariable Long id) {
+        try {
+            return ResponseEntity.ok(userService.getUserById(id));
+        } catch (UserRuntimeException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
+        }
     }
     @GetMapping("/username/{username}")
-    public Optional<User> findByUsername(@PathVariable String username) {
-        return userService.getUserByUsername(username);
+    public ResponseEntity<User> findByUsername(@PathVariable String username) {
+        try {
+            return ResponseEntity.ok(userService.getUserByUsername(username));
+        } catch (UserRuntimeException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
+        }
     }
 
-    @PatchMapping("/{id}")
+    @PatchMapping("/id/{id}")
     public ResponseEntity<User> updateUser(@PathVariable Long id, @RequestBody Map<String, Object> fields) {
-        return ResponseEntity.ok(userService.updateUser(id, fields));
+        try {
+            return ResponseEntity.ok(userService.updateUser(id, fields));
+        } catch (UserRuntimeException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
+        }
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/id/{id}")
     public void deleteUser(@PathVariable Long id) {
-        userService.deleteUser(id);
+        try {
+            userService.deleteUser(id);
+        } catch(UserRuntimeException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
+        }
     }
 
-    @PutMapping("/{userID}/password")
-    public User updatePassword(@PathVariable Long userID, @RequestBody UpdatePasswordDto updatePasswordDto) {
-        return userService.updatePassword(userID, updatePasswordDto);
+    @PutMapping("/password")
+    public ResponseEntity<User> updatePassword(@RequestBody UpdatePasswordReqDto request) {
+        try {
+            return ResponseEntity.ok(userService.updatePassword(request));
+        } catch (UserRuntimeException e) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, e.getMessage());
+        }
     }
 }

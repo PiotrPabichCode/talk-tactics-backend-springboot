@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
 @Data
-public class GetUserCourseItemsPreviewDtoRequest {
+public class GetUserCourseItemsPreviewDtoReq {
     @JsonProperty("user_id")
     Long userId;
     @JsonProperty("course_id")

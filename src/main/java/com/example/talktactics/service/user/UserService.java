@@ -1,13 +1,16 @@
 package com.example.talktactics.service.user;
 
-import com.example.talktactics.dto.user.UpdatePasswordDto;
 import com.example.talktactics.dto.user.UpdateUserDto;
-import com.example.talktactics.exception.UserNotFoundException;
+import com.example.talktactics.dto.user.req.UpdatePasswordReqDto;
+import com.example.talktactics.exception.UserRuntimeException;
 import com.example.talktactics.entity.*;
 import com.example.talktactics.repository.UserRepository;
+import com.example.talktactics.util.Constants;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.parameters.P;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,6 +25,7 @@ import static com.example.talktactics.util.Utils.isEmptyString;
 
 @Service
 @Transactional
+@Slf4j
 @AllArgsConstructor
 public class UserService {
     private final UserRepository userRepository;
@@ -34,29 +38,27 @@ public class UserService {
         return userRepository.findAll();
     }
     public User getUserById(Long id) {
-        return userRepository.findById(id).orElseThrow(() -> new UserNotFoundException(id));
+        return userRepository.findById(id).orElseThrow(() -> new UserRuntimeException(Constants.USER_NOT_FOUND_EXCEPTION));
     }
-    public Optional<User> getUserByUsername(String username) {
-        return userRepository.findByUsername(username);
+    public User getUserByUsername(String username) {
+        return userRepository.findByUsername(username).orElseThrow(() -> new UserRuntimeException(Constants.USER_NOT_FOUND_EXCEPTION));
     }
 
-//    Admin panel - CRUD
     public void deleteUser(Long id) {
         if(!userRepository.existsById(id)) {
-            throw new UserNotFoundException(id);
+            throw new UserRuntimeException(Constants.USER_NOT_FOUND_EXCEPTION);
+        }
+
+        isAdmin();
+        User user = getUserById(id);
+        if(user.getRole().toString().equals(Constants.ADMIN)) {
+            throw new UserRuntimeException("Cannot delete admin user");
         }
         userRepository.deleteById(id);
     }
 
-    public User getUserByUsernameAndValidateCredentials(String username) {
-        User user = getUserByUsername(username).orElseThrow(() -> new UserNotFoundException("User %s not found".formatted(username)));;
-        validateCredentials(user);
-        return user;
-    }
-
     public User updateUser(Long id, Map<String, Object> fields) {
-        System.out.println(fields);
-        User user = userRepository.findById(id).orElseThrow(() -> new UserNotFoundException(id));
+        User user = getUserById(id);
         validateCredentials(user);
         validateFields(fields);
 
@@ -65,11 +67,11 @@ public class UserService {
         fields.forEach((key, value) -> {
             String fieldName = fieldMap.get(key);
             if (fieldName == null) {
-                throw new IllegalStateException("Illegal fields given: " + key);
+                throw new UserRuntimeException("Illegal fields given: " + key);
             }
             Field field = ReflectionUtils.findField(User.class, fieldName);
             if (field == null) {
-                throw new IllegalStateException("Field not found: " + fieldName);
+                throw new UserRuntimeException("Field not found: " + fieldName);
             }
             field.setAccessible(true);
             ReflectionUtils.setField(field, user, value);
@@ -78,11 +80,19 @@ public class UserService {
         return userRepository.save(user);
     }
 
-    private void validateCredentials(User user) {
+    private boolean isAdmin() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String username = authentication.getName();
-        if(user.getRole() != Role.ADMIN && !user.getUsername().equals(username)) {
-            throw new IllegalStateException("Not enough authorities");
+        return authentication.getAuthorities().stream().anyMatch(auth -> auth.getAuthority().equals(Constants.ADMIN));
+    }
+
+    private boolean isCurrentUser(User user) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        return authentication.getName().equals(user.getUsername());
+    }
+
+    public void validateCredentials(User user) {
+        if(!isAdmin() && !isCurrentUser(user)) {
+            throw new UserRuntimeException(Constants.NOT_ENOUGH_AUTHORITIES_EXCEPTION);
         }
     }
 
@@ -90,26 +100,33 @@ public class UserService {
         if(fields.containsKey("email")) {
             String email = (String) fields.get("email");
             if(!isValidEmail(email)) {
-                throw new IllegalArgumentException("Email has forbidden characters");
+                throw new UserRuntimeException(Constants.EMAIL_FORBIDDEN_VALUES_EXCEPTION);
             }
         }
     }
 
-    private boolean validatePassword(UpdatePasswordDto updatePasswordDto) {
-        return passwordEncoder.matches(updatePasswordDto.getOldPassword(), updatePasswordDto.getCurrentPassword()) &&
-                updatePasswordDto.getNewPassword().equals(updatePasswordDto.getRepeatNewPassword());
+    private void validatePassword(User user, UpdatePasswordReqDto req) {
+        if(req.getOldPassword().isBlank() || req.getNewPassword().isBlank() || req.getRepeatNewPassword().isBlank()) {
+            throw new UserRuntimeException(Constants.ALL_FIELDS_REQUIRED);
+        }
+        if(passwordEncoder.matches(user.getPassword(), req.getOldPassword())) {
+            throw new UserRuntimeException(Constants.INVALID_PASSWORD_EXCEPTION);
+        }
+        if(!req.getNewPassword().equals(req.getRepeatNewPassword())) {
+            throw new UserRuntimeException(Constants.THE_SAME_PASSWORD_EXCEPTION);
+        }
+        if(passwordEncoder.matches(user.getPassword(), req.getNewPassword())) {
+            throw new UserRuntimeException(Constants.DUPLICATED_PASSWORD_EXCEPTION);
+        }
     }
 
-    public User updatePassword(Long id, UpdatePasswordDto updatePasswordDto) {
-        if((isEmptyString(updatePasswordDto.getOldPassword())) || (isEmptyString(updatePasswordDto.getNewPassword()) || (isEmptyString(updatePasswordDto.getRepeatNewPassword())))) {
-            throw new IllegalArgumentException("All fields must be entered");
-        }
-        User user = userRepository.findById(id).orElseThrow(() -> new UserNotFoundException(id));
-        updatePasswordDto.setCurrentPassword(user.getPassword());
-        if(!validatePassword(updatePasswordDto)) {
-            throw new IllegalArgumentException("Invalid password");
-        }
-        user.setPassword(passwordEncoder.encode(updatePasswordDto.getNewPassword()));
+    public User updatePassword(UpdatePasswordReqDto req) {
+        User user = getUserById(req.getId());
+
+        validateCredentials(user);
+        validatePassword(user, req);
+
+        user.setPassword(passwordEncoder.encode(req.getNewPassword()));
         return userRepository.save(user);
     }
 
