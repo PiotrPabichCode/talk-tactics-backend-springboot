@@ -10,7 +10,6 @@ public interface CourseRepository extends JpaRepository<Course, Long> {
     Course findByTitle(String title);
     default List<Course> findByLevelName(String substring) {
         return findAll().stream()
-                .filter(course -> course.getLevel().toString().toLowerCase().contains(substring.toLowerCase()))
-                .collect(Collectors.toList());
+                .filter(course -> course.getLevel().toString().toLowerCase().contains(substring.toLowerCase())).toList();
     }
 }

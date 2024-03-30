@@ -13,7 +13,6 @@ spring:
     open-in-view: false
     database: postgresql
     database-platform: org.hibernate.dialect.PostgreSQLDialect
-
 application:
   security:
     jwt:
@@ -21,3 +20,6 @@ application:
       expiration: ${JWT_TOKEN_EXPIRATION}
       refresh-token:
         expiration: ${JWT_REFRESH_TOKEN_EXPIRATION}
+server:
+  error:
+    include-message: always

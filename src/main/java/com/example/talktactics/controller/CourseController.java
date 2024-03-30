@@ -1,12 +1,15 @@
 package com.example.talktactics.controller;
 
-import com.example.talktactics.dto.course.CourseDto;
+import com.example.talktactics.dto.course.CoursePreviewDto;
 import com.example.talktactics.entity.*;
+import com.example.talktactics.exception.CourseRuntimeException;
 import com.example.talktactics.service.course.CourseService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
-import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
@@ -18,35 +21,54 @@ import java.util.List;
 public class CourseController {
     private final CourseService courseService;
 
-    @PreAuthorize("hasRole('ADMIN')")
-    @PostMapping()
-    public Course createCourse(@RequestBody Course course) {
-        return courseService.createCourse(course);
+    @PostMapping("/create")
+    public ResponseEntity<Course> create(@RequestBody Course course) {
+        try {
+            return ResponseEntity.ok(courseService.create(course));
+        } catch(CourseRuntimeException e) {
+            throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, e.getMessage());
+        }
     }
 
-    @GetMapping()
-    public List<CourseDto> getAllCourses() {
-        return courseService.getCourses();
+    @GetMapping("/id/{id}")
+    public ResponseEntity<Course> getById(@PathVariable Long id) {
+        try {
+            return ResponseEntity.ok(courseService.getById(id));
+        } catch(CourseRuntimeException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
+        }
     }
-
-    @GetMapping("/{id}")
-    public Course getCourseById(@PathVariable Long id) {
-        return courseService.getCourseById(id);
+    @GetMapping("/all/preview")
+    public ResponseEntity<List<CoursePreviewDto>> getPreviewList() {
+        try {
+            return ResponseEntity.ok(courseService.getPreviewList());
+        } catch(CourseRuntimeException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
+        }
     }
     @GetMapping("/level/{level}")
-    public List<Course> getCoursesByLevel(@PathVariable String level) {
-        return courseService.filterCoursesByLevelName(level);
+    public ResponseEntity<List<Course>> getCoursesByLevel(@PathVariable String level) {
+        try {
+            return ResponseEntity.ok(courseService.filterByLevel(level));
+        } catch (CourseRuntimeException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
+        }
+    }
+    @PutMapping("/id/{id}")
+    public ResponseEntity<Course> update(@PathVariable Long id, @RequestBody Course newCourse) {
+        try {
+            return ResponseEntity.ok(courseService.update(id, newCourse));
+        } catch(CourseRuntimeException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
+        }
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
-    @PutMapping("/{id}")
-    public Course updateCourse(@PathVariable Long id, @RequestBody Course newCourse) {
-        return courseService.updateCourse(id, newCourse);
-    }
-
-    @PreAuthorize("hasRole('ADMIN')")
-    @DeleteMapping("/{id}")
-    void deleteCourse(@PathVariable Long id) {
-        courseService.deleteCourse(id);
+    @DeleteMapping("/id/{id}")
+    public void delete(@PathVariable Long id) {
+        try {
+            courseService.delete(id);
+        } catch(CourseRuntimeException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
+        }
     }
 }

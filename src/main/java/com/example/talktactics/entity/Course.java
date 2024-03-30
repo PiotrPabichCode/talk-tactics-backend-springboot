@@ -1,7 +1,7 @@
 package com.example.talktactics.entity;
 
 import com.example.talktactics.common.CommonEntity;
-import com.example.talktactics.dto.course.CourseDto;
+import com.example.talktactics.dto.course.CoursePreviewDto;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
@@ -33,7 +33,7 @@ public class Course extends CommonEntity {
             orphanRemoval = true)
     private List<UserCourse> userCourses;
 
-    public CourseDto toDTO() {
-        return new CourseDto(this.getId(), this.title, this.description, this.level, this.courseItems.size());
+    public CoursePreviewDto toCoursePreviewDto() {
+        return new CoursePreviewDto(this.getId(), this.title, this.description, this.level, this.courseItems.size());
     }
 }

@@ -1,51 +1,53 @@
 package com.example.talktactics.service.course;
 
-import com.example.talktactics.dto.course.CourseDto;
-import com.example.talktactics.exception.CourseNotFoundException;
+import com.example.talktactics.dto.course.CoursePreviewDto;
+import com.example.talktactics.exception.CourseRuntimeException;
 import com.example.talktactics.entity.*;
 import com.example.talktactics.repository.*;
+import com.example.talktactics.util.Constants;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @Transactional
+@Slf4j
 @AllArgsConstructor
 public class CourseService {
     private final CourseRepository courseRepository;
 
-    public Course createCourse(Course course) {
+    public Course create(Course course) throws CourseRuntimeException {
         return courseRepository.save(course);
     }
-    public List<CourseDto> getCourses() {
+    public Course getById(Long id) throws CourseRuntimeException {
+        return courseRepository.findById(id).orElseThrow(() -> new CourseRuntimeException(Constants.COURSE_NOT_FOUND_EXCEPTION));
+    }
+    public List<CoursePreviewDto> getPreviewList() throws CourseRuntimeException {
         List<Course> courses = courseRepository.findAll(Sort.by("id"));
         return courses.stream()
-                .map(Course::toDTO)
-                .collect(Collectors.toList());
+                .map(Course::toCoursePreviewDto)
+                .toList();
     }
-    public Course getCourseById(Long id) {
-        return courseRepository.findById(id).orElseThrow(() -> new CourseNotFoundException(id));
+    public Course update(Long id, Course newCourse) throws CourseRuntimeException {
+        Course course = getById(id);
+
+        course.setDescription(newCourse.getDescription());
+        course.setLevel(newCourse.getLevel());
+        course.setTitle(newCourse.getTitle());
+
+        return course;
     }
-    public List<Course> filterCoursesByLevelName(String levelName) {
-        return courseRepository.findByLevelName(levelName);
-    }
-    public Course updateCourse(Long id, Course newCourse) {
-        return courseRepository.findById(id)
-                .map(course -> {
-                    course.setDescription(newCourse.getDescription());
-                    course.setLevel(newCourse.getLevel());
-                    course.setTitle(newCourse.getTitle());
-                    return courseRepository.save(course);
-                }).orElseThrow(() -> new CourseNotFoundException(id));
-    }
-    public void deleteCourse(Long id) {
+    public void delete(Long id) throws CourseRuntimeException {
         if (!courseRepository.existsById(id)) {
-            throw new CourseNotFoundException(id);
+            throw new CourseRuntimeException(Constants.COURSE_NOT_FOUND_EXCEPTION);
         }
         courseRepository.deleteById(id);
+    }
+    public List<Course> filterByLevel(String level) throws CourseRuntimeException {
+        return courseRepository.findByLevelName(level);
     }
 }
