@@ -1,15 +1,16 @@
 package com.example.talktactics.controller;
 
-import com.example.talktactics.dto.course_item.CourseItemDto;
-import com.example.talktactics.entity.CourseItem;
+import com.example.talktactics.dto.course_item.CourseItemPreviewDto;
+import com.example.talktactics.exception.CourseItemRuntimeException;
 import com.example.talktactics.service.course_item.CourseItemService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
-import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @AllArgsConstructor
@@ -20,32 +21,40 @@ public class CourseItemController {
 
     private final CourseItemService courseItemService;
 
-    @PreAuthorize("hasRole('ADMIN')")
-    @GetMapping()
-    public List<CourseItem> getAll() {
-        return courseItemService.getAll();
+    @GetMapping("/all")
+    public ResponseEntity<List<CourseItemPreviewDto>> getAll() {
+
+        try {
+            return ResponseEntity.ok(courseItemService.getAll());
+        } catch(CourseItemRuntimeException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
+        }
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
-    @GetMapping("/admin/course-items")
-    public List<CourseItemDto> getAllCourseItemsDTO() {
-        return courseItemService.getAllCourseItemsDTO();
+    @GetMapping("/id/{id}")
+    public ResponseEntity<CourseItemPreviewDto> getById(@PathVariable Long id) {
+        try {
+            return ResponseEntity.ok(courseItemService.findById(id));
+        } catch(CourseItemRuntimeException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
+        }
     }
 
-    @GetMapping("/{id}")
-    public Optional<CourseItem> getCourseItemDetailsById(@PathVariable Long id) {
-        return courseItemService.findById(id);
+    @GetMapping("/preview/courses/id/{id}")
+    public ResponseEntity<List<CourseItemPreviewDto>> getPreviewListByCourseId(@PathVariable int id) {
+        try {
+            return ResponseEntity.ok(courseItemService.getAllByCourseId(id));
+        } catch(CourseItemRuntimeException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
+        }
     }
 
-
-    @GetMapping("/courses/{id}/course-items")
-    public List<CourseItemDto> getByCourseId(@PathVariable int id) {
-        return courseItemService.getAllCourseItemsDTOByCourseId(id);
-    }
-
-    @PreAuthorize("hasRole('ADMIN')")
-    @DeleteMapping("/{id}")
-    public void deleteCourseItem(@PathVariable Long id) {
-        courseItemService.deleteCourseItem(id);
+    @DeleteMapping("/id/{id}")
+    public void deleteById(@PathVariable Long id) {
+        try {
+            courseItemService.deleteById(id);
+        } catch(CourseItemRuntimeException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
+        }
     }
 }

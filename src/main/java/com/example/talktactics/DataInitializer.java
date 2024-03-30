@@ -100,7 +100,7 @@ public class DataInitializer implements ApplicationRunner {
         users.add(User.builder().username("user").password(passwordEncoder.encode("user")).email("user@gmail.com").firstName("Jan").lastName("Tomczyk").bio("Adventurous soul, chasing dreams one step at a time. Lover of art, nature, and good conversations. Here to make memories").role(Role.USER).build());
         users.add(User.builder().username("user1").password(passwordEncoder.encode("user1")).email("user1@gmail.com").firstName("Tomasz").lastName("Kukułka").bio("Avid reader, passionate writer, and eternal optimist. Finding beauty in the little things and spreading positivity wherever I go.").role(Role.USER).build());
         userRepository.saveAll(users);
-        // create Course
+        // create Courses
         ArrayList<Course> courses = new ArrayList<>();
         for(int i = 0; i < 21; i++) {
             String name = String.format("Most frequently used english words - Top %d%%", (99 - i));
@@ -113,7 +113,7 @@ public class DataInitializer implements ApplicationRunner {
         loadCourseItemsFromJson(courses);
         ArrayList<UserCourse> userCourses = new ArrayList<>();
         for(User user: users) {
-            new Random().ints(0, courses.size()).limit(5).forEach(value -> {
+            new Random().ints(0, courses.size()).distinct().limit(5).forEach(value -> {
                 Course course = courses.get(value);
                 UserCourse userCourse = UserCourse.builder().completed(false)
                         .progress(0.0).user(user).course(course).build();

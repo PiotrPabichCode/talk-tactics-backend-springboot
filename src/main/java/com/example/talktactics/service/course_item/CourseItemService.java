@@ -1,47 +1,43 @@
 package com.example.talktactics.service.course_item;
 
-import com.example.talktactics.dto.course_item.CourseItemDto;
-import com.example.talktactics.exception.CourseNotFoundException;
+import com.example.talktactics.dto.course_item.CourseItemPreviewDto;
+import com.example.talktactics.exception.CourseItemRuntimeException;
 import com.example.talktactics.entity.CourseItem;
 import com.example.talktactics.repository.CourseItemRepository;
+import com.example.talktactics.util.Constants;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
 @Transactional
+@Slf4j
 @AllArgsConstructor
 public class CourseItemService {
     private final CourseItemRepository courseItemRepository;
-
-    public List<CourseItem> getAll() {
-        return courseItemRepository.findAll();
-    }
-
-    public List<CourseItemDto> getAllCourseItemsDTO() {
+    public List<CourseItemPreviewDto> getAll() throws CourseItemRuntimeException {
         List<CourseItem> courseItems = courseItemRepository.findAll();
         return courseItems.stream()
-                .map(CourseItem::toDTO)
-                .collect(Collectors.toList());
+                .map(CourseItem::toDTO).toList();
     }
 
-    public List<CourseItemDto> getAllCourseItemsDTOByCourseId(int id) {
-        List<CourseItem> courseItems = courseItemRepository.findByCourseId(id);
-        return courseItems.stream()
-                .map(CourseItem::toDTO)
-                .collect(Collectors.toList());
+    public List<CourseItemPreviewDto> getAllByCourseId(int id) throws CourseItemRuntimeException {
+        return courseItemRepository
+                .findByCourseId(id)
+                .stream()
+                .map(CourseItem::toDTO).toList();
     }
-    public Optional<CourseItem> findById(Long id) {
-        return courseItemRepository.findById(id);
+    public CourseItemPreviewDto findById(Long id) throws CourseItemRuntimeException {
+        return courseItemRepository.findById(id).map(CourseItem::toDTO).orElseThrow(() -> new CourseItemRuntimeException(Constants.COURSE_ITEM_NOT_FOUND_EXCEPTION));
     }
 
-    public void deleteCourseItem(Long id) {
+    public void deleteById(Long id) throws CourseItemRuntimeException {
         if (!courseItemRepository.existsById(id)) {
-            throw new CourseNotFoundException(id);
+            throw new CourseItemRuntimeException(Constants.COURSE_ITEM_NOT_FOUND_EXCEPTION);
         }
         courseItemRepository.deleteById(id);
     }

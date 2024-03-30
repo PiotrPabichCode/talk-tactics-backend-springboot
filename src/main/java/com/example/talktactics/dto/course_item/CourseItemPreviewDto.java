@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class CourseItemDto {
+public class CourseItemPreviewDto {
     int id;
     String word;
     @JsonProperty("part_of_speech")

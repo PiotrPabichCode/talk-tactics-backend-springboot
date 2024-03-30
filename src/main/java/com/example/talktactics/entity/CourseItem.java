@@ -1,6 +1,6 @@
 package com.example.talktactics.entity;
 
-import com.example.talktactics.dto.course_item.CourseItemDto;
+import com.example.talktactics.dto.course_item.CourseItemPreviewDto;
 import com.example.talktactics.common.CommonEntity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -40,7 +40,7 @@ public class CourseItem extends CommonEntity {
     @JoinColumn(name = "user_course_item_id")
     private UserCourseItem userCourseItem;
 
-    public CourseItemDto toDTO() {
-        return new CourseItemDto(this.getId(), this.word, this.partOfSpeech, this.phonetic, this.course.getTitle());
+    public CourseItemPreviewDto toDTO() {
+        return new CourseItemPreviewDto(this.getId(), this.word, this.partOfSpeech, this.phonetic, this.course.getTitle());
     }
 }
