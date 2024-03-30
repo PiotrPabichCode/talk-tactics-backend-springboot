@@ -1,16 +1,20 @@
 package com.example.talktactics.controller;
 
-import com.example.talktactics.dto.user_course.UserCourseGetDto;
-import com.example.talktactics.dto.user_course.UserCourseDeleteDto;
+import com.example.talktactics.dto.user_course.UserCourseGetReqDto;
+import com.example.talktactics.dto.user_course.UserCourseDeleteReqDto;
 import com.example.talktactics.dto.user_course.UserCoursePreviewDto;
-import com.example.talktactics.dto.user_course.UserCourseRequestDto;
+import com.example.talktactics.dto.user_course.UserCourseAddReqDto;
 import com.example.talktactics.entity.UserCourse;
+import com.example.talktactics.exception.UserCourseRuntimeException;
+import com.example.talktactics.exception.UserRuntimeException;
 import com.example.talktactics.service.user_course.UserCourseService;
 import com.example.talktactics.service.user.UserService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
-import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
@@ -24,39 +28,66 @@ public class UserCourseController {
     private final UserCourseService userCourseService;
     private final UserService userService;
 
-    @PreAuthorize("hasRole('ADMIN')")
-    @GetMapping()
-    public List<UserCourse> getAllUserCourses() {
-        return userCourseService.getAllUserCourses();
+    @GetMapping("/all")
+    public ResponseEntity<List<UserCourse>> getAllUserCourses() {
+        try {
+            return ResponseEntity.ok(userCourseService.getAllUserCourses());
+        } catch (UserCourseRuntimeException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
+        }
     }
 
-    @GetMapping("/preview/user-id/{userID}")
-    public List<UserCoursePreviewDto> getUserCoursesPreviewByUserId(@PathVariable Long userID) {
-        return userCourseService.getUserCoursesPreviewListByUserId(userID);
+    @GetMapping("/preview/user-id/{id}")
+    public ResponseEntity<List<UserCoursePreviewDto>> getUserCoursesPreviewByUserId(@PathVariable Long id) {
+        try {
+            return ResponseEntity.ok(userCourseService.getUserCoursesPreviewListByUserId(id));
+        } catch (UserCourseRuntimeException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
+        }
     }
 
-    @GetMapping("/username/{username}")
-    public List<UserCourse> getUserCoursesByUsername(@PathVariable String username) {
-        return userCourseService.getAllUserCoursesByUsername(username);
+    @GetMapping("/id/{id}")
+    public ResponseEntity<UserCourse> getById(@PathVariable Long id) {
+        try {
+            return ResponseEntity.ok(userCourseService.getById(id));
+        } catch (UserRuntimeException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
+        }
     }
 
-    @PostMapping("")
-    public UserCourse getByUserIdAndCourseId(@RequestBody UserCourseGetDto userCourseGetDto) {
-        return userCourseService.getByUserIdAndCourseId(userCourseGetDto);
+    @GetMapping("/user-id/{id}")
+    public ResponseEntity<List<UserCourse>> getAllByUserId(@PathVariable Long id) {
+        try {
+            return ResponseEntity.ok(userCourseService.getAllByUserId(id));
+        } catch (UserRuntimeException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
+        }
     }
 
-    @GetMapping("/{id}")
-    public UserCourse getById(@PathVariable Long id) {
-        return userCourseService.getById(id);
+    @PostMapping
+    public ResponseEntity<UserCourse> getByUserIdAndCourseId(@RequestBody UserCourseGetReqDto req) {
+        try {
+            return ResponseEntity.ok(userCourseService.getByUserIdAndCourseId(req));
+        } catch (UserRuntimeException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
+        }
     }
 
-    @PutMapping("")
-    public void addCourseToUser(@RequestBody UserCourseRequestDto userCourseRequestDto) {
-        userCourseService.addUserCourse(userCourseRequestDto);
+    @PutMapping
+    public void addCourseToUser(@RequestBody UserCourseAddReqDto req) {
+        try {
+            userCourseService.addUserCourse(req);
+        } catch (UserRuntimeException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
+        }
     }
 
-    @DeleteMapping("")
-    void deleteUserCourse(@RequestBody UserCourseDeleteDto userCourseDeleteDto) {
-        userCourseService.deleteUserCourse(userCourseDeleteDto);
+    @DeleteMapping
+    void deleteUserCourse(@RequestBody UserCourseDeleteReqDto req) {
+        try {
+            userCourseService.deleteUserCourse(req);
+        } catch (UserRuntimeException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
+        }
     }
 }

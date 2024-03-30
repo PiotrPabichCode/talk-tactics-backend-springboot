@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class UserCourseGetDto {
+public class UserCourseDeleteReqDto {
     @JsonProperty("course_id")
     private Long courseId;
     @JsonProperty("user_id")
