@@ -1,16 +1,14 @@
 package com.example.talktactics.service.user_course;
 
-import com.example.talktactics.dto.user_course.UserCourseDeleteReqDto;
-import com.example.talktactics.dto.user_course.UserCourseGetReqDto;
+import com.example.talktactics.dto.user_course.req.UserCourseDeleteReqDto;
+import com.example.talktactics.dto.user_course.req.UserCourseGetReqDto;
 import com.example.talktactics.dto.user_course.UserCoursePreviewDto;
-import com.example.talktactics.dto.user_course.UserCourseAddReqDto;
+import com.example.talktactics.dto.user_course.req.UserCourseAddReqDto;
 import com.example.talktactics.exception.CourseRuntimeException;
 import com.example.talktactics.exception.UserCourseRuntimeException;
 import com.example.talktactics.entity.*;
-import com.example.talktactics.repository.CourseRepository;
 import com.example.talktactics.repository.UserCourseItemRepository;
 import com.example.talktactics.repository.UserCourseRepository;
-import com.example.talktactics.repository.UserRepository;
 import com.example.talktactics.service.course.CourseService;
 import com.example.talktactics.service.user.UserService;
 import com.example.talktactics.util.Constants;

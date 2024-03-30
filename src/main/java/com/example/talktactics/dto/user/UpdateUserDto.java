@@ -1,11 +1,8 @@
 package com.example.talktactics.dto.user;
 
-import com.example.talktactics.entity.Role;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
-
-import java.util.Optional;
 
 @Data
 @Builder

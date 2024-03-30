@@ -1,14 +1,14 @@
-package com.example.talktactics.dto.user_course;
+package com.example.talktactics.dto.user_course.req;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
-@Builder
-@ToString
 @AllArgsConstructor
 @NoArgsConstructor
-public class UserCourseAddReqDto {
+public class UserCourseGetReqDto {
     @JsonProperty("course_id")
     private Long courseId;
     @JsonProperty("user_id")

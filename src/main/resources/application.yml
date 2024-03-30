@@ -1,6 +1,6 @@
 spring:
   config:
-    import: optional:secrets.local.properties
+    import: optional:secrets.properties
   datasource:
     url: jdbc:postgresql://${DB_HOST}:${DB_PORT}/${DB_DATABASE}
     username: ${DB_USERNAME}

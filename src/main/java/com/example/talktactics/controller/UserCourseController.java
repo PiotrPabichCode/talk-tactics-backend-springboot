@@ -1,9 +1,9 @@
 package com.example.talktactics.controller;
 
-import com.example.talktactics.dto.user_course.UserCourseGetReqDto;
-import com.example.talktactics.dto.user_course.UserCourseDeleteReqDto;
+import com.example.talktactics.dto.user_course.req.UserCourseGetReqDto;
+import com.example.talktactics.dto.user_course.req.UserCourseDeleteReqDto;
 import com.example.talktactics.dto.user_course.UserCoursePreviewDto;
-import com.example.talktactics.dto.user_course.UserCourseAddReqDto;
+import com.example.talktactics.dto.user_course.req.UserCourseAddReqDto;
 import com.example.talktactics.entity.UserCourse;
 import com.example.talktactics.exception.UserCourseRuntimeException;
 import com.example.talktactics.exception.UserRuntimeException;

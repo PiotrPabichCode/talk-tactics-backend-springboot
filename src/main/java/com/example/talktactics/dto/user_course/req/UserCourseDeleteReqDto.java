@@ -1,4 +1,4 @@
-package com.example.talktactics.dto.user_course;
+package com.example.talktactics.dto.user_course.req;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
