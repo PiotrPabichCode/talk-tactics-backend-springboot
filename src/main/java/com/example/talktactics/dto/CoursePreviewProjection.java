@@ -1,11 +1,13 @@
 package com.example.talktactics.dto;
 
 import com.example.talktactics.entity.CourseLevel;
+import org.springframework.beans.factory.annotation.Value;
 
 public interface CoursePreviewProjection {
     Long getId();
     String getTitle();
     String getDescription();
     CourseLevel getLevel();
-    int getCourseItemsSize(); // This might need a custom query to calculate
+    @Value("#{target.courseItemsSize}")
+    int getQuantity();
 }
