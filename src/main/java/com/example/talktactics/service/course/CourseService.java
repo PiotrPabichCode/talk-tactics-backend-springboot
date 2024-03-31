@@ -1,5 +1,6 @@
 package com.example.talktactics.service.course;
 
+import com.example.talktactics.dto.CoursePreviewProjection;
 import com.example.talktactics.dto.course.CoursePreviewDto;
 import com.example.talktactics.exception.CourseRuntimeException;
 import com.example.talktactics.entity.*;
@@ -26,11 +27,8 @@ public class CourseService {
     public Course getById(Long id) throws CourseRuntimeException {
         return courseRepository.findById(id).orElseThrow(() -> new CourseRuntimeException(Constants.COURSE_NOT_FOUND_EXCEPTION));
     }
-    public List<CoursePreviewDto> getPreviewList() throws CourseRuntimeException {
-        List<Course> courses = courseRepository.findAll(Sort.by("id"));
-        return courses.stream()
-                .map(Course::toCoursePreviewDto)
-                .toList();
+    public List<CoursePreviewProjection> getPreviewList() throws CourseRuntimeException {
+        return courseRepository.findCoursePreviews();
     }
     public Course update(Long id, Course newCourse) throws CourseRuntimeException {
         Course course = getById(id);

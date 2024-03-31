@@ -1,5 +1,6 @@
 package com.example.talktactics.controller;
 
+import com.example.talktactics.dto.CoursePreviewProjection;
 import com.example.talktactics.dto.course.CoursePreviewDto;
 import com.example.talktactics.entity.*;
 import com.example.talktactics.exception.CourseRuntimeException;
@@ -39,7 +40,7 @@ public class CourseController {
         }
     }
     @GetMapping("/all/preview")
-    public ResponseEntity<List<CoursePreviewDto>> getPreviewList() {
+    public ResponseEntity<List<CoursePreviewProjection>> getPreviewList() {
         try {
             return ResponseEntity.ok(courseService.getPreviewList());
         } catch(CourseRuntimeException e) {
