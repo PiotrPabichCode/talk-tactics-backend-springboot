@@ -1,22 +1,31 @@
 package com.example.talktactics.config;
 
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import com.example.talktactics.util.Constants;
+import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import io.jsonwebtoken.security.SignatureException;
+import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.security.Key;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.Function;
 
 @Service
+@RequiredArgsConstructor
+@Slf4j
 public class JwtService {
+    private final UserDetailsService userDetailsService;
 
     @Value("${application.security.jwt.secret-key}")
     private String secretKey;
@@ -24,6 +33,7 @@ public class JwtService {
     private long jwtExpiration;
     @Value("${application.security.jwt.refresh-token.expiration}")
     private long refreshExpiration;
+
     public String extractUsername(String token) {
         return extractClaim(token, Claims::getSubject);
     }
@@ -47,11 +57,47 @@ public class JwtService {
         return buildToken(new HashMap<>(), userDetails, refreshExpiration);
     }
 
+    public Optional<UserDetails> validateToken(String token) {
+        try {
+            String username = extractUsername(token);
+            UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+            if(!username.equals(userDetails.getUsername()) || isTokenExpired(token)) {
+                return Optional.empty();
+            }
+            return Optional.of(userDetails);
+        } catch (UsernameNotFoundException e) {
+            log.error(Constants.USERNAME_NOT_FOUND_EXCEPTION);
+            return Optional.empty();
+        } catch (ExpiredJwtException e) {
+            log.error(Constants.JWT_EXPIRED_EXCEPTION);
+            return Optional.empty();
+        } catch (SignatureException e) {
+            log.error(Constants.JWT_SIGNATURE_EXCEPTION);
+            return Optional.empty();
+        } catch (UnsupportedJwtException e) {
+            log.error(Constants.JWT_UNSUPPORTED_EXCEPTION);
+            return Optional.empty();
+        } catch (MalformedJwtException e) {
+            log.error(Constants.JWT_MALFORMED_EXCEPTION);
+            return Optional.empty();
+        } catch (IllegalArgumentException e) {
+            log.error(Constants.JWT_ILLEGAL_ARGUMENT_EXCEPTION);
+            return Optional.empty();
+        }
+    }
+
+//    ExpiredJwtException
+//UnsupportedJwtException
+//MalformedJwtException
+//SignatureException
+//IllegalArgumentException
+
     private String buildToken(
             Map<String, Object> extraClaims,
             UserDetails userDetails,
             long expiration
     ) {
+        log.info("Expiration" + expiration);
         return Jwts
                 .builder()
                 .setClaims(extraClaims)
