@@ -1,13 +1,11 @@
 package com.example.talktactics.repository;
 
-import com.example.talktactics.dto.CoursePreviewProjection;
+import com.example.talktactics.dto.course.CoursePreviewProjection;
 import com.example.talktactics.entity.Course;
-import com.example.talktactics.entity.CourseLevel;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 
 public interface CourseRepository extends JpaRepository<Course, Long> {

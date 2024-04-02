@@ -1,5 +1,10 @@
-package com.example.talktactics.auth;
+package com.example.talktactics.controller;
 
+import com.example.talktactics.dto.auth.req.AuthenticationRequest;
+import com.example.talktactics.dto.auth.req.RefreshTokenRequest;
+import com.example.talktactics.dto.auth.req.RegisterRequest;
+import com.example.talktactics.dto.auth.res.AuthenticationResponse;
+import com.example.talktactics.service.auth.AuthenticationServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -10,7 +15,7 @@ import org.springframework.web.bind.annotation.*;
 @CrossOrigin(origins = {"http://localhost:3000", "https://talk-tactics-frontend.vercel.app/"}, allowCredentials = "true")
 public class AuthenticationController {
 
-    private final AuthenticationService service;
+    private final AuthenticationServiceImpl service;
 
     @PostMapping("/register")
     public ResponseEntity<?> register(

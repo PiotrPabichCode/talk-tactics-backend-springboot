@@ -1,11 +1,10 @@
-package com.example.talktactics.config;
+package com.example.talktactics.service.jwt;
 
 import com.example.talktactics.util.Constants;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import io.jsonwebtoken.security.SignatureException;
-import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -24,16 +23,16 @@ import java.util.function.Function;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class JwtService {
-    private final UserDetailsService userDetailsService;
-
+public class JwtServiceImpl implements JwtService{
     @Value("${application.security.jwt.secret-key}")
     private String secretKey;
     @Value("${application.security.jwt.expiration}")
     private long jwtExpiration;
     @Value("${application.security.jwt.refresh-token.expiration}")
     private long refreshExpiration;
+    private final UserDetailsService userDetailsService;
 
+//  PUBLIC
     public String extractUsername(String token) {
         return extractClaim(token, Claims::getSubject);
     }
@@ -86,12 +85,7 @@ public class JwtService {
         }
     }
 
-//    ExpiredJwtException
-//UnsupportedJwtException
-//MalformedJwtException
-//SignatureException
-//IllegalArgumentException
-
+//  PRIVATE
     private String buildToken(
             Map<String, Object> extraClaims,
             UserDetails userDetails,
@@ -107,11 +101,6 @@ public class JwtService {
                 .signWith(getSignInKey(), SignatureAlgorithm.HS256)
                 .compact();
 
-    }
-
-    public boolean isTokenValid(String token, UserDetails userDetails) {
-        final String username = extractUsername(token);
-        return (username.equals(userDetails.getUsername())) && !isTokenExpired(token);
     }
 
     private boolean isTokenExpired(String token) {

@@ -7,8 +7,8 @@ import com.example.talktactics.dto.user_course.req.UserCourseAddReqDto;
 import com.example.talktactics.entity.UserCourse;
 import com.example.talktactics.exception.UserCourseRuntimeException;
 import com.example.talktactics.exception.UserRuntimeException;
-import com.example.talktactics.service.user_course.UserCourseService;
-import com.example.talktactics.service.user.UserService;
+import com.example.talktactics.service.user_course.UserCourseServiceImpl;
+import com.example.talktactics.service.user.UserServiceImpl;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -25,13 +25,13 @@ import java.util.List;
 @Tag(name = "User courses", description = "User courses management APIs")
 public class UserCourseController {
 
-    private final UserCourseService userCourseService;
-    private final UserService userService;
+    private final UserCourseServiceImpl userCourseServiceImpl;
+    private final UserServiceImpl userServiceImpl;
 
     @GetMapping("/all")
     public ResponseEntity<List<UserCourse>> getAllUserCourses() {
         try {
-            return ResponseEntity.ok(userCourseService.getAllUserCourses());
+            return ResponseEntity.ok(userCourseServiceImpl.getAllUserCourses());
         } catch (UserCourseRuntimeException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
         }
@@ -40,7 +40,7 @@ public class UserCourseController {
     @GetMapping("/preview/user-id/{id}")
     public ResponseEntity<List<UserCoursePreviewDto>> getUserCoursesPreviewByUserId(@PathVariable Long id) {
         try {
-            return ResponseEntity.ok(userCourseService.getUserCoursesPreviewListByUserId(id));
+            return ResponseEntity.ok(userCourseServiceImpl.getUserCoursesPreviewListByUserId(id));
         } catch (UserCourseRuntimeException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
         }
@@ -49,7 +49,7 @@ public class UserCourseController {
     @GetMapping("/id/{id}")
     public ResponseEntity<UserCourse> getById(@PathVariable Long id) {
         try {
-            return ResponseEntity.ok(userCourseService.getById(id));
+            return ResponseEntity.ok(userCourseServiceImpl.getById(id));
         } catch (UserRuntimeException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
         }
@@ -58,7 +58,7 @@ public class UserCourseController {
     @GetMapping("/user-id/{id}")
     public ResponseEntity<List<UserCourse>> getAllByUserId(@PathVariable Long id) {
         try {
-            return ResponseEntity.ok(userCourseService.getAllByUserId(id));
+            return ResponseEntity.ok(userCourseServiceImpl.getAllByUserId(id));
         } catch (UserRuntimeException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
         }
@@ -67,7 +67,7 @@ public class UserCourseController {
     @PostMapping
     public ResponseEntity<UserCourse> getByUserIdAndCourseId(@RequestBody UserCourseGetReqDto req) {
         try {
-            return ResponseEntity.ok(userCourseService.getByUserIdAndCourseId(req));
+            return ResponseEntity.ok(userCourseServiceImpl.getByUserIdAndCourseId(req));
         } catch (UserRuntimeException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
         }
@@ -76,7 +76,7 @@ public class UserCourseController {
     @PutMapping
     public void addCourseToUser(@RequestBody UserCourseAddReqDto req) {
         try {
-            userCourseService.addUserCourse(req);
+            userCourseServiceImpl.addUserCourse(req);
         } catch (UserRuntimeException e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
         }
@@ -85,7 +85,7 @@ public class UserCourseController {
     @DeleteMapping
     void deleteUserCourse(@RequestBody UserCourseDeleteReqDto req) {
         try {
-            userCourseService.deleteUserCourse(req);
+            userCourseServiceImpl.deleteUserCourse(req);
         } catch (UserRuntimeException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
         }

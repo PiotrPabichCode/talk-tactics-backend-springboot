@@ -1,6 +1,10 @@
-package com.example.talktactics.auth;
+package com.example.talktactics.service.auth;
 
-import com.example.talktactics.config.JwtService;
+import com.example.talktactics.dto.auth.req.AuthenticationRequest;
+import com.example.talktactics.dto.auth.res.AuthenticationResponse;
+import com.example.talktactics.dto.auth.req.RefreshTokenRequest;
+import com.example.talktactics.dto.auth.req.RegisterRequest;
+import com.example.talktactics.service.jwt.JwtServiceImpl;
 import com.example.talktactics.entity.Role;
 import com.example.talktactics.entity.User;
 import com.example.talktactics.repository.UserRepository;
@@ -12,12 +16,14 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class AuthenticationService {
+public class AuthenticationServiceImpl implements AuthenticationService{
 
     private final UserRepository repository;
     private final PasswordEncoder passwordEncoder;
-    private final JwtService jwtService;
+    private final JwtServiceImpl jwtServiceImpl;
     private final AuthenticationManager authenticationManager;
+
+//  PUBLIC
     public AuthenticationResponse register(RegisterRequest request) {
         validateNewUser(request);
         var user = User.builder()
@@ -29,8 +35,8 @@ public class AuthenticationService {
                 .role(Role.USER)
                 .build();
         repository.save(user);
-        var jwtToken = jwtService.generateToken(user);
-        var jwtRefreshToken = jwtService.generateRefreshToken(user);
+        var jwtToken = jwtServiceImpl.generateToken(user);
+        var jwtRefreshToken = jwtServiceImpl.generateRefreshToken(user);
         return AuthenticationResponse.builder()
                 .id(user.getId())
                 .username(user.getUsername())
@@ -40,9 +46,44 @@ public class AuthenticationService {
                 .build();
     }
 
-    private boolean isEmpty(String value) {
-        return value == null || value.isEmpty();
+    public AuthenticationResponse authenticate(AuthenticationRequest request) {
+        authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(
+                        request.getUsername(),
+                        request.getPassword()
+                )
+        );
+        var user = repository.findByUsername(request.getUsername())
+                .orElseThrow();
+        var jwtToken = jwtServiceImpl.generateToken(user);
+        var jwtRefreshToken = jwtServiceImpl.generateRefreshToken(user);
+        return AuthenticationResponse.builder()
+                .id(user.getId())
+                .username(user.getUsername())
+                .role(user.getRole())
+                .token(jwtToken)
+                .refreshToken(jwtRefreshToken)
+                .build();
     }
+
+    public AuthenticationResponse reauthenticate(RefreshTokenRequest request) {
+        var user = repository.findByUsername(request.getUsername())
+                .orElseThrow();
+        var jwtToken = jwtServiceImpl.generateToken(user);
+        var jwtRefreshToken = jwtServiceImpl.generateRefreshToken(user);
+        return AuthenticationResponse.builder()
+                .id(user.getId())
+                .username(user.getUsername())
+                .role(user.getRole())
+                .token(jwtToken)
+                .refreshToken(jwtRefreshToken)
+                .build();
+    }
+
+//  PRIVATE
+    private boolean isEmpty(String value) {
+    return value == null || value.isEmpty();
+}
     private void validateNewUser(RegisterRequest request) {
         if(isEmpty(request.getUsername()) || isEmpty(request.getPassword()) || isEmpty(request.getRepeatPassword())
                 || isEmpty(request.getEmail()) || isEmpty(request.getFirstName()) || isEmpty(request.getLastName())) {
@@ -57,40 +98,5 @@ public class AuthenticationService {
         if(!request.getPassword().equals(request.getRepeatPassword())) {
             throw new RuntimeException("Passwords must match each other");
         }
-    }
-
-    public AuthenticationResponse authenticate(AuthenticationRequest request) {
-        System.out.println(request);
-        authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                        request.getUsername(),
-                        request.getPassword()
-                )
-        );
-        var user = repository.findByUsername(request.getUsername())
-                .orElseThrow();
-        var jwtToken = jwtService.generateToken(user);
-        var jwtRefreshToken = jwtService.generateRefreshToken(user);
-        return AuthenticationResponse.builder()
-                .id(user.getId())
-                .username(user.getUsername())
-                .role(user.getRole())
-                .token(jwtToken)
-                .refreshToken(jwtRefreshToken)
-                .build();
-    }
-
-    public AuthenticationResponse reauthenticate(RefreshTokenRequest request) {
-        var user = repository.findByUsername(request.getUsername())
-                .orElseThrow();
-        var jwtToken = jwtService.generateToken(user);
-        var jwtRefreshToken = jwtService.generateRefreshToken(user);
-        return AuthenticationResponse.builder()
-                .id(user.getId())
-                .username(user.getUsername())
-                .role(user.getRole())
-                .token(jwtToken)
-                .refreshToken(jwtRefreshToken)
-                .build();
     }
 }

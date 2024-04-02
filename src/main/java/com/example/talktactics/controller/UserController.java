@@ -3,7 +3,7 @@ package com.example.talktactics.controller;
 import com.example.talktactics.dto.user.req.UpdatePasswordReqDto;
 import com.example.talktactics.entity.*;
 import com.example.talktactics.exception.UserRuntimeException;
-import com.example.talktactics.service.user.UserService;
+import com.example.talktactics.service.user.UserServiceImpl;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -20,12 +20,12 @@ import java.util.Map;
 @CrossOrigin(origins = {"http://localhost:3000", "https://talk-tactics-frontend.vercel.app/"}, allowCredentials = "true")
 @Tag(name = "Users", description = "Users management APIs")
 public class UserController {
-    private final UserService userService;
+    private final UserServiceImpl userServiceImpl;
 
     @PostMapping("/create")
     public ResponseEntity<User> create(@RequestBody User user) {
         try {
-            return ResponseEntity.ok(userService.createUser(user));
+            return ResponseEntity.ok(userServiceImpl.createUser(user));
         } catch(UserRuntimeException e) {
             throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, e.getMessage());
         }
@@ -34,7 +34,7 @@ public class UserController {
     @GetMapping("/all")
     public ResponseEntity<List<User>> getUsers() {
         try {
-            return ResponseEntity.ok(userService.getUsers());
+            return ResponseEntity.ok(userServiceImpl.getUsers());
         } catch(UserRuntimeException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
         }
@@ -43,7 +43,7 @@ public class UserController {
     @GetMapping("/id/{id}")
     public ResponseEntity<User> getUserById(@PathVariable Long id) {
         try {
-            return ResponseEntity.ok(userService.getUserById(id));
+            return ResponseEntity.ok(userServiceImpl.getUserById(id));
         } catch (UserRuntimeException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
         }
@@ -51,7 +51,7 @@ public class UserController {
     @GetMapping("/username/{username}")
     public ResponseEntity<User> findByUsername(@PathVariable String username) {
         try {
-            return ResponseEntity.ok(userService.getUserByUsername(username));
+            return ResponseEntity.ok(userServiceImpl.getUserByUsername(username));
         } catch (UserRuntimeException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
         }
@@ -60,7 +60,7 @@ public class UserController {
     @PatchMapping("/id/{id}")
     public ResponseEntity<User> updateUser(@PathVariable Long id, @RequestBody Map<String, Object> fields) {
         try {
-            return ResponseEntity.ok(userService.updateUser(id, fields));
+            return ResponseEntity.ok(userServiceImpl.updateUser(id, fields));
         } catch (UserRuntimeException e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
         }
@@ -69,7 +69,7 @@ public class UserController {
     @DeleteMapping("/id/{id}")
     public void deleteUser(@PathVariable Long id) {
         try {
-            userService.deleteUser(id);
+            userServiceImpl.deleteUser(id);
         } catch(UserRuntimeException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
         }
@@ -78,7 +78,7 @@ public class UserController {
     @PutMapping("/password")
     public ResponseEntity<User> updatePassword(@RequestBody UpdatePasswordReqDto request) {
         try {
-            return ResponseEntity.ok(userService.updatePassword(request));
+            return ResponseEntity.ok(userServiceImpl.updatePassword(request));
         } catch (UserRuntimeException e) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, e.getMessage());
         }

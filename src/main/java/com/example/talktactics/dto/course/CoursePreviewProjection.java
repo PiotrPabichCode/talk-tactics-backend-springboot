@@ -1,4 +1,4 @@
-package com.example.talktactics.dto;
+package com.example.talktactics.dto.course;
 
 import com.example.talktactics.entity.CourseLevel;
 import org.springframework.beans.factory.annotation.Value;

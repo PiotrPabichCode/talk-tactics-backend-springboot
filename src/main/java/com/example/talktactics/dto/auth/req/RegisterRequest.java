@@ -1,4 +1,4 @@
-package com.example.talktactics.auth;
+package com.example.talktactics.dto.auth.req;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;

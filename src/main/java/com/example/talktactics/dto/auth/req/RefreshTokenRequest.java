@@ -1,6 +1,5 @@
-package com.example.talktactics.auth;
+package com.example.talktactics.dto.auth.req;
 
-import com.example.talktactics.entity.Role;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -11,12 +10,8 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class AuthenticationResponse {
-
-    private int id;
+public class RefreshTokenRequest {
     private String username;
-    private Role role;
-    private String token;
     @JsonProperty("refresh_token")
     private String refreshToken;
 }
