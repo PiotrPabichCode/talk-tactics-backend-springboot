@@ -1,5 +1,6 @@
-package com.example.talktactics.config;
+package com.example.talktactics.config.security;
 
+import com.example.talktactics.service.jwt.JwtServiceImpl;
 import com.example.talktactics.util.Constants;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -12,17 +13,20 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
+import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 import java.util.Optional;
 
+import static com.example.talktactics.config.SecurityConfig.WHITELIST_URLS;
+
 @Component
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
-    private final JwtService jwtService;
+    private final JwtServiceImpl jwtServiceImpl;
 
     @Override
     protected void doFilterInternal(
@@ -30,6 +34,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             @NonNull HttpServletResponse response,
             @NonNull FilterChain filterChain
     ) throws ServletException, IOException {
+        for(RequestMatcher anyRequest: WHITELIST_URLS) {
+            if(anyRequest.matches(request)) {
+                filterChain.doFilter(request, response);
+                return;
+            }
+        }
         final String authHeader = request.getHeader("Authorization");
         final String jwt;
         if(authHeader == null || !authHeader.startsWith("Bearer ")) {
@@ -38,7 +48,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         }
         jwt = authHeader.substring(7);
         if(SecurityContextHolder.getContext().getAuthentication() == null) {
-            Optional<UserDetails> userDetails = jwtService.validateToken(jwt);
+            Optional<UserDetails> userDetails = jwtServiceImpl.validateToken(jwt);
             if(userDetails.isEmpty()) {
                 response.sendError(HttpStatus.UNAUTHORIZED.value(), Constants.JWT_INVALID_EXCEPTION);
                 return;
