@@ -3,6 +3,7 @@ package com.example.talktactics.common;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
+import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -10,11 +11,16 @@ import java.io.Serializable;
 import java.util.Date;
 
 @MappedSuperclass
-@Data
+@SuperBuilder(toBuilder = true)
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
 public abstract class CommonEntity implements Serializable {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private long id;
 
     @JsonIgnore
     @CreationTimestamp

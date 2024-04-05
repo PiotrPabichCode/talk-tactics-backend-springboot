@@ -63,7 +63,7 @@ public class UserCourseItemServiceImpl implements UserCourseItemService {
         if(items.isEmpty()) {
             throw new UserCourseRuntimeException(Constants.USER_COURSE_ITEM_NOT_FOUND_EXCEPTION);
         }
-        items.sort(Comparator.comparingInt(UserCourseItemPreviewDto::getId));
+        items.sort(Comparator.comparingLong(UserCourseItemPreviewDto::getId));
         return items;
     }
 }

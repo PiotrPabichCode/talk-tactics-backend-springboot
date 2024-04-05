@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class CourseItemPreviewDto {
-    int id;
+    long id;
     String word;
     @JsonProperty("part_of_speech")
     String partOfSpeech;

@@ -9,11 +9,11 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class UserCoursePreviewDto {
-    int id;
+    long id;
     @JsonProperty("user_id")
-    int userId;
+    long userId;
     @JsonProperty("course_id")
-    int courseId;
+    long courseId;
     double progress;
     boolean completed;
 }

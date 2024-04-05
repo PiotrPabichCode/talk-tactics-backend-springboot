@@ -7,6 +7,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
 import lombok.*;
+import lombok.experimental.SuperBuilder;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -15,12 +16,12 @@ import java.util.Collection;
 import java.util.List;
 
 @Entity
-@Builder
-@Data
+@Table(name = "users")
+@Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@ToString
-@Table(name = "users")
+@SuperBuilder(toBuilder = true)
 public class User extends CommonEntity implements UserDetails {
 
     @Column(unique = true)
@@ -33,7 +34,7 @@ public class User extends CommonEntity implements UserDetails {
     private String lastName;
     @Column(unique = true)
     private String email;
-    @Size(max = 160)
+    @Size(max = 250)
     private String bio;
 
     @Enumerated(EnumType.STRING)
