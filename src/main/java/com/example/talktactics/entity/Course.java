@@ -5,15 +5,16 @@ import com.example.talktactics.dto.course.CoursePreviewDto;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
+import lombok.experimental.SuperBuilder;
 
 import java.util.List;
 
 @Entity
-@Builder
-@Data
+@Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@ToString
+@SuperBuilder(toBuilder = true)
 @Table(name = "courses")
 public class Course extends CommonEntity {
     private String title;

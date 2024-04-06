@@ -4,6 +4,7 @@ import com.example.talktactics.dto.course.CoursePreviewProjection;
 import com.example.talktactics.exception.CourseRuntimeException;
 import com.example.talktactics.entity.*;
 import com.example.talktactics.repository.*;
+import com.example.talktactics.service.user.UserServiceImpl;
 import com.example.talktactics.util.Constants;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -18,18 +19,21 @@ import java.util.List;
 @AllArgsConstructor
 public class CourseServiceImpl implements CourseService {
     private final CourseRepository courseRepository;
+    private final UserServiceImpl userService;
 
 //  PUBLIC
     public Course create(Course course) throws CourseRuntimeException {
+        userService.validateAdmin();
         return courseRepository.save(course);
     }
-    public Course getById(Long id) throws CourseRuntimeException {
+    public Course getById(long id) throws CourseRuntimeException {
         return courseRepository.findById(id).orElseThrow(() -> new CourseRuntimeException(Constants.COURSE_NOT_FOUND_EXCEPTION));
     }
     public List<CoursePreviewProjection> getPreviewList() throws CourseRuntimeException {
         return courseRepository.findCoursePreviews();
     }
-    public Course update(Long id, Course newCourse) throws CourseRuntimeException {
+    public Course update(long id, Course newCourse) throws CourseRuntimeException {
+        userService.validateAdmin();
         Course course = getById(id);
 
         course.setDescription(newCourse.getDescription());
@@ -38,7 +42,8 @@ public class CourseServiceImpl implements CourseService {
 
         return course;
     }
-    public void delete(Long id) throws CourseRuntimeException {
+    public void delete(long id) throws CourseRuntimeException {
+        userService.validateAdmin();
         if (!courseRepository.existsById(id)) {
             throw new CourseRuntimeException(Constants.COURSE_NOT_FOUND_EXCEPTION);
         }

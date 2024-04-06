@@ -7,9 +7,9 @@ import java.util.List;
 
 public interface CourseService {
     Course create(Course course);
-    Course getById(Long id);
+    Course getById(long id);
     List<CoursePreviewProjection> getPreviewList();
-    Course update(Long id, Course newCourse);
-    void delete(Long id);
+    Course update(long id, Course newCourse);
+    void delete(long id);
     List<Course> filterByLevel(String level);
 }
