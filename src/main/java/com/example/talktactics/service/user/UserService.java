@@ -9,10 +9,10 @@ import java.util.Map;
 public interface UserService {
     User createUser(User user);
     List<User> getUsers();
-    User getUserById(Long id);
+    User getUserById(long id);
     User getUserByUsername(String username);
-    void deleteUser(Long id);
-    User updateUser(Long id, Map<String, Object> fields);
+    void deleteUser(long id);
+    User updateUser(long id, Map<String, Object> fields);
     void validateCredentials(User user);
     void validateFields(Map<String, Object> fields);
     User updatePassword(UpdatePasswordReqDto req);

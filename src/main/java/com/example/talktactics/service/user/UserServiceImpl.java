@@ -34,21 +34,26 @@ public class UserServiceImpl implements UserService{
         return userRepository.save(user);
     }
     public List<User> getUsers() {
+        validateAdmin();
         return userRepository.findAll();
     }
-    public User getUserById(Long id) {
-        return userRepository.findById(id).orElseThrow(() -> new UserRuntimeException(Constants.USER_NOT_FOUND_EXCEPTION));
+    public User getUserById(long id) {
+        User user = userRepository.findById(id).orElseThrow(() -> new UserRuntimeException(Constants.USER_NOT_FOUND_EXCEPTION));
+        validateCredentials(user);
+        return user;
     }
     public User getUserByUsername(String username) {
-        return userRepository.findByUsername(username).orElseThrow(() -> new UserRuntimeException(Constants.USER_NOT_FOUND_EXCEPTION));
+        User user = userRepository.findByUsername(username).orElseThrow(() -> new UserRuntimeException(Constants.USER_NOT_FOUND_EXCEPTION));
+        validateCredentials(user);
+        return user;
     }
 
-    public void deleteUser(Long id) {
+    public void deleteUser(long id) {
+        validateAdmin();
         if(!userRepository.existsById(id)) {
             throw new UserRuntimeException(Constants.USER_NOT_FOUND_EXCEPTION);
         }
 
-        isAdmin();
         User user = getUserById(id);
         if(user.getRole().toString().equals(Constants.ADMIN)) {
             throw new UserRuntimeException("Cannot delete admin user");
@@ -56,7 +61,7 @@ public class UserServiceImpl implements UserService{
         userRepository.deleteById(id);
     }
 
-    public User updateUser(Long id, Map<String, Object> fields) {
+    public User updateUser(long id, Map<String, Object> fields) {
         User user = getUserById(id);
         validateCredentials(user);
         validateFields(fields);
@@ -77,6 +82,12 @@ public class UserServiceImpl implements UserService{
         });
 
         return userRepository.save(user);
+    }
+
+    public void validateAdmin() {
+        if(!isAdmin()) {
+            throw new UserRuntimeException(Constants.NOT_ENOUGH_AUTHORITIES_EXCEPTION);
+        }
     }
     public void validateCredentials(User user) {
         if(!isAdmin() && !isCurrentUser(user)) {

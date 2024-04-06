@@ -16,7 +16,8 @@ https://talk-tactics-backend-springboot.onrender.com/swagger-ui/index.html#/
 - PostgreSQL: A relational database management system used for storing and retrieving data.
 - JSON Web Tokens (JWT): A method for securely transmitting information between parties as a JSON object.
 - Hibernate: An object-relational mapping framework for Java applications.
-- Swagger UI: A tool for creating visual documentation
+- Swagger UI: A tool for generating interactive API documentation.
+- Mockito: A mocking framework for testing Java applications.
 
 ## Folder structure:
 
