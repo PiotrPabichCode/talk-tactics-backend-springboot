@@ -7,16 +7,17 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.*;
+import lombok.experimental.SuperBuilder;
 
 import java.util.List;
 
 @Entity
-@Builder
-@Data
+@Table(name = "course_items")
+@Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@ToString
-@Table(name = "course_items")
+@SuperBuilder(toBuilder = true)
 public class CourseItem extends CommonEntity {
     private String word;
     private String phonetic;

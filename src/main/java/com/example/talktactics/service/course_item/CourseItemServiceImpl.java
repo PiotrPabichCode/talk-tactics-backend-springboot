@@ -4,6 +4,7 @@ import com.example.talktactics.dto.course_item.CourseItemPreviewDto;
 import com.example.talktactics.exception.CourseItemRuntimeException;
 import com.example.talktactics.entity.CourseItem;
 import com.example.talktactics.repository.CourseItemRepository;
+import com.example.talktactics.service.user.UserServiceImpl;
 import com.example.talktactics.util.Constants;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -18,6 +19,7 @@ import java.util.List;
 @AllArgsConstructor
 public class CourseItemServiceImpl implements CourseItemService{
     private final CourseItemRepository courseItemRepository;
+    private final UserServiceImpl userService;
 
 //  PUBLIC
     public List<CourseItemPreviewDto> getAll() throws CourseItemRuntimeException {
@@ -26,17 +28,18 @@ public class CourseItemServiceImpl implements CourseItemService{
                 .map(CourseItem::toDTO).toList();
     }
 
-    public List<CourseItemPreviewDto> getAllByCourseId(int id) throws CourseItemRuntimeException {
+    public List<CourseItemPreviewDto> getAllByCourseId(long id) throws CourseItemRuntimeException {
         return courseItemRepository
                 .findByCourseId(id)
                 .stream()
                 .map(CourseItem::toDTO).toList();
     }
-    public CourseItem findById(Long id) throws CourseItemRuntimeException {
+    public CourseItem findById(long id) throws CourseItemRuntimeException {
         return courseItemRepository.findById(id).orElseThrow(() -> new CourseItemRuntimeException(Constants.COURSE_ITEM_NOT_FOUND_EXCEPTION));
     }
 
-    public void deleteById(Long id) throws CourseItemRuntimeException {
+    public void deleteById(long id) throws CourseItemRuntimeException {
+        userService.validateAdmin();
         if (!courseItemRepository.existsById(id)) {
             throw new CourseItemRuntimeException(Constants.COURSE_ITEM_NOT_FOUND_EXCEPTION);
         }

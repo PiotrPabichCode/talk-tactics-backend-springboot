@@ -7,7 +7,7 @@ import java.util.List;
 
 public interface CourseItemService {
     List<CourseItemPreviewDto> getAll();
-    List<CourseItemPreviewDto> getAllByCourseId(int id);
-    CourseItem findById(Long id);
-    void deleteById(Long id);
+    List<CourseItemPreviewDto> getAllByCourseId(long id);
+    CourseItem findById(long id);
+    void deleteById(long id);
 }
