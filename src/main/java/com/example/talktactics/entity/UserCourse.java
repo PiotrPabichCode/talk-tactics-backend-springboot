@@ -6,16 +6,17 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.*;
+import lombok.experimental.SuperBuilder;
 
 import java.util.List;
 
 @Entity
-@Builder
-@Data
+@Table(name = "user_courses")
+@Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@ToString
-@Table(name = "user_courses")
+@SuperBuilder(toBuilder = true)
 public class UserCourse extends CommonEntity {
     private double progress;
     @JsonProperty("is_completed")

@@ -10,7 +10,7 @@ import lombok.*;
 @NoArgsConstructor
 public class UserCourseAddReqDto {
     @JsonProperty("course_id")
-    private Long courseId;
+    private long courseId;
     @JsonProperty("user_id")
-    private Long userId;
+    private long userId;
 }

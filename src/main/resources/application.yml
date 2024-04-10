@@ -9,8 +9,10 @@ spring:
   jpa:
     hibernate:
       ddl-auto: create
+      format_sql: true
     show-sql: false
     open-in-view: false
+
     database: postgresql
     database-platform: org.hibernate.dialect.PostgreSQLDialect
 application:

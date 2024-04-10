@@ -10,9 +10,9 @@ import java.util.List;
 
 public interface UserCourseService {
     List<UserCourse> getAllUserCourses();
-    List<UserCourse> getAllByUserId(Long userID);
-    List<UserCoursePreviewDto> getUserCoursesPreviewListByUserId(Long userId);
-    UserCourse getById(Long id);
+    List<UserCourse> getAllByUserId(long userID);
+    List<UserCoursePreviewDto> getUserCoursesPreviewListByUserId(long userId);
+    UserCourse getById(long id);
     void addUserCourse(UserCourseAddReqDto req);
     void deleteUserCourse(UserCourseDeleteReqDto req);
     UserCourse getByUserIdAndCourseId(UserCourseGetReqDto req);

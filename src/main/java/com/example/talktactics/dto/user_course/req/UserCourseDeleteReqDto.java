@@ -1,16 +1,16 @@
 package com.example.talktactics.dto.user_course.req;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Data
+@Builder
+@ToString
 @AllArgsConstructor
 @NoArgsConstructor
 public class UserCourseDeleteReqDto {
     @JsonProperty("course_id")
-    private Long courseId;
+    private long courseId;
     @JsonProperty("user_id")
-    private Long userId;
+    private long userId;
 }

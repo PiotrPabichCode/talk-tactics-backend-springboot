@@ -29,27 +29,28 @@ public class UserCourseServiceImpl implements UserCourseService {
 
     private final UserCourseItemRepository userCourseItemRepository;
     private final UserCourseRepository userCourseRepository;
-    private final UserServiceImpl userServiceImpl;
-    private final CourseServiceImpl courseServiceImpl;
+    private final UserServiceImpl userService;
+    private final CourseServiceImpl courseService;
 
 //  PUBLIC
     public List<UserCourse> getAllUserCourses() throws UserCourseRuntimeException {
+        userService.validateAdmin();
         return userCourseRepository.findAll(Sort.by("id"));
     }
 
-    public List<UserCourse> getAllByUserId(Long userID) throws UserCourseRuntimeException {
-        User user = userServiceImpl.getUserById(userID);
-        userServiceImpl.validateCredentials(user);
+    public List<UserCourse> getAllByUserId(long userID) throws UserCourseRuntimeException {
+        User user = userService.getUserById(userID);
+        userService.validateCredentials(user);
         return user.getUserCourses();
     }
 
-    public List<UserCoursePreviewDto> getUserCoursesPreviewListByUserId(Long userId) throws UserCourseRuntimeException {
+    public List<UserCoursePreviewDto> getUserCoursesPreviewListByUserId(long userId) throws UserCourseRuntimeException {
         return getAllByUserId(userId).stream().map(UserCourse::toUserCoursePreviewDto).toList();
     }
 
-    public UserCourse getById(Long id) throws UserCourseRuntimeException {
+    public UserCourse getById(long id) throws UserCourseRuntimeException {
         UserCourse userCourse = userCourseRepository.findById(id).orElseThrow(() -> new UserCourseRuntimeException(Constants.USER_COURSE_NOT_FOUND_EXCEPTION));
-        userServiceImpl.validateCredentials(userCourse.getUser());
+        userService.validateCredentials(userCourse.getUser());
         return userCourse;
     }
 
@@ -58,10 +59,10 @@ public class UserCourseServiceImpl implements UserCourseService {
             throw new UserCourseRuntimeException(Constants.USER_COURSE_EXISTS_EXCEPTION);
         }
 
-        User user = userServiceImpl.getUserById(req.getUserId());
-        userServiceImpl.validateCredentials(user);
+        User user = userService.getUserById(req.getUserId());
+        userService.validateCredentials(user);
         // find course
-        Course course = courseServiceImpl.getById(req.getCourseId());
+        Course course = courseService.getById(req.getCourseId());
 
         UserCourse userCourse = UserCourse.builder().completed(false)
                 .progress(0.0).user(user).course(course).build();
@@ -74,15 +75,15 @@ public class UserCourseServiceImpl implements UserCourseService {
         userCourseItemRepository.saveAll(userCourseItems);
     }
     public void deleteUserCourse(UserCourseDeleteReqDto req) throws UserCourseRuntimeException {
-        User user = userServiceImpl.getUserById(req.getUserId());
-        userServiceImpl.validateCredentials(user);
+        User user = userService.getUserById(req.getUserId());
+        userService.validateCredentials(user);
         UserCourse userCourse = getUserCourse(req.getCourseId(), req.getUserId());
         userCourseRepository.delete(userCourse);
     }
 
     public UserCourse getByUserIdAndCourseId(UserCourseGetReqDto req) throws UserCourseRuntimeException {
-        User user = userServiceImpl.getUserById(req.getUserId());
-        userServiceImpl.validateCredentials(user);
+        User user = userService.getUserById(req.getUserId());
+        userService.validateCredentials(user);
         return getUserCourse(req.getCourseId(), req.getUserId());
     }
 
