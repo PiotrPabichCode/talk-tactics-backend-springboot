@@ -4,6 +4,7 @@ import com.example.talktactics.dto.user_course.UserCoursePreviewDto;
 import com.example.talktactics.dto.user_course.req.UserCourseAddReqDto;
 import com.example.talktactics.dto.user_course.req.UserCourseDeleteReqDto;
 import com.example.talktactics.dto.user_course.req.UserCourseGetReqDto;
+import com.example.talktactics.dto.user_course.res.UserCourseResponseDto;
 import com.example.talktactics.entity.Course;
 import com.example.talktactics.entity.Role;
 import com.example.talktactics.entity.User;
@@ -62,6 +63,7 @@ public class UserCourseServiceTests {
     private UserCourseAddReqDto userCourseAddReqDto;
     private UserCourseDeleteReqDto userCourseDeleteReqDto;
     private UserCourseGetReqDto userCourseGetReqDto;
+    private UserCourseResponseDto userCourseResponseDto;
 
     @BeforeEach
     public void init() {
@@ -144,6 +146,8 @@ public class UserCourseServiceTests {
                 .userId(userCourseList.get(0).getUser().getId())
                 .courseId(userCourseList.get(0).getId())
                 .build();
+
+        userCourseResponseDto = userCourseList.get(0).toUserCourseResponseDto();
     }
 
 //    @Test
@@ -177,12 +181,15 @@ public class UserCourseServiceTests {
     @Test
     @WithMockUser(username = "dwayne_johnson")
     public void UserCourseService_GetAllByUserId_ReturnsListOfUserCourses() {
+        UserCourse testUserCourse = userCourseList.get(0);
         given(userRepository.findById(any(long.class))).willReturn(Optional.of(userList.get(0)));
+        given(userCourseRepository.findAllByUserId(any(long.class))).willReturn(List.of(testUserCourse));
 
-        List<UserCourse> result = userCourseService.getAllByUserId(1);
+        List<UserCourseResponseDto> result = userCourseService.getAllByUserId(1);
 
         Assertions.assertThat(result).isNotNull();
         Assertions.assertThat(result.size()).isEqualTo(1);
+        Assertions.assertThat(result.get(0)).isEqualTo(userCourseResponseDto);
     }
 
     @Test

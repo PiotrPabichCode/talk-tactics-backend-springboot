@@ -4,6 +4,7 @@ import com.example.talktactics.dto.user_course.UserCoursePreviewDto;
 import com.example.talktactics.dto.user_course.req.UserCourseAddReqDto;
 import com.example.talktactics.dto.user_course.req.UserCourseDeleteReqDto;
 import com.example.talktactics.dto.user_course.req.UserCourseGetReqDto;
+import com.example.talktactics.dto.user_course.res.UserCourseResponseDto;
 import com.example.talktactics.entity.*;
 import com.example.talktactics.service.jwt.JwtServiceImpl;
 import com.example.talktactics.service.user.UserServiceImpl;
@@ -58,6 +59,7 @@ public class UserCourseControllerTests {
     private UserCourseGetReqDto userCourseGetReqDto;
     private UserCourseAddReqDto userCourseAddReqDto;
     private UserCourseDeleteReqDto userCourseDeleteReqDto;
+    private UserCourseResponseDto userCourseResponseDto;
 
     @BeforeEach
     public void init() {
@@ -133,6 +135,8 @@ public class UserCourseControllerTests {
                 .userId(user.getId())
                 .courseId(courseList.get(0).getId())
                 .build();
+
+        userCourseResponseDto = userCourseList.get(0).toUserCourseResponseDto();
     }
 
     @Test
@@ -196,7 +200,7 @@ public class UserCourseControllerTests {
 
     @Test
     public void UserCourseController_GetAllByUserId_ReturnsUserCourses() throws Exception {
-        given(userCourseService.getAllByUserId(any(long.class))).willReturn(userCourseList);
+        given(userCourseService.getAllByUserId(any(long.class))).willReturn(List.of(userCourseResponseDto));
 
         MockHttpServletRequestBuilder request = get(BASE_URL + "/user-id/" + user.getId())
                 .contentType(MediaType.APPLICATION_JSON);
@@ -205,11 +209,16 @@ public class UserCourseControllerTests {
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$").isArray())
-                .andExpect(jsonPath("$[0].id").value(userCourseList.get(0).getId()))
-                .andExpect(jsonPath("$[0].course.id").value(userCourseList.get(0).getCourse().getId()))
-                .andExpect(jsonPath("$[0].user.id").value(userCourseList.get(0).getUser().getId()))
-                .andExpect(jsonPath("$[1].id").value(userCourseList.get(1).getId()));
+                .andExpectAll(
+                        jsonPath("$").isArray(),
+                        jsonPath("$[0].id").value(userCourseResponseDto.getId()),
+                        jsonPath("$[0].title").value(userCourseResponseDto.getTitle()),
+                        jsonPath("$[0].description").value(userCourseResponseDto.getDescription()),
+                        jsonPath("$[0].level").value(userCourseResponseDto.getLevel().name()),
+                        jsonPath("$[0].quantity").value(userCourseResponseDto.getQuantity()),
+                        jsonPath("$[0].completed").value(userCourseResponseDto.isCompleted()),
+                        jsonPath("$[0].progress").value(userCourseResponseDto.getProgress())
+                );
 
         verify(userCourseService).getAllByUserId(user.getId());
     }
