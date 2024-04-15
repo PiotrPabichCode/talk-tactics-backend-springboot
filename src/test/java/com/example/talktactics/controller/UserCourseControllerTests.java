@@ -160,27 +160,6 @@ public class UserCourseControllerTests {
     }
 
     @Test
-    public void UserCourseController_GetUserCoursesPreviewByUserId_ReturnsUserCoursesPreview() throws Exception {
-        given(userCourseService.getUserCoursesPreviewListByUserId(any(long.class))).willReturn(userCoursePreviewDtoList);
-
-        MockHttpServletRequestBuilder request = get(BASE_URL + "/preview/user-id/" + user.getId())
-                .contentType(MediaType.APPLICATION_JSON);
-
-
-        mockMvc.perform(request)
-                .andDo(print())
-                .andExpect(status().isOk())
-                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$").isArray())
-                .andExpect(jsonPath("$[0].id").value(userCoursePreviewDtoList.get(0).getId()))
-                .andExpect(jsonPath("$[0].course_id").value(userCoursePreviewDtoList.get(0).getCourseId()))
-                .andExpect(jsonPath("$[0].user_id").value(userCoursePreviewDtoList.get(0).getUserId()))
-                .andExpect(jsonPath("$[1].id").value(userCoursePreviewDtoList.get(1).getId()));
-
-        verify(userCourseService).getUserCoursesPreviewListByUserId(user.getId());
-    }
-
-    @Test
     public void UserCourseController_GetById_ReturnsUserCourse() throws Exception {
         given(userCourseService.getById(any(long.class))).willReturn(userCourse);
 

@@ -22,22 +22,24 @@ public class CourseItemServiceImpl implements CourseItemService{
     private final UserServiceImpl userService;
 
 //  PUBLIC
+    @Override
     public List<CourseItemPreviewDto> getAll() throws CourseItemRuntimeException {
         List<CourseItem> courseItems = courseItemRepository.findAll();
         return courseItems.stream()
                 .map(CourseItem::toDTO).toList();
     }
-
+    @Override
     public List<CourseItemPreviewDto> getAllByCourseId(long id) throws CourseItemRuntimeException {
         return courseItemRepository
                 .findByCourseId(id)
                 .stream()
                 .map(CourseItem::toDTO).toList();
     }
+    @Override
     public CourseItem findById(long id) throws CourseItemRuntimeException {
         return courseItemRepository.findById(id).orElseThrow(() -> new CourseItemRuntimeException(Constants.COURSE_ITEM_NOT_FOUND_EXCEPTION));
     }
-
+    @Override
     public void deleteById(long id) throws CourseItemRuntimeException {
         userService.validateAdmin();
         if (!courseItemRepository.existsById(id)) {

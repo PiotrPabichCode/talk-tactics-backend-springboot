@@ -14,6 +14,7 @@ public interface UserService {
     void deleteUser(long id);
     User updateUser(long id, Map<String, Object> fields);
     void validateCredentials(User user);
+    void validateAdmin();
     void validateFields(Map<String, Object> fields);
     User updatePassword(UpdatePasswordReqDto req);
 }

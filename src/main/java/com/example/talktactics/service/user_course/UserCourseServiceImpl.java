@@ -34,26 +34,23 @@ public class UserCourseServiceImpl implements UserCourseService {
     private final CourseServiceImpl courseService;
 
 //  PUBLIC
+    @Override
     public List<UserCourse> getAllUserCourses() throws UserCourseRuntimeException {
         userService.validateAdmin();
         return userCourseRepository.findAll(Sort.by("id"));
     }
-
+    @Override
     public List<UserCourseResponseDto> getAllByUserId(long userID) throws UserCourseRuntimeException {
         userService.getUserById(userID);
         return userCourseRepository.findAllByUserId(userID).stream().map(UserCourse::toUserCourseResponseDto).toList();
     }
-
-    public List<UserCoursePreviewDto> getUserCoursesPreviewListByUserId(long userId) throws UserCourseRuntimeException {
-        return null;
-    }
-
+    @Override
     public UserCourse getById(long id) throws UserCourseRuntimeException {
         UserCourse userCourse = userCourseRepository.findById(id).orElseThrow(() -> new UserCourseRuntimeException(Constants.USER_COURSE_NOT_FOUND_EXCEPTION));
         userService.validateCredentials(userCourse.getUser());
         return userCourse;
     }
-
+    @Override
     public void addUserCourse(UserCourseAddReqDto req) throws UserCourseRuntimeException, CourseRuntimeException {
         if (userCourseRepository.existsByCourseIdAndUserId(req.getCourseId(), req.getUserId())) {
             throw new UserCourseRuntimeException(Constants.USER_COURSE_EXISTS_EXCEPTION);
@@ -74,6 +71,7 @@ public class UserCourseServiceImpl implements UserCourseService {
         userCourseRepository.save(userCourse);
         userCourseItemRepository.saveAll(userCourseItems);
     }
+    @Override
     public void deleteUserCourse(UserCourseDeleteReqDto req) throws UserCourseRuntimeException {
         User user = userService.getUserById(req.getUserId());
         userService.validateCredentials(user);
@@ -81,6 +79,7 @@ public class UserCourseServiceImpl implements UserCourseService {
         userCourseRepository.delete(userCourse);
     }
 
+    @Override
     public UserCourse getByUserIdAndCourseId(UserCourseGetReqDto req) throws UserCourseRuntimeException {
         User user = userService.getUserById(req.getUserId());
         userService.validateCredentials(user);

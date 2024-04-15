@@ -32,13 +32,14 @@ public class UserCourseItemServiceImpl implements UserCourseItemService {
     private final UserServiceImpl userService;
 
 //  PUBLIC
+    @Override
     public UserCourseItem getById(Long id) {
         UserCourseItem userCourseItem = userCourseItemRepository.findById(id).orElseThrow(() -> new UserCourseItemRuntimeException(Constants.USER_COURSE_ITEM_NOT_FOUND_EXCEPTION));
         User user = userCourseItem.getUserCourse().getUser();
         userService.validateCredentials(user);
         return userCourseItem;
     }
-
+    @Override
     public LearnUserCourseItemDtoResponse updateIsLearned(Long id) {
         UserCourseItem userCourseItem = getById(id);
         UserCourse userCourse = userCourseItem.getUserCourse();
@@ -51,6 +52,7 @@ public class UserCourseItemServiceImpl implements UserCourseItemService {
         userCourseItemRepository.save(userCourseItem);
         return new LearnUserCourseItemDtoResponse(userCourse.getCourse().getId());
     }
+    @Override
     public GetUserCourseItemPreviewDtoResponse getUserCourseItemPreviewDtoResponse(GetUserCourseItemsPreviewDtoReq req) {
         List<UserCourseItemPreviewDto> items = getAllByUserIdAndCourseId(req.getUserId(), req.getCourseId());
         String courseName = courseService.getById(req.getCourseId()).getTitle();

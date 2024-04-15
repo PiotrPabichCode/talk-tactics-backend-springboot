@@ -33,29 +33,31 @@ public class JwtServiceImpl implements JwtService{
     private final UserDetailsService userDetailsService;
 
 //  PUBLIC
+    @Override
     public String extractUsername(String token) {
         return extractClaim(token, Claims::getSubject);
     }
-
+    @Override
     public <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
         final Claims claims = extractAllClaims(token);
         return claimsResolver.apply(claims);
     }
-
+    @Override
     public String generateToken(UserDetails userDetails) {
         return generateToken(new HashMap<>(), userDetails);
     }
-
+    @Override
     public String generateToken(
             Map<String, Object> extraClaims,
             UserDetails userDetails
     ) {
         return buildToken(extraClaims, userDetails, jwtExpiration);
     }
+    @Override
     public String generateRefreshToken(UserDetails userDetails) {
         return buildToken(new HashMap<>(), userDetails, refreshExpiration);
     }
-
+    @Override
     public Optional<UserDetails> validateToken(String token) {
         try {
             String username = extractUsername(token);

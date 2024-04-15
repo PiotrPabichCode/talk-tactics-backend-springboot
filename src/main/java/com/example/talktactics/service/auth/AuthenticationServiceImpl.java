@@ -24,6 +24,7 @@ public class AuthenticationServiceImpl implements AuthenticationService{
     private final AuthenticationManager authenticationManager;
 
 //  PUBLIC
+    @Override
     public AuthenticationResponse register(RegisterRequest request) {
         validateNewUser(request);
         var user = User.builder()
@@ -45,7 +46,7 @@ public class AuthenticationServiceImpl implements AuthenticationService{
                 .refreshToken(jwtRefreshToken)
                 .build();
     }
-
+    @Override
     public AuthenticationResponse authenticate(AuthenticationRequest request) {
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
@@ -65,7 +66,7 @@ public class AuthenticationServiceImpl implements AuthenticationService{
                 .refreshToken(jwtRefreshToken)
                 .build();
     }
-
+    @Override
     public AuthenticationResponse reauthenticate(RefreshTokenRequest request) {
         var user = repository.findByUsername(request.getUsername())
                 .orElseThrow();

@@ -36,15 +36,6 @@ public class UserCourseController {
         }
     }
 
-    @GetMapping("/preview/user-id/{id}")
-    public ResponseEntity<List<UserCoursePreviewDto>> getUserCoursesPreviewByUserId(@PathVariable Long id) {
-        try {
-            return ResponseEntity.ok(userCourseService.getUserCoursesPreviewListByUserId(id));
-        } catch (UserCourseRuntimeException e) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
-        }
-    }
-
     @GetMapping("/id/{id}")
     public ResponseEntity<UserCourse> getById(@PathVariable Long id) {
         try {

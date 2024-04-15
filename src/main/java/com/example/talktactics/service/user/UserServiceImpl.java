@@ -30,24 +30,28 @@ public class UserServiceImpl implements UserService{
     private final PasswordEncoder passwordEncoder;
 
 //  PUBLIC
+    @Override
     public User createUser(User user) {
         return userRepository.save(user);
     }
+    @Override
     public List<User> getUsers() {
         validateAdmin();
         return userRepository.findAll();
     }
+    @Override
     public User getUserById(long id) {
         User user = userRepository.findById(id).orElseThrow(() -> new UserRuntimeException(Constants.USER_NOT_FOUND_EXCEPTION));
         validateCredentials(user);
         return user;
     }
+    @Override
     public User getUserByUsername(String username) {
         User user = userRepository.findByUsername(username).orElseThrow(() -> new UserRuntimeException(Constants.USER_NOT_FOUND_EXCEPTION));
         validateCredentials(user);
         return user;
     }
-
+    @Override
     public void deleteUser(long id) {
         validateAdmin();
         if(!userRepository.existsById(id)) {
@@ -60,7 +64,7 @@ public class UserServiceImpl implements UserService{
         }
         userRepository.deleteById(id);
     }
-
+    @Override
     public User updateUser(long id, Map<String, Object> fields) {
         User user = getUserById(id);
         validateCredentials(user);
@@ -83,18 +87,20 @@ public class UserServiceImpl implements UserService{
 
         return userRepository.save(user);
     }
-
+    @Override
     public void validateAdmin() {
         if(!isAdmin()) {
             throw new UserRuntimeException(Constants.NOT_ENOUGH_AUTHORITIES_EXCEPTION);
         }
     }
+    @Override
     public void validateCredentials(User user) {
         if(!isAdmin() && !isCurrentUser(user)) {
             throw new UserRuntimeException(Constants.NOT_ENOUGH_AUTHORITIES_EXCEPTION);
         }
     }
 
+    @Override
     public void validateFields(Map<String, Object> fields) {
         if(fields.containsKey("email")) {
             String email = (String) fields.get("email");
@@ -103,6 +109,7 @@ public class UserServiceImpl implements UserService{
             }
         }
     }
+    @Override
     public User updatePassword(UpdatePasswordReqDto req) {
         User user = getUserById(req.getId());
 
@@ -119,7 +126,8 @@ public class UserServiceImpl implements UserService{
         return authentication.getAuthorities().stream().anyMatch(auth -> auth.getAuthority().equals(Constants.ADMIN));
     }
 
-    public boolean isCurrentUser(User user) {
+
+    private boolean isCurrentUser(User user) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         return authentication.getName().equals(user.getUsername());
     }

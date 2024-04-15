@@ -194,17 +194,6 @@ public class UserCourseServiceTests {
 
     @Test
     @WithMockUser(username = "dwayne_johnson")
-    public void UserCourseService_GetUserCoursesPreviewListByUserId_ReturnsListOfUserCoursePreviewDtos() {
-        given(userRepository.findById(any(long.class))).willReturn(Optional.of(userList.get(0)));
-
-        List<UserCoursePreviewDto> userCoursePreviewDtoList = userCourseService.getUserCoursesPreviewListByUserId(1);
-
-        Assertions.assertThat(userCoursePreviewDtoList).isNotNull();
-        Assertions.assertThat(userCoursePreviewDtoList.size()).isEqualTo(1);
-    }
-
-    @Test
-    @WithMockUser(username = "dwayne_johnson")
     public void UserCourseService_GetById_ReturnsUserCourse() {
         given(userCourseRepository.findById(any(long.class))).willReturn(Optional.of(userCourse));
 
