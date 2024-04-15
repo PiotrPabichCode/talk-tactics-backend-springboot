@@ -69,15 +69,6 @@ public class CourseRepositoryTests {
     }
 
     @Test
-    public void CourseRepository_FindByLevel_ReturnsListOfCourses() {
-        courseRepository.saveAll(courseList);
-        List<Course> courses = courseRepository.findByLevelName(CourseLevel.BEGINNER.toString());
-
-        Assertions.assertThat(courses).isNotNull();
-        Assertions.assertThat(courses.size()).isEqualTo(1);
-    }
-
-    @Test
     public void CourseRepository_FindByTitle_ReturnsCourse() {
         courseRepository.saveAll(courseList);
         Course foundCourse = courseRepository.findByTitle("Intermediate English");

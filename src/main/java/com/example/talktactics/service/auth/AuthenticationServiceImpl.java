@@ -20,7 +20,7 @@ public class AuthenticationServiceImpl implements AuthenticationService{
 
     private final UserRepository repository;
     private final PasswordEncoder passwordEncoder;
-    private final JwtServiceImpl jwtServiceImpl;
+    private final JwtServiceImpl jwtService;
     private final AuthenticationManager authenticationManager;
 
 //  PUBLIC
@@ -35,8 +35,8 @@ public class AuthenticationServiceImpl implements AuthenticationService{
                 .role(Role.USER)
                 .build();
         repository.save(user);
-        var jwtToken = jwtServiceImpl.generateToken(user);
-        var jwtRefreshToken = jwtServiceImpl.generateRefreshToken(user);
+        var jwtToken = jwtService.generateToken(user);
+        var jwtRefreshToken = jwtService.generateRefreshToken(user);
         return AuthenticationResponse.builder()
                 .id(user.getId())
                 .username(user.getUsername())
@@ -55,8 +55,8 @@ public class AuthenticationServiceImpl implements AuthenticationService{
         );
         var user = repository.findByUsername(request.getUsername())
                 .orElseThrow();
-        var jwtToken = jwtServiceImpl.generateToken(user);
-        var jwtRefreshToken = jwtServiceImpl.generateRefreshToken(user);
+        var jwtToken = jwtService.generateToken(user);
+        var jwtRefreshToken = jwtService.generateRefreshToken(user);
         return AuthenticationResponse.builder()
                 .id(user.getId())
                 .username(user.getUsername())
@@ -69,8 +69,8 @@ public class AuthenticationServiceImpl implements AuthenticationService{
     public AuthenticationResponse reauthenticate(RefreshTokenRequest request) {
         var user = repository.findByUsername(request.getUsername())
                 .orElseThrow();
-        var jwtToken = jwtServiceImpl.generateToken(user);
-        var jwtRefreshToken = jwtServiceImpl.generateRefreshToken(user);
+        var jwtToken = jwtService.generateToken(user);
+        var jwtRefreshToken = jwtService.generateRefreshToken(user);
         return AuthenticationResponse.builder()
                 .id(user.getId())
                 .username(user.getUsername())

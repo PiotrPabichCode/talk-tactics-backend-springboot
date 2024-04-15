@@ -3,6 +3,7 @@ package com.example.talktactics.service.user_course_item;
 import com.example.talktactics.dto.user_course_item.UserCourseItemPreviewDto;
 import com.example.talktactics.dto.user_course_item.req.GetUserCourseItemsPreviewDtoReq;
 import com.example.talktactics.dto.user_course_item.res.GetUserCourseItemPreviewDtoResponse;
+import com.example.talktactics.dto.user_course_item.res.LearnUserCourseItemDtoResponse;
 import com.example.talktactics.entity.User;
 import com.example.talktactics.exception.UserCourseItemRuntimeException;
 import com.example.talktactics.entity.UserCourse;
@@ -27,18 +28,18 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 public class UserCourseItemServiceImpl implements UserCourseItemService {
     private final UserCourseItemRepository userCourseItemRepository;
-    private final CourseServiceImpl courseServiceImpl;
-    private final UserServiceImpl userServiceImpl;
+    private final CourseServiceImpl courseService;
+    private final UserServiceImpl userService;
 
 //  PUBLIC
     public UserCourseItem getById(Long id) {
         UserCourseItem userCourseItem = userCourseItemRepository.findById(id).orElseThrow(() -> new UserCourseItemRuntimeException(Constants.USER_COURSE_ITEM_NOT_FOUND_EXCEPTION));
         User user = userCourseItem.getUserCourse().getUser();
-        userServiceImpl.validateCredentials(user);
+        userService.validateCredentials(user);
         return userCourseItem;
     }
 
-    public void updateIsLearned(Long id) {
+    public LearnUserCourseItemDtoResponse updateIsLearned(Long id) {
         UserCourseItem userCourseItem = getById(id);
         UserCourse userCourse = userCourseItem.getUserCourse();
         double value = 100.0 / userCourse.getUserCourseItems().size();
@@ -48,17 +49,18 @@ public class UserCourseItemServiceImpl implements UserCourseItemService {
         userCourse.setCompleted(Math.abs(userCourse.getProgress() - 100.0) < tolerance);
         userCourseItem.setLearned(!userCourseItem.isLearned());
         userCourseItemRepository.save(userCourseItem);
+        return new LearnUserCourseItemDtoResponse(userCourse.getCourse().getId());
     }
     public GetUserCourseItemPreviewDtoResponse getUserCourseItemPreviewDtoResponse(GetUserCourseItemsPreviewDtoReq req) {
         List<UserCourseItemPreviewDto> items = getAllByUserIdAndCourseId(req.getUserId(), req.getCourseId());
-        String courseName = courseServiceImpl.getById(req.getCourseId()).getTitle();
+        String courseName = courseService.getById(req.getCourseId()).getTitle();
         return new GetUserCourseItemPreviewDtoResponse(courseName, items);
     }
 
 //  PRIVATE
     private List<UserCourseItemPreviewDto> getAllByUserIdAndCourseId(Long userId, Long courseId) {
-        User user = userServiceImpl.getUserById(userId);
-        userServiceImpl.validateCredentials(user);
+        User user = userService.getUserById(userId);
+        userService.validateCredentials(user);
         List<UserCourseItemPreviewDto> items = userCourseItemRepository.findAllByUserCourseCourseIdAndUserCourseUserId(courseId, userId).stream().map(UserCourseItem::toUserCourseItemPreviewDto).collect(Collectors.toList());
         if(items.isEmpty()) {
             throw new UserCourseRuntimeException(Constants.USER_COURSE_ITEM_NOT_FOUND_EXCEPTION);

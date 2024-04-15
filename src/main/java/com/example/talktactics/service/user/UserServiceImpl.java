@@ -119,7 +119,7 @@ public class UserServiceImpl implements UserService{
         return authentication.getAuthorities().stream().anyMatch(auth -> auth.getAuthority().equals(Constants.ADMIN));
     }
 
-    private boolean isCurrentUser(User user) {
+    public boolean isCurrentUser(User user) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         return authentication.getName().equals(user.getUsername());
     }

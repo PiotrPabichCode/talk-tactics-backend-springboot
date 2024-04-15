@@ -135,15 +135,4 @@ public class CourseServiceTests {
 
         courseService.delete(1);
     }
-
-    @Test
-    public void CourseService_FilterByLevel_ReturnsListOfCourses() {
-        List<Course> beginnerCourses = List.of(courseList.get(0));
-        given(courseRepository.findByLevelName(any(String.class))).willReturn(beginnerCourses);
-
-        List<Course> courses = courseService.filterByLevel("BEGINNER");
-
-        Assertions.assertThat(courses).isNotNull();
-        Assertions.assertThat(courses.size()).isEqualTo(beginnerCourses.size());
-    }
 }

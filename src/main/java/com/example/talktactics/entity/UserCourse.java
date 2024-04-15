@@ -2,6 +2,7 @@ package com.example.talktactics.entity;
 
 import com.example.talktactics.common.CommonEntity;
 import com.example.talktactics.dto.user_course.UserCoursePreviewDto;
+import com.example.talktactics.dto.user_course.res.UserCourseResponseDto;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
@@ -39,6 +40,24 @@ public class UserCourse extends CommonEntity {
 
 
     public UserCoursePreviewDto toUserCoursePreviewDto() {
-        return new UserCoursePreviewDto(getId(), user.getId(), course.getId(), getProgress(), this.completed);
+        return UserCoursePreviewDto.builder()
+                .id(this.getId())
+                .userId(this.getUser().getId())
+                .courseId(this.getCourse().getId())
+                .progress(this.getProgress())
+                .completed(this.isCompleted())
+                .build();
+    }
+
+    public UserCourseResponseDto toUserCourseResponseDto() {
+        return UserCourseResponseDto.builder()
+                .id(this.getCourse().getId())
+                .title(this.getCourse().getTitle())
+                .description(this.getCourse().getDescription())
+                .level(this.getCourse().getLevel())
+                .quantity(this.getCourse().getQuantity())
+                .completed(this.isCompleted())
+                .progress(this.getProgress())
+                .build();
     }
 }

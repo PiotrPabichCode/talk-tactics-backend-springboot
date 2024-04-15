@@ -20,12 +20,12 @@ import java.util.Map;
 @CrossOrigin(origins = {"http://localhost:3000", "https://talk-tactics-frontend.vercel.app/"}, allowCredentials = "true")
 @Tag(name = "Users", description = "Users management APIs")
 public class UserController {
-    private final UserServiceImpl userServiceImpl;
+    private final UserServiceImpl userService;
 
     @PostMapping("/create")
     public ResponseEntity<User> create(@RequestBody User user) {
         try {
-            return ResponseEntity.ok(userServiceImpl.createUser(user));
+            return ResponseEntity.ok(userService.createUser(user));
         } catch(UserRuntimeException e) {
             throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, e.getMessage());
         }
@@ -34,7 +34,7 @@ public class UserController {
     @GetMapping("/all")
     public ResponseEntity<List<User>> getUsers() {
         try {
-            return ResponseEntity.ok(userServiceImpl.getUsers());
+            return ResponseEntity.ok(userService.getUsers());
         } catch(UserRuntimeException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
         }
@@ -43,7 +43,7 @@ public class UserController {
     @GetMapping("/id/{id}")
     public ResponseEntity<User> getUserById(@PathVariable Long id) {
         try {
-            return ResponseEntity.ok(userServiceImpl.getUserById(id));
+            return ResponseEntity.ok(userService.getUserById(id));
         } catch (UserRuntimeException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
         }
@@ -51,7 +51,7 @@ public class UserController {
     @GetMapping("/username/{username}")
     public ResponseEntity<User> findByUsername(@PathVariable String username) {
         try {
-            return ResponseEntity.ok(userServiceImpl.getUserByUsername(username));
+            return ResponseEntity.ok(userService.getUserByUsername(username));
         } catch (UserRuntimeException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
         }
@@ -60,7 +60,7 @@ public class UserController {
     @PatchMapping("/id/{id}")
     public ResponseEntity<User> updateUser(@PathVariable Long id, @RequestBody Map<String, Object> fields) {
         try {
-            return ResponseEntity.ok(userServiceImpl.updateUser(id, fields));
+            return ResponseEntity.ok(userService.updateUser(id, fields));
         } catch (UserRuntimeException e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
         }
@@ -69,7 +69,7 @@ public class UserController {
     @DeleteMapping("/id/{id}")
     public void deleteUser(@PathVariable Long id) {
         try {
-            userServiceImpl.deleteUser(id);
+            userService.deleteUser(id);
         } catch(UserRuntimeException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
         }
@@ -78,7 +78,7 @@ public class UserController {
     @PutMapping("/password")
     public ResponseEntity<User> updatePassword(@RequestBody UpdatePasswordReqDto request) {
         try {
-            return ResponseEntity.ok(userServiceImpl.updatePassword(request));
+            return ResponseEntity.ok(userService.updatePassword(request));
         } catch (UserRuntimeException e) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, e.getMessage());
         }

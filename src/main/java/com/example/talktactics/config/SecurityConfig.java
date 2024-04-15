@@ -42,6 +42,8 @@ public class SecurityConfig {
 
     public static final RequestMatcher[] WHITELIST_URLS = {
         new AntPathRequestMatcher("/error"),
+        new AntPathRequestMatcher("/api/v1/courses/all"),
+        new AntPathRequestMatcher("/api/v1/courses/navbar"),
         new AntPathRequestMatcher("/api/v1/courses/all/preview"),
         new AntPathRequestMatcher("/api/v1/auth/**"),
         new AntPathRequestMatcher("/api/v1/courses/id/{id}", HttpMethod.GET.name()),

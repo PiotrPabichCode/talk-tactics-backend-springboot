@@ -10,14 +10,15 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.*;
+import lombok.experimental.SuperBuilder;
 
 @Entity
-@Builder
-@Data
+@Table(name = "user_course_items")
+@Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@ToString
-@Table(name = "user_course_items")
+@SuperBuilder(toBuilder = true)
 public class UserCourseItem extends CommonEntity {
 
     @JsonProperty("course_item")

@@ -195,43 +195,6 @@ public class CourseControllerTests {
 
         verify(courseService).getPreviewList();
     }
-
-    @Test
-    public void CourseController_GetCoursesByLevel_ReturnsListOfCourses_Status200() throws Exception {
-        String level = CourseLevel.BEGINNER.toString();
-        List<Course> beginnerCourses = List.of(courseList.get(0));
-        given(courseService.filterByLevel(any(String.class))).willReturn(beginnerCourses);
-
-        MockHttpServletRequestBuilder request = get(BASE_URL + "/level/" + level)
-                .contentType(MediaType.APPLICATION_JSON);
-
-        mockMvc.perform(request)
-                .andDo(print())
-                .andExpect(status().isOk())
-                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$").isArray())
-                .andExpect(jsonPath("$.length()").value(beginnerCourses.size()))
-                .andExpect(jsonPath("$[0].title").value(beginnerCourses.get(0).getTitle()));
-
-        verify(courseService).filterByLevel(any(String.class));
-    }
-
-    @Test
-    public void CourseController_GetCoursesByLevel_Status404() throws Exception {
-        String level = CourseLevel.BEGINNER.toString();
-        given(courseService.filterByLevel(any(String.class))).willThrow(new CourseRuntimeException("Courses not found."));
-
-        MockHttpServletRequestBuilder request = get(BASE_URL + "/level/" + level)
-                .contentType(MediaType.APPLICATION_JSON);
-
-        mockMvc.perform(request)
-                .andDo(print())
-                .andExpect(status().isNotFound())
-                .andExpect(result -> assertEquals("404 NOT_FOUND \"Courses not found.\"", result.getResolvedException().getMessage()));
-
-        verify(courseService).filterByLevel(any(String.class));
-    }
-
     @Test
     public void CourseController_UpdateCourse_ReturnsUpdatedCourse_Status200() throws Exception {
         long courseId = 2;

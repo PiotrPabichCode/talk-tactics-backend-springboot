@@ -4,6 +4,7 @@ import com.example.talktactics.dto.user_course.req.UserCourseDeleteReqDto;
 import com.example.talktactics.dto.user_course.req.UserCourseGetReqDto;
 import com.example.talktactics.dto.user_course.UserCoursePreviewDto;
 import com.example.talktactics.dto.user_course.req.UserCourseAddReqDto;
+import com.example.talktactics.dto.user_course.res.UserCourseResponseDto;
 import com.example.talktactics.exception.CourseRuntimeException;
 import com.example.talktactics.exception.UserCourseRuntimeException;
 import com.example.talktactics.entity.*;
@@ -38,14 +39,13 @@ public class UserCourseServiceImpl implements UserCourseService {
         return userCourseRepository.findAll(Sort.by("id"));
     }
 
-    public List<UserCourse> getAllByUserId(long userID) throws UserCourseRuntimeException {
-        User user = userService.getUserById(userID);
-        userService.validateCredentials(user);
-        return user.getUserCourses();
+    public List<UserCourseResponseDto> getAllByUserId(long userID) throws UserCourseRuntimeException {
+        userService.getUserById(userID);
+        return userCourseRepository.findAllByUserId(userID).stream().map(UserCourse::toUserCourseResponseDto).toList();
     }
 
     public List<UserCoursePreviewDto> getUserCoursesPreviewListByUserId(long userId) throws UserCourseRuntimeException {
-        return getAllByUserId(userId).stream().map(UserCourse::toUserCoursePreviewDto).toList();
+        return null;
     }
 
     public UserCourse getById(long id) throws UserCourseRuntimeException {

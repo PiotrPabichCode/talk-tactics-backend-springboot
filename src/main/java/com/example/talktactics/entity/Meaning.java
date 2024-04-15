@@ -5,14 +5,15 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.*;
+import lombok.experimental.SuperBuilder;
 
 @Entity
-@Builder
-@Data
+@Table(name = "meanings")
+@Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@ToString
-@Table(name = "meanings")
+@SuperBuilder(toBuilder = true)
 public class Meaning extends CommonEntity {
     @Column(length = 800)
     private String definition;
