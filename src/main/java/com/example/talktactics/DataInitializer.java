@@ -47,10 +47,22 @@ public class DataInitializer implements ApplicationRunner {
                 JsonNode item = courseItemNode.get(0);
                 String word = item.hasNonNull("word") ? item.get("word").asText() : null;
                 String phonetic = item.hasNonNull("phonetic") ? item.get("phonetic").asText() : null;
+                JsonNode phoneticsNode = item.get("phonetics");
+                String audio = null;
+                for(JsonNode phoneticNode: phoneticsNode) {
+                    if(phoneticNode.hasNonNull("audio")) {
+                        String newAudio = phoneticNode.get("audio").asText();
+                        if(!newAudio.isBlank()) {
+                            audio = newAudio;
+                            break;
+                        }
+                    }
+                }
 
                 CourseItem courseItem = CourseItem.builder()
                         .word(word)
                         .phonetic(phonetic)
+                        .audio(audio)
                         .build();
 
                 JsonNode meaningsNode = item.get("meanings");

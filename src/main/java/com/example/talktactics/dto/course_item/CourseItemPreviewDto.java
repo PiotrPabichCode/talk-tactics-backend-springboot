@@ -15,6 +15,7 @@ public class CourseItemPreviewDto {
     String word;
     @JsonProperty("part_of_speech")
     String partOfSpeech;
+    String audio;
     String phonetic;
     @JsonProperty("course_name")
     String courseName;

@@ -20,13 +20,13 @@ import java.util.List;
 @Tag(name = "Course items", description = "Course items management APIs")
 public class CourseItemController {
 
-    private final CourseItemServiceImpl courseItemServiceImpl;
+    private final CourseItemServiceImpl courseItemService;
 
     @GetMapping("/all")
     public ResponseEntity<List<CourseItemPreviewDto>> getAll() {
 
         try {
-            return ResponseEntity.ok(courseItemServiceImpl.getAll());
+            return ResponseEntity.ok(courseItemService.getAll());
         } catch(CourseItemRuntimeException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
         }
@@ -35,7 +35,7 @@ public class CourseItemController {
     @GetMapping("/id/{id}")
     public ResponseEntity<CourseItem> getById(@PathVariable Long id) {
         try {
-            return ResponseEntity.ok(courseItemServiceImpl.findById(id));
+            return ResponseEntity.ok(courseItemService.findById(id));
         } catch(CourseItemRuntimeException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
         }
@@ -44,7 +44,7 @@ public class CourseItemController {
     @GetMapping("/preview/courses/id/{id}")
     public ResponseEntity<List<CourseItemPreviewDto>> getPreviewListByCourseId(@PathVariable int id) {
         try {
-            return ResponseEntity.ok(courseItemServiceImpl.getAllByCourseId(id));
+            return ResponseEntity.ok(courseItemService.getAllByCourseId(id));
         } catch(CourseItemRuntimeException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
         }
@@ -53,7 +53,7 @@ public class CourseItemController {
     @DeleteMapping("/id/{id}")
     public void deleteById(@PathVariable Long id) {
         try {
-            courseItemServiceImpl.deleteById(id);
+            courseItemService.deleteById(id);
         } catch(CourseItemRuntimeException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
         }

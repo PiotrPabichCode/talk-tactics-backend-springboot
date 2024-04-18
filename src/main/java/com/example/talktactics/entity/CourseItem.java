@@ -5,6 +5,7 @@ import com.example.talktactics.common.CommonEntity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
@@ -23,6 +24,8 @@ public class CourseItem extends CommonEntity {
     private String phonetic;
     @JsonProperty("part_of_speech")
     private String partOfSpeech;
+    @Nullable
+    private String audio;
 
     @JsonIgnoreProperties("course")
     @OneToMany(mappedBy = "courseItem",
@@ -42,6 +45,6 @@ public class CourseItem extends CommonEntity {
     private UserCourseItem userCourseItem;
 
     public CourseItemPreviewDto toDTO() {
-        return new CourseItemPreviewDto(this.getId(), this.word, this.partOfSpeech, this.phonetic, this.course.getTitle());
+        return new CourseItemPreviewDto(this.getId(), this.word, this.partOfSpeech, this.audio, this.phonetic, this.course.getTitle());
     }
 }
