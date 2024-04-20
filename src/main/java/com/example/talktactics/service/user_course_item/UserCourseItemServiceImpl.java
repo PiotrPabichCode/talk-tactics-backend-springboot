@@ -4,10 +4,8 @@ import com.example.talktactics.dto.user_course_item.UserCourseItemPreviewDto;
 import com.example.talktactics.dto.user_course_item.req.GetUserCourseItemsPreviewDtoReq;
 import com.example.talktactics.dto.user_course_item.res.GetUserCourseItemPreviewDtoResponse;
 import com.example.talktactics.dto.user_course_item.res.LearnUserCourseItemDtoResponse;
-import com.example.talktactics.entity.User;
+import com.example.talktactics.entity.*;
 import com.example.talktactics.exception.UserCourseItemRuntimeException;
-import com.example.talktactics.entity.UserCourse;
-import com.example.talktactics.entity.UserCourseItem;
 import com.example.talktactics.exception.UserCourseRuntimeException;
 import com.example.talktactics.repository.UserCourseItemRepository;
 import com.example.talktactics.service.course.CourseServiceImpl;
@@ -42,14 +40,18 @@ public class UserCourseItemServiceImpl implements UserCourseItemService {
     @Override
     public LearnUserCourseItemDtoResponse updateIsLearned(Long id) {
         UserCourseItem userCourseItem = getById(id);
+        CourseItem courseItem = userCourseItem.getCourseItem();
         UserCourse userCourse = userCourseItem.getUserCourse();
-        double value = 100.0 / userCourse.getUserCourseItems().size();
-        userCourse.setProgress(userCourse.getProgress() + (!userCourseItem.isLearned() ? value : -value));
 
-        double tolerance = 0.0001;
-        userCourse.setCompleted(Math.abs(userCourse.getProgress() - 100.0) < tolerance);
         userCourseItem.setLearned(!userCourseItem.isLearned());
+        boolean allLearned = checkIfAllLearned(userCourse);
+        int addedPoints = calculatePoints(userCourseItem, courseItem, allLearned, userCourse.isCompleted());
+
+        userCourse.setPoints(userCourse.getPoints() + addedPoints);
+        userCourse.setCompleted(allLearned);
+
         userCourseItemRepository.save(userCourseItem);
+
         return new LearnUserCourseItemDtoResponse(userCourse.getCourse().getId());
     }
     @Override
@@ -69,5 +71,20 @@ public class UserCourseItemServiceImpl implements UserCourseItemService {
         }
         items.sort(Comparator.comparingLong(UserCourseItemPreviewDto::getId));
         return items;
+    }
+
+    private boolean checkIfAllLearned(UserCourse userCourse) {
+        return userCourse.getUserCourseItems().stream().allMatch(UserCourseItem::isLearned);
+    }
+
+    private int calculatePoints(UserCourseItem userCourseItem, CourseItem courseItem, boolean allLearned, boolean isCompleted) {
+        int courseCompletionPoints = userCourseItem.getUserCourse().getCourse().getPoints();
+        int addedPoints = userCourseItem.isLearned() ? courseItem.getPoints() : -courseItem.getPoints();
+        if(!allLearned && isCompleted) {
+            addedPoints -= courseCompletionPoints;
+        } else if(allLearned && !isCompleted) {
+            addedPoints += courseCompletionPoints;
+        }
+        return addedPoints;
     }
 }

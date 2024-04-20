@@ -3,6 +3,7 @@ package com.example.talktactics.entity;
 import com.example.talktactics.common.CommonEntity;
 import com.example.talktactics.dto.course.CoursePreviewDto;
 import com.example.talktactics.listeners.CourseEntityListeners;
+import com.example.talktactics.util.Constants;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
@@ -22,6 +23,7 @@ public class Course extends CommonEntity {
     private String title;
     @Column(length = 800)
     private String description;
+    @Enumerated(EnumType.STRING)
     private CourseLevel level;
 
     @JsonIgnore
@@ -30,7 +32,7 @@ public class Course extends CommonEntity {
             orphanRemoval = true)
     private List<CourseItem> courseItems;
 
-    private int quantity;
+    private int quantity = 0;
 
     @JsonIgnore
     @OneToMany(mappedBy = "course",
@@ -40,5 +42,13 @@ public class Course extends CommonEntity {
 
     public CoursePreviewDto toCoursePreviewDto() {
         return new CoursePreviewDto(this.getId(), this.getTitle(), this.getDescription(), this.getLevel(), this.getQuantity());
+    }
+
+    public int getPoints() {
+        return switch (this.level) {
+            case BEGINNER -> Constants.BEGINNER_COMPLETED_POINTS;
+            case INTERMEDIATE -> Constants.INTERMEDIATE_COMPLETED_POINTS;
+            case ADVANCED -> Constants.ADVANCED_COMPLETED_POINTS;
+        };
     }
 }

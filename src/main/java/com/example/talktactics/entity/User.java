@@ -1,6 +1,8 @@
 package com.example.talktactics.entity;
 
 import com.example.talktactics.common.CommonEntity;
+import com.example.talktactics.dto.user.UserProfilePreviewDto;
+import com.example.talktactics.listeners.UserEntityListeners;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -22,6 +24,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @SuperBuilder(toBuilder = true)
+@EntityListeners(UserEntityListeners.class)
 public class User extends CommonEntity implements UserDetails {
 
     @Column(unique = true)
@@ -36,6 +39,8 @@ public class User extends CommonEntity implements UserDetails {
     private String email;
     @Size(max = 250)
     private String bio;
+    @JsonProperty("total_points")
+    private int totalPoints = 0;
 
     @Enumerated(EnumType.STRING)
     private Role role;
@@ -44,6 +49,7 @@ public class User extends CommonEntity implements UserDetails {
     @JsonIgnoreProperties("user")
     @OneToMany(mappedBy = "user",
             cascade = CascadeType.ALL,
+            fetch = FetchType.LAZY,
             orphanRemoval = true)
     private List<UserCourse> userCourses;
 

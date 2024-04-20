@@ -3,11 +3,13 @@ package com.example.talktactics.entity;
 import com.example.talktactics.common.CommonEntity;
 import com.example.talktactics.dto.user_course.UserCoursePreviewDto;
 import com.example.talktactics.dto.user_course.res.UserCourseResponseDto;
+import com.example.talktactics.listeners.UserCourseEntityListeners;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
+import org.springframework.boot.context.properties.bind.DefaultValue;
 
 import java.util.List;
 
@@ -18,10 +20,12 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @SuperBuilder(toBuilder = true)
+@EntityListeners(UserCourseEntityListeners.class)
 public class UserCourse extends CommonEntity {
-    private double progress;
+    private double progress = 0.0;
     @JsonProperty("is_completed")
-    private boolean completed;
+    private boolean completed = false;
+    private int points = 0;
 
     @ManyToOne
     @JoinColumn(name = "user_id")

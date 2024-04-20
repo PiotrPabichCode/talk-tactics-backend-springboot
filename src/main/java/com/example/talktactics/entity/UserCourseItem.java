@@ -1,7 +1,6 @@
 package com.example.talktactics.entity;
 
 import com.example.talktactics.common.CommonEntity;
-import com.example.talktactics.dto.user_course.UserCoursePreviewDto;
 import com.example.talktactics.dto.user_course_item.UserCourseItemPreviewDto;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
