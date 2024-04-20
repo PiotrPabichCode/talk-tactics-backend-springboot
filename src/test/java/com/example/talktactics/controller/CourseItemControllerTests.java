@@ -3,6 +3,7 @@ package com.example.talktactics.controller;
 import com.example.talktactics.dto.course_item.CourseItemPreviewDto;
 import com.example.talktactics.entity.Course;
 import com.example.talktactics.entity.CourseItem;
+import com.example.talktactics.entity.CourseLevel;
 import com.example.talktactics.exception.CourseItemRuntimeException;
 import com.example.talktactics.service.course.CourseServiceImpl;
 import com.example.talktactics.service.course_item.CourseItemServiceImpl;
@@ -64,6 +65,7 @@ public class CourseItemControllerTests {
                 .id(1L)
                 .word("word")
                 .phonetic("phonetic")
+                .level(CourseLevel.BEGINNER)
                 .partOfSpeech("partOfSpeech")
                 .build();
 
@@ -73,6 +75,7 @@ public class CourseItemControllerTests {
                         .course(Course.builder().id(1).build())
                         .word("word")
                         .phonetic("phonetic")
+                        .level(CourseLevel.INTERMEDIATE)
                         .partOfSpeech("partOfSpeech")
                         .build(),
                 CourseItem.builder()
@@ -80,6 +83,7 @@ public class CourseItemControllerTests {
                         .course(Course.builder().id(2).build())
                         .word("word2")
                         .phonetic("phonetic2")
+                        .level(CourseLevel.ADVANCED)
                         .partOfSpeech("partOfSpeech2")
                         .build()
         );

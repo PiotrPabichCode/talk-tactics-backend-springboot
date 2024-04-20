@@ -34,6 +34,9 @@ public class UserCourseEntityListeners {
 
 //    PRIVATE
     private int calculateTotalPoints(UserCourse userCourse) {
+        if(userCourse.getUserCourseItems() == null) {
+            return 0;
+        }
         return userCourse.getUserCourseItems().stream()
                 .filter(UserCourseItem::isLearned)
                 .mapToInt(item -> item.getCourseItem().getPoints())

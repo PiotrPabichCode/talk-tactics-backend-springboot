@@ -27,4 +27,5 @@ public class CourseNavbarDto {
                 tuple.get("quantity", Integer.class)
         );
     }
+
 }

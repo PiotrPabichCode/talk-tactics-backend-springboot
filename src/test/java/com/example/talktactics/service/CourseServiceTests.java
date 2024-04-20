@@ -60,6 +60,7 @@ public class CourseServiceTests {
                         .title("English for Beginners")
                         .level(CourseLevel.BEGINNER)
                         .courseItems(List.of())
+                        .quantity(0)
                         .description("A comprehensive course designed to help beginners learn English from scratch.")
                         .build(),
                 Course.builder()
@@ -67,6 +68,7 @@ public class CourseServiceTests {
                         .title("Intermediate English")
                         .level(CourseLevel.INTERMEDIATE)
                         .courseItems(List.of())
+                        .quantity(0)
                         .description("A course tailored to help learners improve their English language skills.")
                         .build(),
                 Course.builder()
@@ -74,6 +76,7 @@ public class CourseServiceTests {
                         .title("Advanced English")
                         .level(CourseLevel.ADVANCED)
                         .courseItems(List.of())
+                        .quantity(0)
                         .description("An advanced course tailored to help learners master the intricacies of the English language.")
                         .build());
 
