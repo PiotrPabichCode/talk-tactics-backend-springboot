@@ -2,6 +2,8 @@ package com.example.talktactics.entity;
 
 import com.example.talktactics.dto.course_item.CourseItemPreviewDto;
 import com.example.talktactics.common.CommonEntity;
+import com.example.talktactics.listeners.CourseItemEntityListeners;
+import com.example.talktactics.util.Constants;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -19,6 +21,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @SuperBuilder(toBuilder = true)
+@EntityListeners(CourseItemEntityListeners.class)
 public class CourseItem extends CommonEntity {
     private String word;
     private String phonetic;
@@ -26,6 +29,8 @@ public class CourseItem extends CommonEntity {
     private String partOfSpeech;
     @Nullable
     private String audio;
+    @Enumerated(EnumType.STRING)
+    private CourseLevel level;
 
     @JsonIgnoreProperties("course")
     @OneToMany(mappedBy = "courseItem",
@@ -46,5 +51,13 @@ public class CourseItem extends CommonEntity {
 
     public CourseItemPreviewDto toDTO() {
         return new CourseItemPreviewDto(this.getId(), this.word, this.partOfSpeech, this.audio, this.phonetic, this.course.getTitle());
+    }
+
+    public int getPoints() {
+        return switch (this.level) {
+            case BEGINNER -> Constants.BEGINNER_POINTS;
+            case INTERMEDIATE -> Constants.INTERMEDIATE_POINTS;
+            case ADVANCED -> Constants.ADVANCED_POINTS;
+        };
     }
 }

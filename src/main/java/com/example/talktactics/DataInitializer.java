@@ -2,9 +2,13 @@ package com.example.talktactics;
 
 import com.example.talktactics.entity.*;
 import com.example.talktactics.repository.*;
+import com.example.talktactics.util.CourseDataGenerator;
+import com.example.talktactics.util.UserProfileBioGenerator;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.transaction.Transactional;
+import lombok.extern.slf4j.Slf4j;
+import net.datafaker.Faker;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
@@ -13,10 +17,13 @@ import org.springframework.stereotype.Component;
 
 import java.io.File;
 import java.io.IOException;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.*;
 
 @Component
 @Transactional
+@Slf4j
 public class DataInitializer implements ApplicationRunner {
 
     @Autowired
@@ -33,116 +40,191 @@ public class DataInitializer implements ApplicationRunner {
     private UserCourseItemRepository userCourseItemRepository;
     @Autowired
     private PasswordEncoder passwordEncoder;
+    private final Faker faker = new Faker();
+    private final Random random = new Random();
 
-    private void loadCourseItemsFromJson(List<Course> courses) {
-        ObjectMapper objectMapper = new ObjectMapper();
-        File jsonFile = new File("src/main/java/com/example/talktactics/util/long_words.json");
+    private final ArrayList<User> userList = new ArrayList<>();
+    private final ArrayList<Course> courseList = new ArrayList<>();
+    private final ArrayList<CourseItem> courseItemList = new ArrayList<>();
+    private final ArrayList<UserCourse> userCourseList = new ArrayList<>();
+    private static final int USERS_SIZE = 50;
+    private static final int COURSES_SIZE = 50;
+    private static final int BEGINNER_COURSES_BREAKPOINT = 15;
+    private static final int INTERMEDIATE_COURSES_BREAKPOINT = 35;
+    public void initData() {
+        initUsers();
+        initCourses();
+        initCourseItems();
+        initUserCourses();
+    }
+    public void initUsers() {
+        userList.add(User.builder().username("admin").password(passwordEncoder.encode("admin")).email("email@gmail.com").firstName("Piotr").lastName("Pabich").bio("Passionate about technology, design, and the power of innovation. Always seeking new challenges and ways to make an impact.").role(Role.ADMIN).build());
+        userList.add(User.builder().username("user").password(passwordEncoder.encode("user")).email("user@gmail.com").firstName("Jan").lastName("Tomczyk").bio("Adventurous soul, chasing dreams one step at a time. Lover of art, nature, and good conversations. Here to make memories").role(Role.USER).build());
+        userList.add(User.builder().username("user1").password(passwordEncoder.encode("user1")).email("user1@gmail.com").firstName("Tomasz").lastName("Kukułka").bio("Avid reader, passionate writer, and eternal optimist. Finding beauty in the little things and spreading positivity wherever I go.").role(Role.USER).build());
 
-        int counter = 0;
+        for(int i = 0; i < USERS_SIZE; i++) {
+            String firstName = faker.name().firstName();
+            String lastName = faker.name().lastName();
+            String username = String.format("%s%s%d", firstName, lastName, i);
+            String email = String.format("%s%s%d@email.com", firstName, lastName, i);
+            String bio = UserProfileBioGenerator.generateBio(random.nextInt(3) + 1);
+            userList.add(User.builder().username(username).password(passwordEncoder.encode("talktactics")).email(email).firstName(firstName).lastName(lastName).bio(bio).role(Role.USER).build());
+        }
+        userRepository.saveAll(userList);
+    }
+    public void initCourses() {
+        for(int i = 0; i < COURSES_SIZE; i++) {
+            String name = CourseDataGenerator.selectCourseTitle(i);
+            String description = CourseDataGenerator.selectCourseDescription(i);
+            CourseLevel level = i < COURSES_SIZE / 4 ? CourseLevel.BEGINNER : i < COURSES_SIZE * 3/4 ? CourseLevel.INTERMEDIATE : CourseLevel.ADVANCED;
+            courseList.add(Course.builder().title(name).description(description).level(level).build());
+        }
+        courseRepository.saveAll(courseList);
+    }
+    public void initCourseItems() {
         try {
-            JsonNode jsonNode = objectMapper.readTree(jsonFile);
-            List<CourseItem> courseItems = new ArrayList<>();
+            JsonNode rootNode = readJsonFile("src/main/java/com/example/talktactics/util/long_words.json");
 
-            for (JsonNode courseItemNode : jsonNode) {
-                JsonNode item = courseItemNode.get(0);
-                String word = item.hasNonNull("word") ? item.get("word").asText() : null;
-                String phonetic = item.hasNonNull("phonetic") ? item.get("phonetic").asText() : null;
-                JsonNode phoneticsNode = item.get("phonetics");
-                String audio = null;
-                for(JsonNode phoneticNode: phoneticsNode) {
-                    if(phoneticNode.hasNonNull("audio")) {
-                        String newAudio = phoneticNode.get("audio").asText();
-                        if(!newAudio.isBlank()) {
-                            audio = newAudio;
-                            break;
-                        }
+            int totalItems = rootNode.size();
+            int itemsPerCourse = totalItems / COURSES_SIZE;
+            int itemsAssigned = 0;
+            for (int i = 0; i < COURSES_SIZE; i++) {
+                Course course = courseList.get(i);
+                int courseItemsCount = 0;
+                int maxWords, minWords;
+
+                if (i < BEGINNER_COURSES_BREAKPOINT) {
+                    minWords = 20;
+                    maxWords = itemsPerCourse / 3 + random.nextInt(itemsPerCourse / 3);
+                } else if (i < INTERMEDIATE_COURSES_BREAKPOINT) {
+                    minWords = 30;
+                    maxWords = itemsPerCourse / 2 + random.nextInt(itemsPerCourse / 2);
+                } else {
+                    minWords = 60;
+                    maxWords = itemsPerCourse;
+                }
+
+                maxWords = Math.max(minWords, maxWords);
+
+                while (itemsAssigned < totalItems && courseItemsCount < itemsPerCourse) {
+                    if (courseItemsCount < maxWords) {
+                        JsonNode courseItemNode = rootNode.get(itemsAssigned).get(0);
+                        CourseItem courseItem = createCourseItem(courseItemNode);
+                        courseItem.setCourse(course);
+                        courseItemList.add(courseItem);
+                        courseItemsCount++;
+                        itemsAssigned++;
+                    } else {
+                        break;
                     }
                 }
-
-                CourseItem courseItem = CourseItem.builder()
-                        .word(word)
-                        .phonetic(phonetic)
-                        .audio(audio)
-                        .build();
-
-                JsonNode meaningsNode = item.get("meanings");
-                String partOfSpeech = meaningsNode.get(0).get("partOfSpeech").asText();
-                courseItem.setPartOfSpeech(partOfSpeech);
-                JsonNode definitionsNode = meaningsNode.get(0).get("definitions");
-                List<Meaning> meanings = new ArrayList<>();
-                for (JsonNode definitionNode : definitionsNode) {
-
-                    String definition = definitionNode.hasNonNull("definition") ? definitionNode.get("definition").asText() : null;
-                    String example = definitionNode.hasNonNull("example") ? definitionNode.get("example").asText() : null;
-
-                    Meaning meaning = Meaning.builder()
-                            .definition(definition)
-                            .example(example)
-                            .courseItem(courseItem)
-                            .build();
-
-                    meanings.add(meaning);
-                }
-                meaningRepository.saveAll(meanings);
-
-                Course course = courses.get(counter / 100);
-                courseItem.setCourse(course);
-                courseItems.add(courseItem);
-                counter++;
-            }
-            for(Course course: courses) {
-                List<CourseItem> items = courseItems.stream().filter(item -> item.getCourse().equals(course)).toList();
-                course.setCourseItems(items);
             }
 
-            courseItemRepository.saveAll(courseItems);
+            int remainingItems = totalItems - itemsAssigned;
+            for(int i = 0; i < remainingItems; i++) {
+                JsonNode courseItemNode = rootNode.get(itemsAssigned).get(0);
+                CourseItem courseItem = createCourseItem(courseItemNode);
+                courseItem.setCourse(courseList.get(random.nextInt(COURSES_SIZE)));
+                courseItemList.add(courseItem);
+                itemsAssigned++;
+            }
+
+            assignCourseItemsToCourses();
+            courseItemRepository.saveAll(courseItemList);
 
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
-
-
-
-
-    public void initData() {
-        // create Users
-        ArrayList<User> users = new ArrayList<>();
-        users.add(User.builder().username("admin").password(passwordEncoder.encode("admin")).email("email@gmail.com").firstName("Piotr").lastName("Pabich").bio("Passionate about technology, design, and the power of innovation. Always seeking new challenges and ways to make an impact.").role(Role.ADMIN).build());
-        users.add(User.builder().username("user").password(passwordEncoder.encode("user")).email("user@gmail.com").firstName("Jan").lastName("Tomczyk").bio("Adventurous soul, chasing dreams one step at a time. Lover of art, nature, and good conversations. Here to make memories").role(Role.USER).build());
-        users.add(User.builder().username("user1").password(passwordEncoder.encode("user1")).email("user1@gmail.com").firstName("Tomasz").lastName("Kukułka").bio("Avid reader, passionate writer, and eternal optimist. Finding beauty in the little things and spreading positivity wherever I go.").role(Role.USER).build());
-        userRepository.saveAll(users);
-        // create Courses
-        ArrayList<Course> courses = new ArrayList<>();
-        for(int i = 0; i < 21; i++) {
-            String name = String.format("Most frequently used english words - Top %d%%", (99 - i));
-            String description = "Comprehensive program designed to enhance individuals' English language skills by expanding their vocabulary with commonly known words.";
-//            String description = "The \"Mastering Everyday English Vocabulary\" course is a comprehensive program designed to enhance individuals' English language skills by expanding their vocabulary with commonly known words, enabling effective communication and improved reading and writing abilities.";
-            CourseLevel level = i < 5 ? CourseLevel.BEGINNER : i < 15 ? CourseLevel.INTERMEDIATE : CourseLevel.ADVANCED;
-            courses.add(Course.builder().title(name).description(description).level(level).build());
-        }
-        courseRepository.saveAll(courses);
-        loadCourseItemsFromJson(courses);
-        ArrayList<UserCourse> userCourses = new ArrayList<>();
-        for(User user: users) {
-            new Random().ints(0, courses.size()).distinct().limit(5).forEach(value -> {
-                Course course = courses.get(value);
-                UserCourse userCourse = UserCourse.builder().completed(false)
-                        .progress(0.0).user(user).course(course).build();
+    public void initUserCourses() {
+        for(User user: userList) {
+            random.ints(0, courseList.size()).distinct().limit(random.nextInt(COURSES_SIZE * 3/4) + 1).forEach(value -> {
+                Course course = courseList.get(value);
+                UserCourse userCourse = UserCourse.builder().user(user).course(course).build();
                 List<UserCourseItem> userCourseItems = new ArrayList<>();
                 for(CourseItem courseItem: course.getCourseItems()) {
-                    userCourseItems.add(UserCourseItem.builder().courseItem(courseItem).isLearned(false).userCourse(userCourse).build());
+                    userCourseItems.add(UserCourseItem.builder().courseItem(courseItem).isLearned(random.nextBoolean()).userCourse(userCourse).build());
                 }
                 userCourse.setUserCourseItems(userCourseItems);
-                userCourses.add(userCourse);
+                userCourseList.add(userCourse);
             });
         }
-        userCourseRepository.saveAll(userCourses);
+        userCourseRepository.saveAll(userCourseList);
     }
 
 
     @Override
-    public void run(ApplicationArguments args) throws Exception {
+    public void run(ApplicationArguments args) {
+        Instant start = Instant.now();
+        log.info("Initializing data... | {}", start);
+
         initData();
+        Instant end = Instant.now();
+
+        Duration duration = Duration.between(start, end);
+
+        log.info("Data initialized successfully! | Took: {} seconds | {}", duration.toMillis() / 1000.0, end);
+    }
+
+    // PRIVATE
+    private JsonNode readJsonFile(String filePath) throws IOException {
+        ObjectMapper objectMapper = new ObjectMapper();
+        File jsonFile = new File(filePath);
+        return objectMapper.readTree(jsonFile);
+    }
+    private CourseItem createCourseItem(JsonNode itemNode) {
+        String word = itemNode.hasNonNull("word") ? itemNode.get("word").asText() : null;
+        String phonetic = itemNode.hasNonNull("phonetic") ? itemNode.get("phonetic").asText() : null;
+        String audio = getAudioFromPhoneticsNode(itemNode.get("phonetics"));
+
+        CourseItem courseItem = CourseItem.builder()
+                .word(word)
+                .phonetic(phonetic)
+                .audio(audio)
+                .build();
+
+        JsonNode meaningsNode = itemNode.get("meanings");
+        String partOfSpeech = meaningsNode.get(0).get("partOfSpeech").asText();
+        courseItem.setPartOfSpeech(partOfSpeech);
+
+        List<Meaning> meanings = createMeanings(meaningsNode.get(0).get("definitions"), courseItem);
+        meaningRepository.saveAll(meanings);
+
+        return courseItem;
+    }
+    private String getAudioFromPhoneticsNode(JsonNode phoneticsNode) {
+        String audio = null;
+        for(JsonNode phoneticNode: phoneticsNode) {
+            if(phoneticNode.hasNonNull("audio")) {
+                String newAudio = phoneticNode.get("audio").asText();
+                if(!newAudio.isBlank()) {
+                    audio = newAudio;
+                    break;
+                }
+            }
+        }
+        return audio;
+    }
+    private List<Meaning> createMeanings(JsonNode definitionsNode, CourseItem courseItem) {
+        List<Meaning> meanings = new ArrayList<>();
+        for (JsonNode definitionNode : definitionsNode) {
+            String definition = definitionNode.hasNonNull("definition") ? definitionNode.get("definition").asText() : null;
+            String example = definitionNode.hasNonNull("example") ? definitionNode.get("example").asText() : null;
+
+            Meaning meaning = Meaning.builder()
+                    .definition(definition)
+                    .example(example)
+                    .courseItem(courseItem)
+                    .build();
+
+            meanings.add(meaning);
+        }
+        return meanings;
+    }
+    private void assignCourseItemsToCourses() {
+        for(Course course: courseList) {
+            List<CourseItem> items = courseItemList.stream().filter(item -> item.getCourse().getId() == course.getId()).toList();
+            course.setCourseItems(items);
+        }
     }
 }
