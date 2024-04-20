@@ -138,7 +138,7 @@ public class DataInitializer implements ApplicationRunner {
     }
     public void initUserCourses() {
         for(User user: userList) {
-            random.ints(0, courseList.size()).distinct().limit(random.nextInt(COURSES_SIZE * 3/4) + 1).forEach(value -> {
+            random.ints(0, courseList.size()).distinct().limit(random.nextInt(COURSES_SIZE / 2) + 1).forEach(value -> {
                 Course course = courseList.get(value);
                 UserCourse userCourse = UserCourse.builder().user(user).course(course).build();
                 List<UserCourseItem> userCourseItems = new ArrayList<>();
