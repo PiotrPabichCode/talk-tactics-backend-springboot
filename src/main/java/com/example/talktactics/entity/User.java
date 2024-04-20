@@ -87,4 +87,17 @@ public class User extends CommonEntity implements UserDetails {
     public boolean isEnabled() {
         return true;
     }
+
+    public String getFullName() {
+        return this.firstName + " " + this.lastName;
+    }
+
+    public UserProfilePreviewDto toUserProfilePreviewDto() {
+        return UserProfilePreviewDto.builder()
+                .id(this.getId())
+                .fullName(this.getFullName())
+                .totalPoints(this.getTotalPoints())
+                .bio(this.getBio())
+                .build();
+    }
 }

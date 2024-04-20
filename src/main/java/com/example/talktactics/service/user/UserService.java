@@ -1,5 +1,6 @@
 package com.example.talktactics.service.user;
 
+import com.example.talktactics.dto.user.UserProfilePreviewDto;
 import com.example.talktactics.dto.user.req.UpdatePasswordReqDto;
 import com.example.talktactics.entity.User;
 
@@ -17,4 +18,5 @@ public interface UserService {
     void validateAdmin();
     void validateFields(Map<String, Object> fields);
     User updatePassword(UpdatePasswordReqDto req);
+    List<UserProfilePreviewDto> getUserProfiles();
 }

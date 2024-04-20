@@ -1,6 +1,7 @@
 package com.example.talktactics.service.user;
 
 import com.example.talktactics.dto.user.UpdateUserDto;
+import com.example.talktactics.dto.user.UserProfilePreviewDto;
 import com.example.talktactics.dto.user.req.UpdatePasswordReqDto;
 import com.example.talktactics.exception.UserRuntimeException;
 import com.example.talktactics.entity.*;
@@ -120,7 +121,17 @@ public class UserServiceImpl implements UserService{
         return userRepository.save(user);
     }
 
-//  PRIVATE
+    @Override
+    public List<UserProfilePreviewDto> getUserProfiles() {
+        List<User> users = userRepository.findAll();
+        List<UserProfilePreviewDto> userProfiles = users.stream()
+                .sorted(Comparator.comparingInt(User::getTotalPoints).reversed())
+                .map(User::toUserProfilePreviewDto)
+                .toList();
+        return userProfiles;
+    }
+
+    //  PRIVATE
     private boolean isAdmin() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         return authentication.getAuthorities().stream().anyMatch(auth -> auth.getAuthority().equals(Constants.ADMIN));

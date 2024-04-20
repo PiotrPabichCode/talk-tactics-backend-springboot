@@ -1,5 +1,6 @@
 package com.example.talktactics.controller;
 
+import com.example.talktactics.dto.user.UserProfilePreviewDto;
 import com.example.talktactics.dto.user.req.UpdatePasswordReqDto;
 import com.example.talktactics.entity.*;
 import com.example.talktactics.exception.UserRuntimeException;
@@ -35,6 +36,15 @@ public class UserController {
     public ResponseEntity<List<User>> getUsers() {
         try {
             return ResponseEntity.ok(userService.getUsers());
+        } catch(UserRuntimeException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
+        }
+    }
+
+    @GetMapping("/profiles")
+    public ResponseEntity<List<UserProfilePreviewDto>> getUserProfiles() {
+        try {
+            return ResponseEntity.ok(userService.getUserProfiles());
         } catch(UserRuntimeException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
         }
