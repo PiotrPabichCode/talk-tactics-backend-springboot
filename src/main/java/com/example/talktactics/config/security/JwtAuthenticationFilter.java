@@ -1,6 +1,6 @@
 package com.example.talktactics.config.security;
 
-import com.example.talktactics.service.jwt.JwtServiceImpl;
+import com.example.talktactics.service.jwt.JwtService;
 import com.example.talktactics.util.Constants;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -26,7 +26,7 @@ import static com.example.talktactics.config.SecurityConfig.WHITELIST_URLS;
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
-    private final JwtServiceImpl jwtServiceImpl;
+    private final JwtService jwtService;
 
     @Override
     protected void doFilterInternal(
@@ -48,7 +48,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         }
         jwt = authHeader.substring(7);
         if(SecurityContextHolder.getContext().getAuthentication() == null) {
-            Optional<UserDetails> userDetails = jwtServiceImpl.validateToken(jwt);
+            Optional<UserDetails> userDetails = jwtService.validateToken(jwt);
             if(userDetails.isEmpty()) {
                 response.sendError(HttpStatus.UNAUTHORIZED.value(), Constants.JWT_INVALID_EXCEPTION);
                 return;

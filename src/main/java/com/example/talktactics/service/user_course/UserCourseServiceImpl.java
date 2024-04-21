@@ -2,19 +2,19 @@ package com.example.talktactics.service.user_course;
 
 import com.example.talktactics.dto.user_course.req.UserCourseDeleteReqDto;
 import com.example.talktactics.dto.user_course.req.UserCourseGetReqDto;
-import com.example.talktactics.dto.user_course.UserCoursePreviewDto;
 import com.example.talktactics.dto.user_course.req.UserCourseAddReqDto;
-import com.example.talktactics.dto.user_course.res.UserCourseResponseDto;
+import com.example.talktactics.dto.user_course.UserCourseDetailsDto;
 import com.example.talktactics.exception.CourseRuntimeException;
 import com.example.talktactics.exception.UserCourseRuntimeException;
 import com.example.talktactics.entity.*;
 import com.example.talktactics.repository.UserCourseItemRepository;
 import com.example.talktactics.repository.UserCourseRepository;
-import com.example.talktactics.service.course.CourseServiceImpl;
-import com.example.talktactics.service.user.UserServiceImpl;
+import com.example.talktactics.service.course.CourseService;
+import com.example.talktactics.service.user.UserService;
 import com.example.talktactics.util.Constants;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,13 +25,23 @@ import java.util.List;
 @Service
 @Transactional
 @Slf4j
-@AllArgsConstructor
 public class UserCourseServiceImpl implements UserCourseService {
 
     private final UserCourseItemRepository userCourseItemRepository;
     private final UserCourseRepository userCourseRepository;
-    private final UserServiceImpl userService;
-    private final CourseServiceImpl courseService;
+    private final UserService userService;
+    private final CourseService courseService;
+
+    public UserCourseServiceImpl(
+            UserCourseItemRepository userCourseItemRepository,
+            UserCourseRepository userCourseRepository,
+            @Lazy UserService userService,
+            CourseService courseService) {
+        this.userCourseItemRepository = userCourseItemRepository;
+        this.userCourseRepository = userCourseRepository;
+        this.userService = userService;
+        this.courseService = courseService;
+    }
 
 //  PUBLIC
     @Override
@@ -40,9 +50,9 @@ public class UserCourseServiceImpl implements UserCourseService {
         return userCourseRepository.findAll(Sort.by("id"));
     }
     @Override
-    public List<UserCourseResponseDto> getAllByUserId(long userID) throws UserCourseRuntimeException {
+    public List<UserCourseDetailsDto> getAllByUserId(long userID) throws UserCourseRuntimeException {
         userService.getUserById(userID);
-        return userCourseRepository.findAllByUserId(userID).stream().map(UserCourse::toUserCourseResponseDto).toList();
+        return userCourseRepository.findAllByUserId(userID).stream().map(UserCourse::toUserCourseDetailsDto).toList();
     }
     @Override
     public UserCourse getById(long id) throws UserCourseRuntimeException {

@@ -8,8 +8,8 @@ import com.example.talktactics.entity.*;
 import com.example.talktactics.exception.UserCourseItemRuntimeException;
 import com.example.talktactics.exception.UserCourseRuntimeException;
 import com.example.talktactics.repository.UserCourseItemRepository;
-import com.example.talktactics.service.course.CourseServiceImpl;
-import com.example.talktactics.service.user.UserServiceImpl;
+import com.example.talktactics.service.course.CourseService;
+import com.example.talktactics.service.user.UserService;
 import com.example.talktactics.util.Constants;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -26,8 +26,8 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 public class UserCourseItemServiceImpl implements UserCourseItemService {
     private final UserCourseItemRepository userCourseItemRepository;
-    private final CourseServiceImpl courseService;
-    private final UserServiceImpl userService;
+    private final CourseService courseService;
+    private final UserService userService;
 
 //  PUBLIC
     @Override
@@ -49,6 +49,7 @@ public class UserCourseItemServiceImpl implements UserCourseItemService {
 
         userCourse.setPoints(userCourse.getPoints() + addedPoints);
         userCourse.setCompleted(allLearned);
+        userCourse.setProgress(calculateProgress(userCourse));
 
         userCourseItemRepository.save(userCourseItem);
 
@@ -86,5 +87,17 @@ public class UserCourseItemServiceImpl implements UserCourseItemService {
             addedPoints += courseCompletionPoints;
         }
         return addedPoints;
+    }
+
+    private double calculateProgress(UserCourse userCourse) {
+        if(userCourse.getUserCourseItems() == null) {
+            return 0.0;
+        }
+        int totalItems = userCourse.getUserCourseItems().size();
+        int learnedItems = (int) userCourse.getUserCourseItems().stream()
+                .filter(UserCourseItem::isLearned)
+                .count();
+        double progress = 100.0 * learnedItems / totalItems;
+        return Math.floor(progress * 10) / 10;
     }
 }

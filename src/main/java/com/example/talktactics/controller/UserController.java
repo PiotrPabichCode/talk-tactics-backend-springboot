@@ -1,10 +1,11 @@
 package com.example.talktactics.controller;
 
+import com.example.talktactics.dto.user.UserProfileDto;
 import com.example.talktactics.dto.user.UserProfilePreviewDto;
 import com.example.talktactics.dto.user.req.UpdatePasswordReqDto;
 import com.example.talktactics.entity.*;
 import com.example.talktactics.exception.UserRuntimeException;
-import com.example.talktactics.service.user.UserServiceImpl;
+import com.example.talktactics.service.user.UserService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -21,7 +22,7 @@ import java.util.Map;
 @CrossOrigin(origins = {"http://localhost:3000", "https://talk-tactics-frontend.vercel.app/"}, allowCredentials = "true")
 @Tag(name = "Users", description = "Users management APIs")
 public class UserController {
-    private final UserServiceImpl userService;
+    private final UserService userService;
 
     @PostMapping("/create")
     public ResponseEntity<User> create(@RequestBody User user) {
@@ -45,6 +46,15 @@ public class UserController {
     public ResponseEntity<List<UserProfilePreviewDto>> getUserProfiles() {
         try {
             return ResponseEntity.ok(userService.getUserProfiles());
+        } catch(UserRuntimeException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
+        }
+    }
+
+    @GetMapping("/profiles/{id}")
+    public ResponseEntity<UserProfileDto> getUserProfileById(@PathVariable Long id) {
+        try {
+            return ResponseEntity.ok(userService.getUserProfileById(id));
         } catch(UserRuntimeException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
         }

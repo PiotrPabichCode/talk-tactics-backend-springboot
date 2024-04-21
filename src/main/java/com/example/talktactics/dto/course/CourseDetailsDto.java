@@ -2,7 +2,6 @@ package com.example.talktactics.dto.course;
 
 import com.example.talktactics.entity.CourseLevel;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
@@ -11,10 +10,10 @@ import lombok.experimental.SuperBuilder;
 @AllArgsConstructor
 @NoArgsConstructor
 @SuperBuilder(toBuilder = true)
-public class CoursePreviewDto {
-    private long id;
-    private String title;
-    private String description;
-    private CourseLevel level;
-    private int quantity;
+public class CourseDetailsDto {
+    long id;
+    String title;
+    String description;
+    CourseLevel level;
+    int quantity;
 }

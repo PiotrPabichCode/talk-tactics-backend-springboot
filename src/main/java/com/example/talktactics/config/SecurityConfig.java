@@ -49,7 +49,8 @@ public class SecurityConfig {
         new AntPathRequestMatcher("/api/v1/courses/id/{id}", HttpMethod.GET.name()),
         new AntPathRequestMatcher("/api/v1/courses/level/{level}"),
         new AntPathRequestMatcher("/api/v1/users/create"),
-        new AntPathRequestMatcher("/api/v1/users/profiles")
+        new AntPathRequestMatcher("/api/v1/users/profiles"),
+        new AntPathRequestMatcher("/api/v1/users/profiles/{id}")
     };
 
     @Bean

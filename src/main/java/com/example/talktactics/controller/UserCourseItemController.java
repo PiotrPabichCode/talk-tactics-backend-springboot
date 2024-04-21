@@ -5,7 +5,7 @@ import com.example.talktactics.dto.user_course_item.res.GetUserCourseItemPreview
 import com.example.talktactics.dto.user_course_item.res.LearnUserCourseItemDtoResponse;
 import com.example.talktactics.entity.UserCourseItem;
 import com.example.talktactics.exception.UserCourseItemRuntimeException;
-import com.example.talktactics.service.user_course_item.UserCourseItemServiceImpl;
+import com.example.talktactics.service.user_course_item.UserCourseItemService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -20,7 +20,7 @@ import org.springframework.web.server.ResponseStatusException;
 @Tag(name = "User course items", description = "User course items management APIs")
 public class UserCourseItemController {
 
-    private final UserCourseItemServiceImpl userCourseItemService;
+    private final UserCourseItemService userCourseItemService;
 
     @PostMapping("/learn/id/{id}")
     public ResponseEntity<LearnUserCourseItemDtoResponse> updateIsLearned(@PathVariable Long id) {

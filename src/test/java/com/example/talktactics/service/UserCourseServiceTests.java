@@ -1,10 +1,9 @@
 package com.example.talktactics.service;
 
-import com.example.talktactics.dto.user_course.UserCoursePreviewDto;
 import com.example.talktactics.dto.user_course.req.UserCourseAddReqDto;
 import com.example.talktactics.dto.user_course.req.UserCourseDeleteReqDto;
 import com.example.talktactics.dto.user_course.req.UserCourseGetReqDto;
-import com.example.talktactics.dto.user_course.res.UserCourseResponseDto;
+import com.example.talktactics.dto.user_course.UserCourseDetailsDto;
 import com.example.talktactics.entity.Course;
 import com.example.talktactics.entity.Role;
 import com.example.talktactics.entity.User;
@@ -63,12 +62,12 @@ public class UserCourseServiceTests {
     private UserCourseAddReqDto userCourseAddReqDto;
     private UserCourseDeleteReqDto userCourseDeleteReqDto;
     private UserCourseGetReqDto userCourseGetReqDto;
-    private UserCourseResponseDto userCourseResponseDto;
+    private UserCourseDetailsDto userCourseDetailsDto;
 
     @BeforeEach
     public void init() {
         passwordEncoder = new BCryptPasswordEncoder();
-        userService = new UserServiceImpl(userRepository, passwordEncoder);
+        userService = new UserServiceImpl(userRepository, userCourseService, passwordEncoder);
         userCourseService = new UserCourseServiceImpl(userCourseItemRepository, userCourseRepository, userService, courseService);
 
         userList = List.of(
@@ -147,7 +146,7 @@ public class UserCourseServiceTests {
                 .courseId(userCourseList.get(0).getId())
                 .build();
 
-        userCourseResponseDto = userCourseList.get(0).toUserCourseResponseDto();
+        userCourseDetailsDto = userCourseList.get(0).toUserCourseDetailsDto();
     }
 
 //    @Test
@@ -185,11 +184,11 @@ public class UserCourseServiceTests {
         given(userRepository.findById(any(long.class))).willReturn(Optional.of(userList.get(0)));
         given(userCourseRepository.findAllByUserId(any(long.class))).willReturn(List.of(testUserCourse));
 
-        List<UserCourseResponseDto> result = userCourseService.getAllByUserId(1);
+        List<UserCourseDetailsDto> result = userCourseService.getAllByUserId(1);
 
         Assertions.assertThat(result).isNotNull();
         Assertions.assertThat(result.size()).isEqualTo(1);
-        Assertions.assertThat(result.get(0)).isEqualTo(userCourseResponseDto);
+        Assertions.assertThat(result.get(0)).isEqualTo(userCourseDetailsDto);
     }
 
     @Test

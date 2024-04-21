@@ -3,11 +3,11 @@ package com.example.talktactics.controller;
 import com.example.talktactics.dto.user_course.req.UserCourseGetReqDto;
 import com.example.talktactics.dto.user_course.req.UserCourseDeleteReqDto;
 import com.example.talktactics.dto.user_course.req.UserCourseAddReqDto;
-import com.example.talktactics.dto.user_course.res.UserCourseResponseDto;
+import com.example.talktactics.dto.user_course.UserCourseDetailsDto;
 import com.example.talktactics.entity.UserCourse;
 import com.example.talktactics.exception.UserCourseRuntimeException;
 import com.example.talktactics.exception.UserRuntimeException;
-import com.example.talktactics.service.user_course.UserCourseServiceImpl;
+import com.example.talktactics.service.user_course.UserCourseService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -24,7 +24,7 @@ import java.util.List;
 @Tag(name = "User courses", description = "User courses management APIs")
 public class UserCourseController {
 
-    private final UserCourseServiceImpl userCourseService;
+    private final UserCourseService userCourseService;
 
     @GetMapping("/all")
     public ResponseEntity<List<UserCourse>> getAllUserCourses() {
@@ -45,7 +45,7 @@ public class UserCourseController {
     }
 
     @GetMapping("/user-id/{id}")
-    public ResponseEntity<List<UserCourseResponseDto>> getAllByUserId(@PathVariable Long id) {
+    public ResponseEntity<List<UserCourseDetailsDto>> getAllByUserId(@PathVariable Long id) {
         try {
             return ResponseEntity.ok(userCourseService.getAllByUserId(id));
         } catch (UserRuntimeException e) {

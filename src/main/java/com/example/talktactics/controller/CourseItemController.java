@@ -3,7 +3,7 @@ package com.example.talktactics.controller;
 import com.example.talktactics.dto.course_item.CourseItemPreviewDto;
 import com.example.talktactics.entity.CourseItem;
 import com.example.talktactics.exception.CourseItemRuntimeException;
-import com.example.talktactics.service.course_item.CourseItemServiceImpl;
+import com.example.talktactics.service.course_item.CourseItemService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -20,7 +20,7 @@ import java.util.List;
 @Tag(name = "Course items", description = "Course items management APIs")
 public class CourseItemController {
 
-    private final CourseItemServiceImpl courseItemService;
+    private final CourseItemService courseItemService;
 
     @GetMapping("/all")
     public ResponseEntity<List<CourseItemPreviewDto>> getAll() {

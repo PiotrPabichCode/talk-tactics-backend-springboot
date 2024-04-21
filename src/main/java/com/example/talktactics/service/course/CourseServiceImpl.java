@@ -6,11 +6,12 @@ import com.example.talktactics.dto.course.CoursePreviewProjection;
 import com.example.talktactics.exception.CourseRuntimeException;
 import com.example.talktactics.entity.*;
 import com.example.talktactics.repository.*;
-import com.example.talktactics.service.user.UserServiceImpl;
+import com.example.talktactics.service.user.UserService;
 import com.example.talktactics.util.Constants;
 import jakarta.persistence.Tuple;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -25,10 +26,16 @@ import static com.example.talktactics.specification.course.CourseSpecification.*
 @Service
 @Transactional
 @Slf4j
-@AllArgsConstructor
 public class CourseServiceImpl implements CourseService {
     private final CourseRepository courseRepository;
-    private final UserServiceImpl userService;
+    private final UserService userService;
+
+    public CourseServiceImpl(
+            CourseRepository courseRepository,
+            @Lazy UserService userService) {
+        this.courseRepository = courseRepository;
+        this.userService = userService;
+    }
 
 //  PUBLIC
     @Override

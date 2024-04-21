@@ -1,7 +1,6 @@
 package com.example.talktactics.entity;
 
 import com.example.talktactics.common.CommonEntity;
-import com.example.talktactics.dto.course.CoursePreviewDto;
 import com.example.talktactics.listeners.CourseEntityListeners;
 import com.example.talktactics.util.Constants;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -39,10 +38,6 @@ public class Course extends CommonEntity {
             cascade = CascadeType.ALL,
             orphanRemoval = true)
     private List<UserCourse> userCourses;
-
-    public CoursePreviewDto toCoursePreviewDto() {
-        return new CoursePreviewDto(this.getId(), this.getTitle(), this.getDescription(), this.getLevel(), this.getQuantity());
-    }
 
     public int getPoints() {
         return switch (this.level) {

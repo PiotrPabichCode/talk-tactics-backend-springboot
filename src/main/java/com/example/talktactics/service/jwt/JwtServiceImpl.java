@@ -93,7 +93,6 @@ public class JwtServiceImpl implements JwtService{
             UserDetails userDetails,
             long expiration
     ) {
-        log.info("Expiration" + expiration);
         return Jwts
                 .builder()
                 .setClaims(extraClaims)

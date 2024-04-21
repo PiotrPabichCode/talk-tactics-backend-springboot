@@ -2,7 +2,6 @@ package com.example.talktactics.service.course;
 
 import com.example.talktactics.dto.course.CourseFilterDto;
 import com.example.talktactics.dto.course.CourseNavbarDto;
-import com.example.talktactics.dto.course.CoursePreviewDto;
 import com.example.talktactics.dto.course.CoursePreviewProjection;
 import com.example.talktactics.entity.Course;
 import org.springframework.data.domain.Page;

@@ -1,14 +1,20 @@
 package com.example.talktactics.service.user;
 
 import com.example.talktactics.dto.user.UpdateUserDto;
+import com.example.talktactics.dto.user.UserProfileDto;
 import com.example.talktactics.dto.user.UserProfilePreviewDto;
 import com.example.talktactics.dto.user.req.UpdatePasswordReqDto;
+import com.example.talktactics.dto.user_course.UserCourseDetailsDto;
 import com.example.talktactics.exception.UserRuntimeException;
 import com.example.talktactics.entity.*;
 import com.example.talktactics.repository.UserRepository;
+import com.example.talktactics.service.user_course.UserCourseService;
 import com.example.talktactics.util.Constants;
 import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -25,10 +31,12 @@ import static com.example.talktactics.util.Utils.getJsonPropertyFieldMap;
 @Service
 @Transactional
 @Slf4j
-@AllArgsConstructor
-public class UserServiceImpl implements UserService{
+@RequiredArgsConstructor
+public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
+    private final UserCourseService userCourseService;
     private final PasswordEncoder passwordEncoder;
+
 
 //  PUBLIC
     @Override
@@ -42,9 +50,7 @@ public class UserServiceImpl implements UserService{
     }
     @Override
     public User getUserById(long id) {
-        User user = userRepository.findById(id).orElseThrow(() -> new UserRuntimeException(Constants.USER_NOT_FOUND_EXCEPTION));
-        validateCredentials(user);
-        return user;
+        return userRepository.findById(id).orElseThrow(() -> new UserRuntimeException(Constants.USER_NOT_FOUND_EXCEPTION));
     }
     @Override
     public User getUserByUsername(String username) {
@@ -124,12 +130,20 @@ public class UserServiceImpl implements UserService{
     @Override
     public List<UserProfilePreviewDto> getUserProfiles() {
         List<User> users = userRepository.findAll();
-        List<UserProfilePreviewDto> userProfiles = users.stream()
+        return users.stream()
                 .sorted(Comparator.comparingInt(User::getTotalPoints).reversed())
                 .map(User::toUserProfilePreviewDto)
                 .toList();
-        return userProfiles;
     }
+
+    @Override
+    public UserProfileDto getUserProfileById(Long id) {
+        UserProfilePreviewDto userProfile = getUserById(id).toUserProfilePreviewDto();
+        List<UserCourseDetailsDto> userCourses = userCourseService.getAllByUserId(id);
+
+        return UserProfileDto.toUserProfileDto(userProfile, userCourses);
+    }
+
 
     //  PRIVATE
     private boolean isAdmin() {

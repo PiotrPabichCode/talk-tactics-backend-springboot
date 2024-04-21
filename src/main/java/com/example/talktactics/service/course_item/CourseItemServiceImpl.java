@@ -4,7 +4,7 @@ import com.example.talktactics.dto.course_item.CourseItemPreviewDto;
 import com.example.talktactics.exception.CourseItemRuntimeException;
 import com.example.talktactics.entity.CourseItem;
 import com.example.talktactics.repository.CourseItemRepository;
-import com.example.talktactics.service.user.UserServiceImpl;
+import com.example.talktactics.service.user.UserService;
 import com.example.talktactics.util.Constants;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -19,7 +19,7 @@ import java.util.List;
 @AllArgsConstructor
 public class CourseItemServiceImpl implements CourseItemService{
     private final CourseItemRepository courseItemRepository;
-    private final UserServiceImpl userService;
+    private final UserService userService;
 
 //  PUBLIC
     @Override

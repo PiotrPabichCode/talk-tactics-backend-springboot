@@ -1,15 +1,13 @@
 package com.example.talktactics.entity;
 
 import com.example.talktactics.common.CommonEntity;
-import com.example.talktactics.dto.user_course.UserCoursePreviewDto;
-import com.example.talktactics.dto.user_course.res.UserCourseResponseDto;
+import com.example.talktactics.dto.user_course.UserCourseDetailsDto;
 import com.example.talktactics.listeners.UserCourseEntityListeners;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
-import org.springframework.boot.context.properties.bind.DefaultValue;
 
 import java.util.List;
 
@@ -39,28 +37,21 @@ public class UserCourse extends CommonEntity {
     @JsonIgnore
     @OneToMany(mappedBy = "userCourse",
             cascade = CascadeType.ALL,
+            fetch = FetchType.LAZY,
             orphanRemoval = true)
     private List<UserCourseItem> userCourseItems;
 
+    public UserCourseDetailsDto toUserCourseDetailsDto() {
+        Course course = this.getCourse();
 
-    public UserCoursePreviewDto toUserCoursePreviewDto() {
-        return UserCoursePreviewDto.builder()
-                .id(this.getId())
-                .userId(this.getUser().getId())
-                .courseId(this.getCourse().getId())
-                .progress(this.getProgress())
+        return UserCourseDetailsDto.builder()
+                .id(course.getId())
+                .title(course.getTitle())
+                .description(course.getDescription())
+                .level(course.getLevel())
+                .quantity(course.getQuantity())
                 .completed(this.isCompleted())
-                .build();
-    }
-
-    public UserCourseResponseDto toUserCourseResponseDto() {
-        return UserCourseResponseDto.builder()
-                .id(this.getCourse().getId())
-                .title(this.getCourse().getTitle())
-                .description(this.getCourse().getDescription())
-                .level(this.getCourse().getLevel())
-                .quantity(this.getCourse().getQuantity())
-                .completed(this.isCompleted())
+                .points(this.getPoints())
                 .progress(this.getProgress())
                 .build();
     }

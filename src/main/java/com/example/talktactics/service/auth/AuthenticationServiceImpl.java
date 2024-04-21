@@ -4,7 +4,7 @@ import com.example.talktactics.dto.auth.req.AuthenticationRequest;
 import com.example.talktactics.dto.auth.res.AuthenticationResponse;
 import com.example.talktactics.dto.auth.req.RefreshTokenRequest;
 import com.example.talktactics.dto.auth.req.RegisterRequest;
-import com.example.talktactics.service.jwt.JwtServiceImpl;
+import com.example.talktactics.service.jwt.JwtService;
 import com.example.talktactics.entity.Role;
 import com.example.talktactics.entity.User;
 import com.example.talktactics.repository.UserRepository;
@@ -20,7 +20,7 @@ public class AuthenticationServiceImpl implements AuthenticationService{
 
     private final UserRepository repository;
     private final PasswordEncoder passwordEncoder;
-    private final JwtServiceImpl jwtService;
+    private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
 
 //  PUBLIC

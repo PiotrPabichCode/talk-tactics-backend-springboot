@@ -5,6 +5,7 @@ import com.example.talktactics.entity.Role;
 import com.example.talktactics.entity.User;
 import com.example.talktactics.repository.UserRepository;
 import com.example.talktactics.service.user.UserServiceImpl;
+import com.example.talktactics.service.user_course.UserCourseService;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -31,6 +32,8 @@ public class UserServiceTests {
     private UserRepository userRepository;
     @Mock
     private PasswordEncoder passwordEncoder;
+    @Mock
+    private UserCourseService userCourseService;
 
     @InjectMocks
     private UserServiceImpl userServiceImpl;
@@ -42,7 +45,7 @@ public class UserServiceTests {
     public void init() {
         passwordEncoder = new BCryptPasswordEncoder();
 
-        userServiceImpl = new UserServiceImpl(userRepository, passwordEncoder);
+        userServiceImpl = new UserServiceImpl(userRepository, userCourseService, passwordEncoder);
 
         user = User.builder()
                 .email("dwayne_johnson@gmail.com")

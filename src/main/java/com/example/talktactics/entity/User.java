@@ -88,14 +88,11 @@ public class User extends CommonEntity implements UserDetails {
         return true;
     }
 
-    public String getFullName() {
-        return this.firstName + " " + this.lastName;
-    }
-
     public UserProfilePreviewDto toUserProfilePreviewDto() {
         return UserProfilePreviewDto.builder()
                 .id(this.getId())
-                .fullName(this.getFullName())
+                .firstName(this.getFirstName())
+                .lastName(this.getLastName())
                 .totalPoints(this.getTotalPoints())
                 .bio(this.getBio())
                 .build();

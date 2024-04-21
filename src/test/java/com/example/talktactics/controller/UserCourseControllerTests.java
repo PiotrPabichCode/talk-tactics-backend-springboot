@@ -1,10 +1,9 @@
 package com.example.talktactics.controller;
 
-import com.example.talktactics.dto.user_course.UserCoursePreviewDto;
 import com.example.talktactics.dto.user_course.req.UserCourseAddReqDto;
 import com.example.talktactics.dto.user_course.req.UserCourseDeleteReqDto;
 import com.example.talktactics.dto.user_course.req.UserCourseGetReqDto;
-import com.example.talktactics.dto.user_course.res.UserCourseResponseDto;
+import com.example.talktactics.dto.user_course.UserCourseDetailsDto;
 import com.example.talktactics.entity.*;
 import com.example.talktactics.service.jwt.JwtServiceImpl;
 import com.example.talktactics.service.user.UserServiceImpl;
@@ -55,11 +54,10 @@ public class UserCourseControllerTests {
 
     private UserCourse userCourse;
     private List<UserCourse> userCourseList;
-    private List<UserCoursePreviewDto> userCoursePreviewDtoList;
     private UserCourseGetReqDto userCourseGetReqDto;
     private UserCourseAddReqDto userCourseAddReqDto;
     private UserCourseDeleteReqDto userCourseDeleteReqDto;
-    private UserCourseResponseDto userCourseResponseDto;
+    private UserCourseDetailsDto userCourseDetailsDto;
 
     @BeforeEach
     public void init() {
@@ -106,21 +104,6 @@ public class UserCourseControllerTests {
                         .build()
         );
 
-        userCoursePreviewDtoList = List.of(
-                UserCoursePreviewDto.builder()
-                        .id(1)
-                        .courseId(courseList.get(0).getId())
-                        .userId(user.getId())
-                        .progress(37.0)
-                        .completed(false)
-                        .build(),
-                UserCoursePreviewDto.builder()
-                        .courseId(courseList.get(1).getId())
-                        .userId(user.getId()).progress(100)
-                        .completed(true)
-                        .build()
-        );
-
         userCourseGetReqDto = UserCourseGetReqDto.builder()
                 .userId(user.getId())
                 .courseId(courseList.get(0).getId())
@@ -136,7 +119,7 @@ public class UserCourseControllerTests {
                 .courseId(courseList.get(0).getId())
                 .build();
 
-        userCourseResponseDto = userCourseList.get(0).toUserCourseResponseDto();
+        userCourseDetailsDto = userCourseList.get(0).toUserCourseDetailsDto();
     }
 
     @Test
@@ -179,7 +162,7 @@ public class UserCourseControllerTests {
 
     @Test
     public void UserCourseController_GetAllByUserId_ReturnsUserCourses() throws Exception {
-        given(userCourseService.getAllByUserId(any(long.class))).willReturn(List.of(userCourseResponseDto));
+        given(userCourseService.getAllByUserId(any(long.class))).willReturn(List.of(userCourseDetailsDto));
 
         MockHttpServletRequestBuilder request = get(BASE_URL + "/user-id/" + user.getId())
                 .contentType(MediaType.APPLICATION_JSON);
@@ -190,13 +173,13 @@ public class UserCourseControllerTests {
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpectAll(
                         jsonPath("$").isArray(),
-                        jsonPath("$[0].id").value(userCourseResponseDto.getId()),
-                        jsonPath("$[0].title").value(userCourseResponseDto.getTitle()),
-                        jsonPath("$[0].description").value(userCourseResponseDto.getDescription()),
-                        jsonPath("$[0].level").value(userCourseResponseDto.getLevel().name()),
-                        jsonPath("$[0].quantity").value(userCourseResponseDto.getQuantity()),
-                        jsonPath("$[0].completed").value(userCourseResponseDto.isCompleted()),
-                        jsonPath("$[0].progress").value(userCourseResponseDto.getProgress())
+                        jsonPath("$[0].id").value(userCourseDetailsDto.getId()),
+                        jsonPath("$[0].title").value(userCourseDetailsDto.getTitle()),
+                        jsonPath("$[0].description").value(userCourseDetailsDto.getDescription()),
+                        jsonPath("$[0].level").value(userCourseDetailsDto.getLevel().name()),
+                        jsonPath("$[0].quantity").value(userCourseDetailsDto.getQuantity()),
+                        jsonPath("$[0].completed").value(userCourseDetailsDto.isCompleted()),
+                        jsonPath("$[0].progress").value(userCourseDetailsDto.getProgress())
                 );
 
         verify(userCourseService).getAllByUserId(user.getId());

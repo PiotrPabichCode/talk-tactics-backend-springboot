@@ -8,6 +8,7 @@ import com.example.talktactics.repository.UserRepository;
 import com.example.talktactics.service.course.CourseServiceImpl;
 import com.example.talktactics.service.course_item.CourseItemServiceImpl;
 import com.example.talktactics.service.user.UserServiceImpl;
+import com.example.talktactics.service.user_course.UserCourseService;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -37,6 +38,8 @@ public class CourseItemServiceTests {
 
     @Mock
     private UserServiceImpl userService;
+    @Mock
+    private UserCourseService userCourseService;
     @InjectMocks
     private CourseItemServiceImpl courseItemService;
 
@@ -47,7 +50,7 @@ public class CourseItemServiceTests {
     @BeforeEach
     public void init() {
         passwordEncoder = new BCryptPasswordEncoder();
-        userService = new UserServiceImpl(userRepository, passwordEncoder);
+        userService = new UserServiceImpl(userRepository, userCourseService, passwordEncoder);
         courseItemService = new CourseItemServiceImpl(courseItemRepository, userService);
         courseItem = CourseItem.builder()
                 .id(1L)

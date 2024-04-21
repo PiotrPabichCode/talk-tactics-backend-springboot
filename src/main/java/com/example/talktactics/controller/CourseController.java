@@ -2,13 +2,13 @@ package com.example.talktactics.controller;
 
 import com.example.talktactics.dto.course.CourseFilterDto;
 import com.example.talktactics.dto.course.CourseNavbarDto;
-import com.example.talktactics.dto.course.CoursePreviewDto;
 import com.example.talktactics.dto.course.CoursePreviewProjection;
 import com.example.talktactics.entity.*;
 import com.example.talktactics.exception.CourseRuntimeException;
-import com.example.talktactics.service.course.CourseServiceImpl;
+import com.example.talktactics.service.course.CourseService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,12 +18,12 @@ import org.springframework.web.server.ResponseStatusException;
 import java.util.List;
 
 @RestController
-@AllArgsConstructor
+@RequiredArgsConstructor
 @RequestMapping("/api/v1/courses")
 @CrossOrigin(origins = {"http://localhost:3000", "https://talk-tactics-frontend.vercel.app/"}, allowCredentials = "true")
 @Tag(name = "Courses", description = "Courses management APIs")
 public class CourseController {
-    private final CourseServiceImpl courseService;
+    private final CourseService courseService;
 
     @GetMapping("/all")
     public ResponseEntity<Page<Course>> getCourseList(@RequestParam(value = "page") int page,
