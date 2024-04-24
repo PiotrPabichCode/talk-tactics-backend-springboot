@@ -20,6 +20,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 @Service
@@ -51,8 +52,7 @@ public class UserCourseServiceImpl implements UserCourseService {
     }
     @Override
     public List<UserCourseDetailsDto> getAllByUserId(long userID) throws UserCourseRuntimeException {
-        userService.getUserById(userID);
-        return userCourseRepository.findAllByUserId(userID).stream().map(UserCourse::toUserCourseDetailsDto).toList();
+        return userCourseRepository.findAllByUserId(userID).stream().map(UserCourse::toUserCourseDetailsDto).sorted(Comparator.comparing(UserCourseDetailsDto::isCompleted).thenComparing(UserCourseDetailsDto::getProgress).reversed()).toList();
     }
     @Override
     public UserCourse getById(long id) throws UserCourseRuntimeException {
@@ -71,11 +71,10 @@ public class UserCourseServiceImpl implements UserCourseService {
         // find course
         Course course = courseService.getById(req.getCourseId());
 
-        UserCourse userCourse = UserCourse.builder().completed(false)
-                .progress(0.0).user(user).course(course).build();
+        UserCourse userCourse = UserCourse.builder().user(user).course(course).build();
         List<UserCourseItem> userCourseItems = new ArrayList<>();
         for(CourseItem courseItem: course.getCourseItems()) {
-            userCourseItems.add(UserCourseItem.builder().courseItem(courseItem).isLearned(false).userCourse(userCourse).build());
+            userCourseItems.add(UserCourseItem.builder().courseItem(courseItem).userCourse(userCourse).build());
         }
 
         userCourseRepository.save(userCourse);

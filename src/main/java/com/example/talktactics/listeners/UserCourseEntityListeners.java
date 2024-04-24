@@ -17,7 +17,6 @@ public class UserCourseEntityListeners {
     @Autowired
     private ObjectFactory<UserRepository> userRepositoryProvider;
 
-
     @PrePersist
     public void beforeSave(@NonNull UserCourse userCourse) {
         userCourse.setPoints(calculateTotalPoints(userCourse));

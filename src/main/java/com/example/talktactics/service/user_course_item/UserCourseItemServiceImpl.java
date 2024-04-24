@@ -50,6 +50,7 @@ public class UserCourseItemServiceImpl implements UserCourseItemService {
         userCourse.setPoints(userCourse.getPoints() + addedPoints);
         userCourse.setCompleted(allLearned);
         userCourse.setProgress(calculateProgress(userCourse));
+        userCourse.getUser().setTotalPoints(userCourse.getUser().getTotalPoints() + addedPoints);
 
         userCourseItemRepository.save(userCourseItem);
 
