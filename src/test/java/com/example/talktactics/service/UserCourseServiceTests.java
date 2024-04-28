@@ -9,10 +9,7 @@ import com.example.talktactics.entity.Role;
 import com.example.talktactics.entity.User;
 import com.example.talktactics.entity.UserCourse;
 import com.example.talktactics.exception.UserCourseRuntimeException;
-import com.example.talktactics.repository.CourseRepository;
-import com.example.talktactics.repository.UserCourseItemRepository;
-import com.example.talktactics.repository.UserCourseRepository;
-import com.example.talktactics.repository.UserRepository;
+import com.example.talktactics.repository.*;
 import com.example.talktactics.service.course.CourseServiceImpl;
 import com.example.talktactics.service.user.UserServiceImpl;
 import com.example.talktactics.service.user_course.UserCourseServiceImpl;
@@ -44,6 +41,8 @@ public class UserCourseServiceTests {
     @Mock
     private UserCourseItemRepository userCourseItemRepository;
     @Mock
+    private FriendInvitationRepository friendInvitationRepository;
+    @Mock
     private UserCourseRepository userCourseRepository;
     @Mock
     private CourseRepository courseRepository;
@@ -67,7 +66,7 @@ public class UserCourseServiceTests {
     @BeforeEach
     public void init() {
         passwordEncoder = new BCryptPasswordEncoder();
-        userService = new UserServiceImpl(userRepository, userCourseService, passwordEncoder);
+        userService = new UserServiceImpl(userRepository, friendInvitationRepository, userCourseService, passwordEncoder);
         userCourseService = new UserCourseServiceImpl(userCourseItemRepository, userCourseRepository, userService, courseService);
 
         userList = List.of(

@@ -4,6 +4,7 @@ import com.example.talktactics.dto.course_item.CourseItemPreviewDto;
 import com.example.talktactics.entity.Course;
 import com.example.talktactics.entity.CourseItem;
 import com.example.talktactics.repository.CourseItemRepository;
+import com.example.talktactics.repository.FriendInvitationRepository;
 import com.example.talktactics.repository.UserRepository;
 import com.example.talktactics.service.course.CourseServiceImpl;
 import com.example.talktactics.service.course_item.CourseItemServiceImpl;
@@ -32,6 +33,8 @@ public class CourseItemServiceTests {
     @Mock
     private CourseItemRepository courseItemRepository;
     @Mock
+    private FriendInvitationRepository friendInvitationRepository;
+    @Mock
     private UserRepository userRepository;
     @Mock
     private PasswordEncoder passwordEncoder;
@@ -50,7 +53,7 @@ public class CourseItemServiceTests {
     @BeforeEach
     public void init() {
         passwordEncoder = new BCryptPasswordEncoder();
-        userService = new UserServiceImpl(userRepository, userCourseService, passwordEncoder);
+        userService = new UserServiceImpl(userRepository, friendInvitationRepository, userCourseService, passwordEncoder);
         courseItemService = new CourseItemServiceImpl(courseItemRepository, userService);
         courseItem = CourseItem.builder()
                 .id(1L)
