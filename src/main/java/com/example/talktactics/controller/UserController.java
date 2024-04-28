@@ -2,7 +2,11 @@ package com.example.talktactics.controller;
 
 import com.example.talktactics.dto.user.UserProfileDto;
 import com.example.talktactics.dto.user.UserProfilePreviewDto;
+import com.example.talktactics.dto.user.req.DeleteFriendDto;
+import com.example.talktactics.dto.user.req.FriendInvitationRequest;
+import com.example.talktactics.dto.user.req.FriendRequestDto;
 import com.example.talktactics.dto.user.req.UpdatePasswordReqDto;
+import com.example.talktactics.dto.user.res.FriendInvitationDto;
 import com.example.talktactics.entity.*;
 import com.example.talktactics.exception.UserRuntimeException;
 import com.example.talktactics.service.user.UserService;
@@ -56,6 +60,83 @@ public class UserController {
         try {
             return ResponseEntity.ok(userService.getUserProfileById(id));
         } catch(UserRuntimeException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
+        }
+    }
+
+    @GetMapping("/id/{id}/friends")
+    public ResponseEntity<List<UserProfilePreviewDto>> getFriends(@PathVariable Long id) {
+        try {
+            return ResponseEntity.ok(userService.getFriends(id));
+        } catch (UserRuntimeException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
+        }
+    }
+
+    @PostMapping("/send-friend-invitation")
+    public void sendFriendInvitation(@RequestBody FriendInvitationRequest request) {
+        try {
+            userService.sendFriendInvitation(request);
+        } catch (UserRuntimeException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
+        }
+    }
+
+    @PostMapping("/accept-friend-invitation")
+    public void acceptFriendInvitation(@RequestBody FriendInvitationRequest request) {
+        try {
+            userService.acceptFriendInvitation(request);
+        } catch (UserRuntimeException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
+        }
+    }
+
+    @PostMapping("/reject-friend-invitation")
+    public void rejectFriendInvitation(@RequestBody FriendInvitationRequest request) {
+        try {
+            userService.rejectFriendInvitation(request);
+        } catch (UserRuntimeException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
+        }
+    }
+
+    @DeleteMapping("/delete-friend")
+    public void deleteFriend(@RequestBody DeleteFriendDto request) {
+        try {
+            userService.deleteFriend(request);
+        } catch (UserRuntimeException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
+        }
+    }
+
+    @GetMapping("/id/{id}/received-friend-invitations")
+    public ResponseEntity<List<FriendInvitationDto>> getReceivedFriendInvitations(
+            @PathVariable Long id,
+            @RequestParam(required = false) Boolean withDetails
+    ) {
+        try {
+            return ResponseEntity.ok(userService.getReceivedFriendInvitations(id, withDetails));
+        } catch (UserRuntimeException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
+        }
+    }
+
+    @GetMapping("/id/{id}/sent-friend-invitations")
+    public ResponseEntity<List<FriendInvitationDto>> getSentFriendInvitations(
+            @PathVariable Long id,
+            @RequestParam(required = false) Boolean withDetails
+    ) {
+        try {
+            return ResponseEntity.ok(userService.getSentFriendInvitations(id, withDetails));
+        } catch (UserRuntimeException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
+        }
+    }
+    @DeleteMapping("/delete-sent-friend-invitation")
+    public void deleteSentFriendInvitation(@RequestBody FriendInvitationRequest request) {
+        try {
+            userService.deleteSentFriendInvitation(request);
+        } catch (UserRuntimeException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
         }
     }
