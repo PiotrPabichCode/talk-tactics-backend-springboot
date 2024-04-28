@@ -34,4 +34,10 @@ public class Constants {
     public static final String JWT_ILLEGAL_ARGUMENT_EXCEPTION = "Invalid argument passed";
     public static final String USERNAME_NOT_FOUND_EXCEPTION = "Username not found";
 
+//    FRIENDS
+    public static final String ALREADY_FRIENDS_EXCEPTION = "Already friends";
+    public static final String NOT_FRIENDS_EXCEPTION = "Not friends";
+    public static final String SAME_USER_EXCEPTION = "You cannot send a friend request to yourself";
+    public static final String FRIEND_INVITATION_EXISTS_EXCEPTION = "Friend invitation exists";
+    public static final String FRIEND_INVITATION_NOT_FOUND_EXCEPTION = "Friend invitation not found";
 }

@@ -3,18 +3,19 @@ package com.example.talktactics.service.user;
 import com.example.talktactics.dto.user.UpdateUserDto;
 import com.example.talktactics.dto.user.UserProfileDto;
 import com.example.talktactics.dto.user.UserProfilePreviewDto;
+import com.example.talktactics.dto.user.req.DeleteFriendDto;
+import com.example.talktactics.dto.user.req.FriendInvitationRequest;
 import com.example.talktactics.dto.user.req.UpdatePasswordReqDto;
+import com.example.talktactics.dto.user.res.FriendInvitationDto;
 import com.example.talktactics.dto.user_course.UserCourseDetailsDto;
 import com.example.talktactics.exception.UserRuntimeException;
 import com.example.talktactics.entity.*;
+import com.example.talktactics.repository.FriendInvitationRepository;
 import com.example.talktactics.repository.UserRepository;
 import com.example.talktactics.service.user_course.UserCourseService;
 import com.example.talktactics.util.Constants;
-import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -34,6 +35,7 @@ import static com.example.talktactics.util.Utils.getJsonPropertyFieldMap;
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
+    private final FriendInvitationRepository friendInvitationRepository;
     private final UserCourseService userCourseService;
     private final PasswordEncoder passwordEncoder;
 
@@ -54,9 +56,7 @@ public class UserServiceImpl implements UserService {
     }
     @Override
     public User getUserByUsername(String username) {
-        User user = userRepository.findByUsername(username).orElseThrow(() -> new UserRuntimeException(Constants.USER_NOT_FOUND_EXCEPTION));
-        validateCredentials(user);
-        return user;
+        return userRepository.findByUsername(username).orElseThrow(() -> new UserRuntimeException(Constants.USER_NOT_FOUND_EXCEPTION));
     }
     @Override
     public void deleteUser(long id) {
@@ -144,6 +144,115 @@ public class UserServiceImpl implements UserService {
         return UserProfileDto.toUserProfileDto(userProfile, userCourses);
     }
 
+    @Override
+    public List<UserProfilePreviewDto> getFriends(Long id) {
+        User user = getUserById(id);
+        validateCredentials(user);
+
+        return user.getFriends().stream()
+                .sorted(Comparator.comparingInt(User::getTotalPoints).reversed())
+                .map(User::toUserProfilePreviewDto)
+                .toList();
+    }
+
+    @Override
+    public void sendFriendInvitation(FriendInvitationRequest request) {
+        User sender = getUserById(request.getSenderId());
+        validateCredentials(sender);
+        User receiver = getUserById(request.getReceiverId());
+
+        validateFriendInvitationRequest(sender, receiver);
+        checkIfFriendInvitationExists(sender, receiver);
+
+        FriendInvitation friendInvitation = FriendInvitation.builder()
+                .sender(sender)
+                .receiver(receiver)
+                .build();
+
+        friendInvitationRepository.save(friendInvitation);
+
+        // Add notitfication to receiver
+    }
+
+    @Override
+    public void acceptFriendInvitation(FriendInvitationRequest request) {
+        User receiver = getUserById(request.getReceiverId());
+        validateCredentials(receiver);
+        User sender = getUserById(request.getSenderId());
+
+        validateFriendInvitationRequest(receiver, sender);
+        FriendInvitation friendInvitation = getFriendInvitation(receiver, sender);
+
+        receiver.getFriends().add(sender);
+        sender.getFriends().add(receiver);
+
+        userRepository.saveAll(List.of(receiver, sender));
+        friendInvitationRepository.delete(friendInvitation);
+
+        // Add notification to sender
+    }
+
+    @Override
+    public void rejectFriendInvitation(FriendInvitationRequest request) {
+        User receiver = getUserById(request.getReceiverId());
+        validateCredentials(receiver);
+        User sender = getUserById(request.getSenderId());
+
+        validateFriendInvitationRequest(receiver, sender);
+
+        FriendInvitation friendInvitation = getFriendInvitation(receiver, sender);
+        friendInvitationRepository.delete(friendInvitation);
+
+        // Add notification to sender
+    }
+
+    @Override
+    public void deleteFriend(DeleteFriendDto request) {
+        User user = getUserById(request.getUserId());
+        validateCredentials(user);
+        User friend = getUserById(request.getFriendId());
+
+        if(!user.getFriends().contains(friend)) {
+            throw new UserRuntimeException(Constants.NOT_FRIENDS_EXCEPTION);
+        }
+
+        user.getFriends().remove(friend);
+        friend.getFriends().remove(user);
+
+        userRepository.saveAll(List.of(user, friend));
+    }
+
+    @Override
+    public void deleteSentFriendInvitation(FriendInvitationRequest request) {
+        User sender = getUserById(request.getSenderId());
+        validateCredentials(sender);
+        User receiver = getUserById(request.getReceiverId());
+
+        validateFriendInvitationRequest(sender, receiver);
+
+        FriendInvitation friendInvitation = getFriendInvitation(sender, receiver);
+        friendInvitationRepository.delete(friendInvitation);
+    }
+
+    @Override
+    public List<FriendInvitationDto> getReceivedFriendInvitations(Long id, Boolean withDetails) {
+        User user = getUserById(id);
+        validateCredentials(user);
+
+        return user.getReceivedFriendInvitations().stream()
+                .map(friendInvitation -> friendInvitation.toFriendInvitationDto(withDetails))
+                .toList();
+    }
+
+    @Override
+    public List<FriendInvitationDto> getSentFriendInvitations(Long id, Boolean withDetails) {
+        User user = getUserById(id);
+        validateCredentials(user);
+
+        return user.getSentFriendInvitations().stream()
+                .map(friendInvitation -> friendInvitation.toFriendInvitationDto(withDetails))
+                .toList();
+    }
 
     //  PRIVATE
     private boolean isAdmin() {
@@ -170,6 +279,27 @@ public class UserServiceImpl implements UserService {
         if(passwordEncoder.matches(user.getPassword(), req.getNewPassword())) {
             throw new UserRuntimeException(Constants.DUPLICATED_PASSWORD_EXCEPTION);
         }
+    }
+
+    private void validateFriendInvitationRequest(User user1, User user2) {
+        if(user1.equals(user2)) {
+            throw new UserRuntimeException(Constants.SAME_USER_EXCEPTION);
+        }
+        if(user1.getFriends().contains(user2)) {
+            throw new UserRuntimeException(Constants.ALREADY_FRIENDS_EXCEPTION);
+        }
+    }
+
+    private void checkIfFriendInvitationExists(User user1, User user2) {
+        boolean exists = friendInvitationRepository.existsFriendInvitationByUserIds(user1.getId(), user2.getId());
+        if(exists) {
+            throw new UserRuntimeException(Constants.FRIEND_INVITATION_EXISTS_EXCEPTION);
+        }
+    }
+
+    private FriendInvitation getFriendInvitation(User user1, User user2) {
+        return friendInvitationRepository.findFriendInvitationByUserIds(user1.getId(), user2.getId())
+                .orElseThrow(() -> new UserRuntimeException(Constants.FRIEND_INVITATION_NOT_FOUND_EXCEPTION));
     }
 
 }
