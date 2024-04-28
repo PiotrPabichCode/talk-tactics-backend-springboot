@@ -54,6 +54,34 @@ public class User extends CommonEntity implements UserDetails {
     private List<UserCourse> userCourses;
 
     @JsonIgnore
+    @ManyToMany
+    @JoinTable(
+            name = "user_friends",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "friend_id")
+    )
+    private List<User> friends;
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "sender",
+            fetch = FetchType.LAZY,
+            orphanRemoval = true
+    )
+    @JsonProperty("sent_friend_requests")
+    @OrderBy("createdAt DESC")
+    private List<FriendInvitation> sentFriendInvitations;
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "receiver",
+            fetch = FetchType.LAZY,
+            orphanRemoval = true
+    )
+    @JsonProperty("received_friend_requests")
+    @OrderBy("createdAt DESC")
+    private List<FriendInvitation> receivedFriendInvitations;
+
+
+    @JsonIgnore
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of(new SimpleGrantedAuthority(role.name()));
