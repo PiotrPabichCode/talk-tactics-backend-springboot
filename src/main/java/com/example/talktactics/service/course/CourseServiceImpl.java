@@ -15,13 +15,16 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Comparator;
 import java.util.List;
 
 import static com.example.talktactics.specification.course.CourseSpecification.*;
+import static com.example.talktactics.util.Utils.getSort;
 
 @Service
 @Transactional
@@ -47,7 +50,7 @@ public class CourseServiceImpl implements CourseService {
     @Override
     public List<CourseNavbarDto> getNavbarList() {
         List<Tuple> items = courseRepository.findNavbarList();
-        return items.stream().map(CourseNavbarDto::fromTuple).toList();
+        return items.stream().map(CourseNavbarDto::fromTuple).sorted(Comparator.comparing(t -> CourseLevel.fromString(t.getLevel()))).toList();
     }
     @Override
     public Course getById(long id) throws CourseRuntimeException {
@@ -74,9 +77,12 @@ public class CourseServiceImpl implements CourseService {
                 .and(courseDescriptionContains(filters.getDescription()))
                 .and(courseLevelIn(filters.getLevels()))
                 .and(courseQuantityBetween(filters.getMinQuantity(), filters.getMaxQuantity()));
-        Pageable pageRequest = PageRequest.of(page, size);
+
+        Sort sort = getSort(filters.getSort(), Course.class);
+        Pageable pageRequest = PageRequest.of(page, size, sort);
 
         return courseRepository.findAll(courseSpecification, pageRequest);
+
     }
     @Override
     public void delete(long id) throws CourseRuntimeException {

@@ -28,4 +28,13 @@ public enum CourseLevel {
     public static CourseLevel fromShort(short value) {
         return map.get(value);
     }
+
+    public static CourseLevel fromString(String value) {
+        return switch (value) {
+            case "BEGINNER" -> BEGINNER;
+            case "INTERMEDIATE" -> INTERMEDIATE;
+            case "ADVANCED" -> ADVANCED;
+            default -> throw new IllegalArgumentException("Invalid value: " + value);
+        };
+    }
 }
