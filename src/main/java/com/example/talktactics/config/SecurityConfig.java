@@ -85,7 +85,7 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.DELETE, "/api/v1/users/id/{id}").hasAnyAuthority(Constants.ADMIN)
                 .requestMatchers("/api/v1/users/password").hasAnyAuthority(Constants.USER, Constants.ADMIN)
                 .requestMatchers("/api/v1/users/username/{username}").hasAnyAuthority(Constants.USER, Constants.ADMIN)
-                .requestMatchers("/api/v1/user-courses/all").hasAnyAuthority(Constants.ADMIN)
+                .requestMatchers("/api/v1/user-courses/all").hasAnyAuthority(Constants.USER, Constants.ADMIN)
                 .requestMatchers("/api/v1/user-courses/preview/user-id/{id}").hasAnyAuthority(Constants.USER, Constants.ADMIN)
                 .requestMatchers("/api/v1/user-courses/id/{id}").hasAnyAuthority(Constants.USER, Constants.ADMIN)
                 .requestMatchers("/api/v1/user-courses/user-id/{id}").hasAnyAuthority(Constants.USER, Constants.ADMIN)

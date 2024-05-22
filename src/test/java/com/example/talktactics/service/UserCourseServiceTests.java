@@ -12,6 +12,7 @@ import com.example.talktactics.exception.UserCourseRuntimeException;
 import com.example.talktactics.repository.*;
 import com.example.talktactics.service.course.CourseServiceImpl;
 import com.example.talktactics.service.user.UserServiceImpl;
+import com.example.talktactics.service.user_course.UserCourseMapper;
 import com.example.talktactics.service.user_course.UserCourseServiceImpl;
 import com.example.talktactics.util.Constants;
 import org.assertj.core.api.Assertions;
@@ -50,6 +51,8 @@ public class UserCourseServiceTests {
     private UserServiceImpl userService;
     @Mock
     private CourseServiceImpl courseService;
+    @Mock
+    private UserCourseMapper userCourseMapper;
 
     @InjectMocks
     private UserCourseServiceImpl userCourseService;
@@ -67,7 +70,7 @@ public class UserCourseServiceTests {
     public void init() {
         passwordEncoder = new BCryptPasswordEncoder();
         userService = new UserServiceImpl(userRepository, friendInvitationRepository, userCourseService, passwordEncoder);
-        userCourseService = new UserCourseServiceImpl(userCourseItemRepository, userCourseRepository, userService, courseService);
+        userCourseService = new UserCourseServiceImpl(userCourseItemRepository, userCourseRepository, userService, courseService, userCourseMapper);
 
         userList = List.of(
                 User.builder()

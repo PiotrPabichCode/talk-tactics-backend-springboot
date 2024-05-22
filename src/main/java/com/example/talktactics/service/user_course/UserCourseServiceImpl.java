@@ -1,5 +1,8 @@
 package com.example.talktactics.service.user_course;
 
+import com.example.talktactics.common.PageResult;
+import com.example.talktactics.dto.user_course.UserCourseDto;
+import com.example.talktactics.dto.user_course.UserCourseQueryCriteria;
 import com.example.talktactics.dto.user_course.req.UserCourseDeleteReqDto;
 import com.example.talktactics.dto.user_course.req.UserCourseGetReqDto;
 import com.example.talktactics.dto.user_course.req.UserCourseAddReqDto;
@@ -12,9 +15,13 @@ import com.example.talktactics.repository.UserCourseRepository;
 import com.example.talktactics.service.course.CourseService;
 import com.example.talktactics.service.user.UserService;
 import com.example.talktactics.util.Constants;
+import com.example.talktactics.util.PageUtil;
+import com.example.talktactics.util.QueryHelp;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -32,19 +39,28 @@ public class UserCourseServiceImpl implements UserCourseService {
     private final UserCourseRepository userCourseRepository;
     private final UserService userService;
     private final CourseService courseService;
+    private final UserCourseMapper userCourseMapper;
 
     public UserCourseServiceImpl(
             UserCourseItemRepository userCourseItemRepository,
             UserCourseRepository userCourseRepository,
             @Lazy UserService userService,
-            CourseService courseService) {
+            CourseService courseService,
+            UserCourseMapper userCourseMapper) {
         this.userCourseItemRepository = userCourseItemRepository;
         this.userCourseRepository = userCourseRepository;
         this.userService = userService;
         this.courseService = courseService;
+        this.userCourseMapper = userCourseMapper;
     }
 
 //  PUBLIC
+    @Override
+    public PageResult<UserCourseDto> queryAll(UserCourseQueryCriteria criteria, Pageable pageable) {
+        Page<UserCourse> page = userCourseRepository.findAll((root, criteriaQuery, criteriaBuilder) -> QueryHelp.getPredicate(root, criteria, criteriaBuilder), pageable);
+        return PageUtil.toPage(page.map(userCourseMapper::toDto));
+    }
+
     @Override
     public List<UserCourse> getAllUserCourses() throws UserCourseRuntimeException {
         userService.validateAdmin();
@@ -95,7 +111,7 @@ public class UserCourseServiceImpl implements UserCourseService {
         return getUserCourse(req.getCourseId(), req.getUserId());
     }
 
-//  PRIVATE
+    //  PRIVATE
     private UserCourse getUserCourse(Long courseId, Long userId) {
         UserCourse userCourse = userCourseRepository.findByCourseIdAndUserId(courseId, userId);
         if(userCourse == null) {

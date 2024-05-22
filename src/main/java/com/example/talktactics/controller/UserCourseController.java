@@ -1,15 +1,19 @@
 package com.example.talktactics.controller;
 
+import com.example.talktactics.common.PageResult;
+import com.example.talktactics.dto.user_course.UserCourseDto;
+import com.example.talktactics.dto.user_course.UserCourseQueryCriteria;
 import com.example.talktactics.dto.user_course.req.UserCourseGetReqDto;
 import com.example.talktactics.dto.user_course.req.UserCourseDeleteReqDto;
 import com.example.talktactics.dto.user_course.req.UserCourseAddReqDto;
 import com.example.talktactics.dto.user_course.UserCourseDetailsDto;
 import com.example.talktactics.entity.UserCourse;
-import com.example.talktactics.exception.UserCourseRuntimeException;
+import com.example.talktactics.exception.CourseRuntimeException;
 import com.example.talktactics.exception.UserRuntimeException;
 import com.example.talktactics.service.user_course.UserCourseService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -27,10 +31,10 @@ public class UserCourseController {
     private final UserCourseService userCourseService;
 
     @GetMapping("/all")
-    public ResponseEntity<List<UserCourse>> getAllUserCourses() {
+    public ResponseEntity<PageResult<UserCourseDto>> queryUserCourses(UserCourseQueryCriteria criteria, Pageable pageable) {
         try {
-            return ResponseEntity.ok(userCourseService.getAllUserCourses());
-        } catch (UserCourseRuntimeException e) {
+            return new ResponseEntity<>(userCourseService.queryAll(criteria, pageable), HttpStatus.OK);
+        } catch(CourseRuntimeException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
         }
     }
