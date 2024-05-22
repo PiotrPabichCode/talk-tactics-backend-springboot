@@ -1,6 +1,5 @@
 package com.example.talktactics.repository;
 
-import com.example.talktactics.dto.course.CourseNavbarDto;
 import com.example.talktactics.dto.course.CoursePreviewProjection;
 import com.example.talktactics.entity.Course;
 import jakarta.persistence.Tuple;

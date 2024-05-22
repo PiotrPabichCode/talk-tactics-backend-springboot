@@ -1,50 +1,48 @@
 package com.example.talktactics.service.course;
 
-import com.example.talktactics.dto.course.CourseFilterDto;
-import com.example.talktactics.dto.course.CourseNavbarDto;
-import com.example.talktactics.dto.course.CoursePreviewProjection;
+import com.example.talktactics.common.PageResult;
+import com.example.talktactics.dto.course.*;
 import com.example.talktactics.exception.CourseRuntimeException;
 import com.example.talktactics.entity.*;
 import com.example.talktactics.repository.*;
 import com.example.talktactics.service.user.UserService;
 import com.example.talktactics.util.Constants;
+import com.example.talktactics.util.PageUtil;
+import com.example.talktactics.util.QueryHelp;
 import jakarta.persistence.Tuple;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Comparator;
 import java.util.List;
 
-import static com.example.talktactics.specification.course.CourseSpecification.*;
-import static com.example.talktactics.util.Utils.getSort;
 
 @Service
-@Transactional
 @Slf4j
 public class CourseServiceImpl implements CourseService {
     private final CourseRepository courseRepository;
     private final UserService userService;
+    private final CourseMapper courseMapper;
 
     public CourseServiceImpl(
             CourseRepository courseRepository,
-            @Lazy UserService userService) {
+            @Lazy UserService userService,
+            CourseMapper courseMapper) {
         this.courseRepository = courseRepository;
         this.userService = userService;
+        this.courseMapper = courseMapper;
     }
 
 //  PUBLIC
+
     @Override
-    public Course create(Course course) throws CourseRuntimeException {
-        userService.validateAdmin();
-        return courseRepository.save(course);
+    public PageResult<CourseDto> queryAll(CourseQueryCriteria criteria, Pageable pageable) {
+        Page<Course> page = courseRepository.findAll((root, criteriaQuery, criteriaBuilder) -> QueryHelp.getPredicate(root, criteria, criteriaBuilder), pageable);
+        return PageUtil.toPage(page.map(courseMapper::toDto));
     }
 
     @Override
@@ -60,8 +58,16 @@ public class CourseServiceImpl implements CourseService {
     public List<CoursePreviewProjection> getPreviewList() throws CourseRuntimeException {
         return courseRepository.findCoursePreviews();
     }
+
     @Override
-    public Course update(long id, Course newCourse) throws CourseRuntimeException {
+    @Transactional(rollbackFor = Exception.class)
+    public void create(Course course) throws CourseRuntimeException {
+        userService.validateAdmin();
+        courseRepository.save(course);
+    }
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void update(long id, Course newCourse) throws CourseRuntimeException {
         userService.validateAdmin();
         Course course = getById(id);
 
@@ -69,22 +75,10 @@ public class CourseServiceImpl implements CourseService {
         course.setLevel(newCourse.getLevel());
         course.setTitle(newCourse.getTitle());
 
-        return course;
+        courseRepository.save(course);
     }
     @Override
-    public Page<Course> getCourseList(int page, int size, CourseFilterDto filters) {
-        Specification<Course> courseSpecification = Specification.where(courseTitleContains(filters.getTitle()))
-                .and(courseDescriptionContains(filters.getDescription()))
-                .and(courseLevelIn(filters.getLevels()))
-                .and(courseQuantityBetween(filters.getMinQuantity(), filters.getMaxQuantity()));
-
-        Sort sort = getSort(filters.getSort(), Course.class);
-        Pageable pageRequest = PageRequest.of(page, size, sort);
-
-        return courseRepository.findAll(courseSpecification, pageRequest);
-
-    }
-    @Override
+    @Transactional(rollbackFor = Exception.class)
     public void delete(long id) throws CourseRuntimeException {
         userService.validateAdmin();
         if (!courseRepository.existsById(id)) {

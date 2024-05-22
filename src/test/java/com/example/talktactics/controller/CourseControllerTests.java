@@ -5,9 +5,9 @@ import com.example.talktactics.dto.course.CoursePreviewProjectionImpl;
 import com.example.talktactics.entity.Course;
 import com.example.talktactics.entity.CourseLevel;
 import com.example.talktactics.exception.CourseRuntimeException;
-import com.example.talktactics.service.course.CourseServiceImpl;
-import com.example.talktactics.service.jwt.JwtServiceImpl;
-import com.example.talktactics.service.user.UserServiceImpl;
+import com.example.talktactics.service.course.CourseService;
+import com.example.talktactics.service.jwt.JwtService;
+import com.example.talktactics.service.user.UserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -40,11 +40,11 @@ public class CourseControllerTests {
     private static final String BASE_URL = "/api/v1/courses";
 
     @MockBean
-    private CourseServiceImpl courseService;
+    private CourseService courseService;
     @MockBean
-    private UserServiceImpl userService;
+    private UserService userService;
     @MockBean
-    private JwtServiceImpl jwtService;
+    private JwtService jwtService;
 
     @Autowired
     private MockMvc mockMvc;
@@ -95,24 +95,21 @@ public class CourseControllerTests {
     }
 
     @Test
-    public void CourseController_CreateCourse_ReturnsCourse_Status200() throws Exception {
-        given(courseService.create(any(Course.class))).willReturn(course);
-
+    public void CourseController_CreateCourse_ReturnsStatus201() throws Exception {
         MockHttpServletRequestBuilder request = post(BASE_URL + "/create")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(course));
 
         mockMvc.perform(request)
                 .andDo(print())
-                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.title").value(course.getTitle()));
+                .andExpect(status().isCreated());
 
         verify(courseService).create(any(Course.class));
     }
 
     @Test
     public void CourseController_CreateCourse_Status422() throws Exception {
-        given(courseService.create(any(Course.class))).willThrow(new CourseRuntimeException("Course creation failed."));
+        doThrow(new CourseRuntimeException("Course creation failed.")).when(courseService).create(any(Course.class));
 
         MockHttpServletRequestBuilder request = post(BASE_URL + "/create")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -196,7 +193,7 @@ public class CourseControllerTests {
         verify(courseService).getPreviewList();
     }
     @Test
-    public void CourseController_UpdateCourse_ReturnsUpdatedCourse_Status200() throws Exception {
+    public void CourseController_UpdateCourse_ReturnsStatus204() throws Exception {
         long courseId = 2;
         Course updatedCourse = Course.builder()
                 .id(courseId)
@@ -205,7 +202,8 @@ public class CourseControllerTests {
                 .courseItems(List.of())
                 .description("A course tailored to help learners improve their English language skills.")
                 .build();
-        given(courseService.update(any(long.class), any(Course.class))).willReturn(updatedCourse);
+
+        doNothing().when(courseService).update(any(long.class), any(Course.class));
 
         MockHttpServletRequestBuilder request = put(BASE_URL + "/id/" + courseId)
                 .contentType(MediaType.APPLICATION_JSON)
@@ -213,10 +211,7 @@ public class CourseControllerTests {
 
         mockMvc.perform(request)
                 .andDo(print())
-                .andExpect(status().isOk())
-                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.id").value(updatedCourse.getId()))
-                .andExpect(jsonPath("$.title").value(updatedCourse.getTitle()));
+                .andExpect(status().isNoContent());
 
         verify(courseService).update(any(long.class), any(Course.class));
     }
@@ -231,7 +226,8 @@ public class CourseControllerTests {
                 .courseItems(List.of())
                 .description("A course tailored to help learners improve their English language skills.")
                 .build();
-        given(courseService.update(any(long.class), any(Course.class))).willThrow(new CourseRuntimeException("Course update failed."));
+
+        doThrow(new CourseRuntimeException("Course updateCourse failed.")).when(courseService).update(any(long.class), any(Course.class));
 
         MockHttpServletRequestBuilder request = put(BASE_URL + "/id/" + courseId)
                 .contentType(MediaType.APPLICATION_JSON)
@@ -240,7 +236,7 @@ public class CourseControllerTests {
         mockMvc.perform(request)
                 .andDo(print())
                 .andExpect(status().isBadRequest())
-                .andExpect(result -> assertEquals("400 BAD_REQUEST \"Course update failed.\"", result.getResolvedException().getMessage()));
+                .andExpect(result -> assertEquals("400 BAD_REQUEST \"Course updateCourse failed.\"", result.getResolvedException().getMessage()));
 
         verify(courseService).update(any(long.class), any(Course.class));
     }

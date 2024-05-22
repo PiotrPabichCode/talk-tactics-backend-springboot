@@ -4,7 +4,6 @@ import com.example.talktactics.dto.user.UserProfileDto;
 import com.example.talktactics.dto.user.UserProfilePreviewDto;
 import com.example.talktactics.dto.user.req.DeleteFriendDto;
 import com.example.talktactics.dto.user.req.FriendInvitationRequest;
-import com.example.talktactics.dto.user.req.FriendRequestDto;
 import com.example.talktactics.dto.user.req.UpdatePasswordReqDto;
 import com.example.talktactics.dto.user.res.FriendInvitationDto;
 import com.example.talktactics.entity.*;

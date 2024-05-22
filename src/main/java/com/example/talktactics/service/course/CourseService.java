@@ -1,19 +1,18 @@
 package com.example.talktactics.service.course;
 
-import com.example.talktactics.dto.course.CourseFilterDto;
-import com.example.talktactics.dto.course.CourseNavbarDto;
-import com.example.talktactics.dto.course.CoursePreviewProjection;
+import com.example.talktactics.common.PageResult;
+import com.example.talktactics.dto.course.*;
 import com.example.talktactics.entity.Course;
-import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 
 public interface CourseService {
-    Course create(Course course);
-    Page<Course> getCourseList(int page, int size, CourseFilterDto filters);
+    void create(Course course);
+    void update(long id, Course newCourse);
+    void delete(long id);
+    PageResult<CourseDto> queryAll(CourseQueryCriteria criteria, Pageable pageable);
     List<CourseNavbarDto> getNavbarList();
     Course getById(long id);
     List<CoursePreviewProjection> getPreviewList();
-    Course update(long id, Course newCourse);
-    void delete(long id);
 }

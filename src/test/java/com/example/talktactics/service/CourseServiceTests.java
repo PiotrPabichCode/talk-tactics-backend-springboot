@@ -5,8 +5,9 @@ import com.example.talktactics.dto.course.CoursePreviewProjectionImpl;
 import com.example.talktactics.entity.Course;
 import com.example.talktactics.entity.CourseLevel;
 import com.example.talktactics.repository.CourseRepository;
+import com.example.talktactics.service.course.CourseMapper;
 import com.example.talktactics.service.course.CourseServiceImpl;
-import com.example.talktactics.service.user.UserServiceImpl;
+import com.example.talktactics.service.user.UserService;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -21,6 +22,7 @@ import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.verify;
 
 @SpringJUnitConfig
 public class CourseServiceTests {
@@ -28,7 +30,9 @@ public class CourseServiceTests {
     @Mock
     private CourseRepository courseRepository;
     @Mock
-    private UserServiceImpl userService;
+    private UserService userService;
+    @Mock
+    private CourseMapper courseMapper;
 
     @InjectMocks
     private CourseServiceImpl courseService;
@@ -40,7 +44,7 @@ public class CourseServiceTests {
 
     @BeforeEach
     public void init() {
-        courseService = new CourseServiceImpl(courseRepository, userService);
+        courseService = new CourseServiceImpl(courseRepository, userService, courseMapper);
         course = Course.builder()
                 .id(1)
                 .title("English for Beginners")
@@ -89,13 +93,10 @@ public class CourseServiceTests {
 
     @Test
     @WithMockUser(authorities = {"ADMIN"})
-    public void CourseService_CreateCourse_ReturnsCourse() {
-        given(courseRepository.save(any(Course.class))).willReturn(course);
-
-        Course createdCourse = courseService.create(course);
-
-        Assertions.assertThat(createdCourse).isNotNull();
-        Assertions.assertThat(createdCourse.getTitle()).isEqualTo(course.getTitle());
+    public void CourseService_CreateCourse_CallsSaveMethod() {
+        Course course = new Course();
+        courseService.create(course);
+        verify(courseRepository).save(any(Course.class));
     }
 
     @Test
@@ -121,14 +122,10 @@ public class CourseServiceTests {
 
     @Test
     @WithMockUser(authorities = {"ADMIN"})
-    public void CourseService_UpdateCourse_ReturnsCourse() {
+    public void CourseService_UpdateCourse_CallsSaveMethod() {
         given(courseRepository.findById(any(long.class))).willReturn(Optional.of(course));
-        given(courseRepository.save(any(Course.class))).willReturn(updatedCourse);
-
-        Course newCourse = courseService.update(1, updatedCourse);
-
-        Assertions.assertThat(newCourse).isNotNull();
-        Assertions.assertThat(newCourse.getTitle()).isEqualTo(updatedCourse.getTitle());
+        courseService.update(1, updatedCourse);
+        verify(courseRepository).save(any(Course.class));
     }
 
     @Test
