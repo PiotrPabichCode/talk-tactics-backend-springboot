@@ -1,6 +1,8 @@
 package com.example.talktactics.service.user_course;
 
 import com.example.talktactics.common.PageResult;
+import com.example.talktactics.dto.course.CourseDto;
+import com.example.talktactics.dto.course.CourseQueryCriteria;
 import com.example.talktactics.dto.user_course.UserCourseDto;
 import com.example.talktactics.dto.user_course.UserCourseQueryCriteria;
 import com.example.talktactics.dto.user_course.req.UserCourseDeleteReqDto;
@@ -17,10 +19,11 @@ import com.example.talktactics.service.user.UserService;
 import com.example.talktactics.util.Constants;
 import com.example.talktactics.util.PageUtil;
 import com.example.talktactics.util.QueryHelp;
-import lombok.RequiredArgsConstructor;
+import com.example.talktactics.util.SortUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -29,6 +32,9 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 @Transactional
@@ -58,6 +64,24 @@ public class UserCourseServiceImpl implements UserCourseService {
     @Override
     public PageResult<UserCourseDto> queryAll(UserCourseQueryCriteria criteria, Pageable pageable) {
         Page<UserCourse> page = userCourseRepository.findAll((root, criteriaQuery, criteriaBuilder) -> QueryHelp.getPredicate(root, criteria, criteriaBuilder), pageable);
+        if(criteria.getFetchCourses() != null && page.getNumberOfElements() < page.getSize()) {
+            int remaining = page.getSize() - page.getNumberOfElements();
+            Set<Long> courseIds = page.stream().map(UserCourse::getCourse).map(Course::getId).collect(Collectors.toSet());
+            PageResult<CourseDto> page1 = courseService.queryAll(CourseQueryCriteria.fromUserCourseQueryCriteria(criteria, courseIds), PageRequest.of(pageable.getPageNumber(), pageable.getPageSize()));
+
+            List<UserCourseDto> content = Stream.concat(
+                            page.stream().map(userCourseMapper::toDto),
+                            page1.content().stream().map(UserCourseDto::fromCourseDto)
+                    )
+                    .sorted(SortUtil.getComparator(pageable.getSort()))
+                    .limit(remaining)
+                    .toList();
+            long totalElements = page.getTotalElements() + page1.totalElements();
+            long totalPages = (totalElements + pageable.getPageSize() - 1) / pageable.getPageSize();
+
+            return new PageResult<>(content, totalElements, totalPages);
+        }
+
         return PageUtil.toPage(page.map(userCourseMapper::toDto));
     }
 

@@ -1,6 +1,7 @@
 package com.example.talktactics.dto.course;
 
 import com.example.talktactics.common.Query;
+import com.example.talktactics.dto.user_course.UserCourseQueryCriteria;
 import com.example.talktactics.entity.CourseLevel;
 import lombok.Data;
 
@@ -23,5 +24,19 @@ public class CourseQueryCriteria {
     private Integer minPoints;
     @Query(propName = "points", type = Query.Type.LESS_THAN)
     private Integer maxPoints;
+    @Query(propName = "id", type = Query.Type.NOT_IN)
+    private Set<Long> notInCourseIds = new HashSet<>();
 
+    public static CourseQueryCriteria fromUserCourseQueryCriteria(UserCourseQueryCriteria criteria, Set<Long> courseIds) {
+        CourseQueryCriteria courseQueryCriteria = new CourseQueryCriteria();
+        courseQueryCriteria.setTitle(criteria.getCourseTitle());
+        courseQueryCriteria.setDescription(criteria.getCourseDescription());
+        courseQueryCriteria.setLevels(criteria.getCourseLevels());
+        courseQueryCriteria.setMinQuantity(criteria.getMinQuantity());
+        courseQueryCriteria.setMaxQuantity(criteria.getMaxQuantity());
+        courseQueryCriteria.setMinPoints(criteria.getMinPoints());
+        courseQueryCriteria.setMaxPoints(criteria.getMaxPoints());
+        courseQueryCriteria.setNotInCourseIds(courseIds);
+        return courseQueryCriteria;
+    }
 }

@@ -9,6 +9,7 @@ import java.util.Set;
 
 @Data
 public class UserCourseQueryCriteria {
+    private Boolean fetchCourses;
     @Query
     private Boolean completed;
     @Query(propName = "points", type = Query.Type.GREATER_THAN)

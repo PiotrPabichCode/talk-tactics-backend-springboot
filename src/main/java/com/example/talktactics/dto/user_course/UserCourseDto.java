@@ -14,4 +14,10 @@ public class UserCourseDto implements Serializable {
     private Integer points;
     private User user;
     private CourseDto course;
+
+    public static UserCourseDto fromCourseDto(CourseDto courseDto) {
+        UserCourseDto userCourseDto = new UserCourseDto();
+        userCourseDto.setCourse(courseDto);
+        return userCourseDto;
+    }
 }

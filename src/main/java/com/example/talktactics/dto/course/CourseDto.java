@@ -1,5 +1,6 @@
 package com.example.talktactics.dto.course;
 
+import com.example.talktactics.dto.user_course.UserCourseDto;
 import com.example.talktactics.entity.CourseLevel;
 import lombok.Data;
 
@@ -13,4 +14,10 @@ public class CourseDto implements Serializable {
     private CourseLevel level;
     private int quantity;
     private int points;
+
+    public static UserCourseDto toUserCourseDto(CourseDto courseDto) {
+        UserCourseDto userCourseDto = new UserCourseDto();
+        userCourseDto.setCourse(courseDto);
+        return userCourseDto;
+    }
 }
