@@ -29,10 +29,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -64,22 +61,15 @@ public class UserCourseServiceImpl implements UserCourseService {
     @Override
     public PageResult<UserCourseDto> queryAll(UserCourseQueryCriteria criteria, Pageable pageable) {
         Page<UserCourse> page = userCourseRepository.findAll((root, criteriaQuery, criteriaBuilder) -> QueryHelp.getPredicate(root, criteria, criteriaBuilder), pageable);
+
         if(criteria.getFetchCourses() != null && page.getNumberOfElements() < page.getSize()) {
-            int remaining = page.getSize() - page.getNumberOfElements();
-            Set<Long> courseIds = page.stream().map(UserCourse::getCourse).map(Course::getId).collect(Collectors.toSet());
-            PageResult<CourseDto> page1 = courseService.queryAll(CourseQueryCriteria.fromUserCourseQueryCriteria(criteria, courseIds), PageRequest.of(pageable.getPageNumber(), pageable.getPageSize()));
 
-            List<UserCourseDto> content = Stream.concat(
-                            page.stream().map(userCourseMapper::toDto),
-                            page1.content().stream().map(UserCourseDto::fromCourseDto)
-                    )
-                    .sorted(SortUtil.getComparator(pageable.getSort()))
-                    .limit(remaining)
-                    .toList();
-            long totalElements = page.getTotalElements() + page1.totalElements();
-            long totalPages = (totalElements + pageable.getPageSize() - 1) / pageable.getPageSize();
-
-            return new PageResult<>(content, totalElements, totalPages);
+            PageRequest pageRequest = PageRequest.of(
+                    pageable.getPageNumber(),
+                    pageable.getPageSize(),
+                    toCoursesSort(pageable.getSort())
+            );
+            return fetchAdditionalCourses(page, criteria, pageRequest, pageable);
         }
 
         return PageUtil.toPage(page.map(userCourseMapper::toDto));
@@ -136,11 +126,46 @@ public class UserCourseServiceImpl implements UserCourseService {
     }
 
     //  PRIVATE
+
+    private PageResult<UserCourseDto> fetchAdditionalCourses(Page<UserCourse> page, UserCourseQueryCriteria criteria, PageRequest pageRequest, Pageable pageable) {
+        int remaining = page.getSize() - page.getNumberOfElements();
+        Set<Long> courseIds = page.stream().map(UserCourse::getCourse).map(Course::getId).collect(Collectors.toSet());
+        PageResult<CourseDto> page1 = courseService.queryAll(
+                CourseQueryCriteria.fromUserCourseQueryCriteria(criteria, courseIds),
+                pageRequest
+        );
+
+        List<UserCourseDto> content = Stream.concat(
+                        page.stream().map(userCourseMapper::toDto),
+                        page1.content().stream().map(UserCourseDto::fromCourseDto).limit(remaining)
+                )
+                .sorted(SortUtil.getComparator(pageable.getSort()))
+                .toList();
+        long totalElements = page.getTotalElements() + page1.totalElements();
+        long totalPages = calculateTotalPages(totalElements, pageable.getPageSize());
+
+        return new PageResult<>(content, totalElements, totalPages);
+    }
+
+    private long calculateTotalPages(long totalElements, int pageSize) {
+        return (totalElements + pageSize - 1) / pageSize;
+    }
     private UserCourse getUserCourse(Long courseId, Long userId) {
         UserCourse userCourse = userCourseRepository.findByCourseIdAndUserId(courseId, userId);
         if(userCourse == null) {
             throw new UserCourseRuntimeException(Constants.USER_COURSE_NOT_FOUND_EXCEPTION);
         }
         return userCourse;
+    }
+
+    private Sort toCoursesSort(Sort sort) {
+        List<Sort.Order> orders = sort.stream().map(order -> {
+            if(order.getProperty().contains("course")) {
+                String property = order.getProperty().replace("course.", "");
+                return new Sort.Order(order.getDirection(), property);
+            }
+            return null;
+        }).filter(Objects::nonNull).collect(Collectors.toList());
+        return Sort.by(orders);
     }
 }

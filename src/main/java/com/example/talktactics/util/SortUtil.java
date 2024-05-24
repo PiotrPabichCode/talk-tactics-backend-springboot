@@ -10,20 +10,25 @@ public class SortUtil {
 
     @SuppressWarnings("unchecked")
     public static <T> Comparator<T> getComparator(Sort sort) {
-        Comparator<T> comparator = Comparator.comparing(item -> (Comparable<Object>) getField(item, sort.iterator().next().getProperty()));
+        return (o1, o2) -> {
+            for (Sort.Order order : sort) {
+                int comparison;
+                Comparable<Object> value1 = (Comparable<Object>) getField(o1, order.getProperty());
+                Comparable<Object> value2 = (Comparable<Object>) getField(o2, order.getProperty());
 
-        if (sort.iterator().next().isDescending()) {
-            comparator = comparator.reversed();
-        }
-
-        for (Sort.Order order : sort) {
-            Comparator<T> orderComparator = Comparator.comparing(item -> (Comparable<Object>) getField(item, order.getProperty()));
-            if (order.isDescending()) {
-                orderComparator = orderComparator.reversed();
+                if (value1 == null && value2 == null) {
+                    comparison = 0;
+                } else if (value1 == null) {
+                    comparison = order.getDirection() == Sort.Direction.ASC ? -1 : 1;
+                } else if (value2 == null) {
+                    comparison = order.getDirection() == Sort.Direction.ASC ? 1 : -1;
+                } else {
+                    comparison = order.getDirection() == Sort.Direction.ASC ? value1.compareTo(value2) : value2.compareTo(value1);
+                }
+                return comparison;
             }
-            comparator = comparator.thenComparing(orderComparator);
-        }
-        return comparator;
+            return 0;
+        };
     }
 
     private static Object getField(Object item, String fieldName) {
