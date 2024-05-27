@@ -19,7 +19,6 @@ import com.example.talktactics.service.user.UserService;
 import com.example.talktactics.util.Constants;
 import com.example.talktactics.util.PageUtil;
 import com.example.talktactics.util.QueryHelp;
-import com.example.talktactics.util.SortUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
@@ -31,7 +30,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Service
 @Transactional
@@ -60,18 +58,11 @@ public class UserCourseServiceImpl implements UserCourseService {
 //  PUBLIC
     @Override
     public PageResult<UserCourseDto> queryAll(UserCourseQueryCriteria criteria, Pageable pageable) {
-        Page<UserCourse> page = userCourseRepository.findAll((root, criteriaQuery, criteriaBuilder) -> QueryHelp.getPredicate(root, criteria, criteriaBuilder), pageable);
-
-        if(criteria.getFetchCourses() != null && page.getNumberOfElements() < page.getSize()) {
-
-            PageRequest pageRequest = PageRequest.of(
-                    pageable.getPageNumber(),
-                    pageable.getPageSize(),
-                    toCoursesSort(pageable.getSort())
-            );
-            return fetchAdditionalCourses(page, criteria, pageRequest, pageable);
+        if(criteria.getFetchCourses() != null) {
+            return fetchWithAdditionalCourses(criteria, pageable);
         }
 
+        Page<UserCourse> page = userCourseRepository.findAll((root, criteriaQuery, criteriaBuilder) -> QueryHelp.getPredicate(root, criteria, criteriaBuilder), pageable);
         return PageUtil.toPage(page.map(userCourseMapper::toDto));
     }
 
@@ -127,35 +118,43 @@ public class UserCourseServiceImpl implements UserCourseService {
 
     //  PRIVATE
 
-    private PageResult<UserCourseDto> fetchAdditionalCourses(Page<UserCourse> page, UserCourseQueryCriteria criteria, PageRequest pageRequest, Pageable pageable) {
-        int remaining = page.getSize() - page.getNumberOfElements();
-        Set<Long> courseIds = page.stream().map(UserCourse::getCourse).map(Course::getId).collect(Collectors.toSet());
-        PageResult<CourseDto> page1 = courseService.queryAll(
-                CourseQueryCriteria.fromUserCourseQueryCriteria(criteria, courseIds),
-                pageRequest
-        );
-
-        List<UserCourseDto> content = Stream.concat(
-                        page.stream().map(userCourseMapper::toDto),
-                        page1.content().stream().map(UserCourseDto::fromCourseDto).limit(remaining)
-                )
-                .sorted(SortUtil.getComparator(pageable.getSort()))
-                .toList();
-        long totalElements = page.getTotalElements() + page1.totalElements();
-        long totalPages = calculateTotalPages(totalElements, pageable.getPageSize());
-
-        return new PageResult<>(content, totalElements, totalPages);
-    }
-
-    private long calculateTotalPages(long totalElements, int pageSize) {
-        return (totalElements + pageSize - 1) / pageSize;
-    }
     private UserCourse getUserCourse(Long courseId, Long userId) {
         UserCourse userCourse = userCourseRepository.findByCourseIdAndUserId(courseId, userId);
         if(userCourse == null) {
             throw new UserCourseRuntimeException(Constants.USER_COURSE_NOT_FOUND_EXCEPTION);
         }
         return userCourse;
+    }
+
+    private PageResult<UserCourseDto> fetchWithAdditionalCourses(UserCourseQueryCriteria criteria, Pageable pageable) {
+        PageRequest pageRequest = PageRequest.of(
+                pageable.getPageNumber(),
+                pageable.getPageSize(),
+                toCoursesSort(pageable.getSort())
+        );
+        PageResult<CourseDto> pageResultCourses = courseService.queryAll(
+                CourseQueryCriteria.fromUserCourseQueryCriteria(criteria, null),
+                pageRequest
+        );
+
+        Set<Long> courseIds = pageResultCourses.content().stream().map(CourseDto::getId).collect(Collectors.toSet());
+        criteria.setCourseIds(courseIds);
+
+        Page<UserCourse> pageUserCourses = userCourseRepository.findAll((root, criteriaQuery, criteriaBuilder) -> QueryHelp.getPredicate(root, criteria, criteriaBuilder), pageable);
+
+        Map<Long, UserCourseDto> userCourseDtoMap = pageUserCourses.stream()
+                .collect(Collectors.toMap(
+                        userCourse -> userCourse.getCourse().getId(),
+                        userCourseMapper::toDto
+                ));
+        List<UserCourseDto> content = pageResultCourses.content().stream()
+                .map(courseDto -> {
+                    Long courseId = courseDto.getId();
+                    return userCourseDtoMap.getOrDefault(courseId, UserCourseDto.fromCourseDto(courseDto));
+                })
+                .collect(Collectors.toList());
+
+        return new PageResult<>(content, pageResultCourses.totalElements(), pageResultCourses.totalPages());
     }
 
     private Sort toCoursesSort(Sort sort) {
