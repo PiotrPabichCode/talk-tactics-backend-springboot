@@ -46,6 +46,11 @@ public class CourseServiceImpl implements CourseService {
     }
 
     @Override
+    public long countAll(CourseQueryCriteria criteria) {
+        return courseRepository.count((root, criteriaQuery, criteriaBuilder) -> QueryHelp.getPredicate(root, criteria, criteriaBuilder));
+    }
+
+    @Override
     public List<CourseNavbarDto> getNavbarList() {
         List<Tuple> items = courseRepository.findNavbarList();
         return items.stream().map(CourseNavbarDto::fromTuple).sorted(Comparator.comparing(t -> CourseLevel.fromString(t.getLevel()))).toList();

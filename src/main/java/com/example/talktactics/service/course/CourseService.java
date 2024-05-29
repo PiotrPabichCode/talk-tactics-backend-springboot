@@ -12,6 +12,7 @@ public interface CourseService {
     void update(long id, Course newCourse);
     void delete(long id);
     PageResult<CourseDto> queryAll(CourseQueryCriteria criteria, Pageable pageable);
+    long countAll(CourseQueryCriteria criteria);
     List<CourseNavbarDto> getNavbarList();
     Course getById(long id);
     List<CoursePreviewProjection> getPreviewList();

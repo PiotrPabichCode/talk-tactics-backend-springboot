@@ -1,7 +1,7 @@
 package com.example.talktactics.dto.user_course;
 
 import com.example.talktactics.dto.course.CourseDto;
-import com.example.talktactics.entity.User;
+import com.example.talktactics.dto.user.UserDto;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -12,7 +12,7 @@ public class UserCourseDto implements Serializable {
     private Double progress;
     private Boolean completed;
     private Integer points;
-    private User user;
+    private UserDto user;
     private CourseDto course;
 
     public static UserCourseDto fromCourseDto(CourseDto courseDto) {

@@ -26,7 +26,7 @@ public class UserCourseEntityListeners {
     @PostPersist
     public void afterSave(@NonNull UserCourse userCourse) {
         User user = userCourse.getUser();
-        int totalPoints = user.getTotalPoints();
+        int totalPoints = user.getTotalPoints() == null ? 0 : user.getTotalPoints();
         totalPoints += userCourse.getPoints();
         user.setTotalPoints(totalPoints);
         UserRepository userRepository = this.userRepositoryProvider.getObject();

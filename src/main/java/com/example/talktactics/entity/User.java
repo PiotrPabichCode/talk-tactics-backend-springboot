@@ -40,7 +40,7 @@ public class User extends CommonEntity implements UserDetails {
     @Size(max = 250)
     private String bio;
     @JsonProperty("total_points")
-    private int totalPoints = 0;
+    private Integer totalPoints = 0;
 
     @Enumerated(EnumType.STRING)
     private Role role;

@@ -27,7 +27,7 @@ public class CourseQueryCriteria {
     @Query(propName = "id", type = Query.Type.NOT_IN)
     private Set<Long> notInCourseIds = new HashSet<>();
 
-    public static CourseQueryCriteria fromUserCourseQueryCriteria(UserCourseQueryCriteria criteria, Set<Long> courseIds) {
+    public static CourseQueryCriteria fromUserCourseQueryCriteria(UserCourseQueryCriteria criteria, Set<Long> excludeCourseIds) {
         CourseQueryCriteria courseQueryCriteria = new CourseQueryCriteria();
         courseQueryCriteria.setTitle(criteria.getCourseTitle());
         courseQueryCriteria.setDescription(criteria.getCourseDescription());
@@ -36,7 +36,7 @@ public class CourseQueryCriteria {
         courseQueryCriteria.setMaxQuantity(criteria.getMaxQuantity());
         courseQueryCriteria.setMinPoints(criteria.getMinPoints());
         courseQueryCriteria.setMaxPoints(criteria.getMaxPoints());
-        courseQueryCriteria.setNotInCourseIds(courseIds);
+        courseQueryCriteria.setNotInCourseIds(excludeCourseIds);
         return courseQueryCriteria;
     }
 }

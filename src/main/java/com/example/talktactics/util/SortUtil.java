@@ -8,6 +8,18 @@ import java.util.Comparator;
 
 public class SortUtil {
 
+    public static String getSortProperty(Sort sort) {
+        return sort.stream().findFirst().map(Sort.Order::getProperty).orElse(null);
+    }
+
+    public static Sort.Direction getSortDirection(Sort sort) {
+        return sort.stream().findFirst().map(Sort.Order::getDirection).orElse(null);
+    }
+
+    public static boolean isSortAscending(Sort sort) {
+        return SortUtil.getSortDirection(sort).equals(Sort.Direction.ASC);
+    }
+
     @SuppressWarnings("unchecked")
     public static <T> Comparator<T> getComparator(Sort sort) {
         return (o1, o2) -> {

@@ -68,7 +68,7 @@ public class DataInitializer implements ApplicationRunner {
             String username = String.format("%s%s%d", firstName, lastName, i);
             String email = String.format("%s%s%d@email.com", firstName, lastName, i);
             String bio = UserProfileBioGenerator.generateBio(random.nextInt(3) + 1);
-            userList.add(User.builder().username(username).password(passwordEncoder.encode("talktactics")).email(email).firstName(firstName).lastName(lastName).bio(bio).role(Role.USER).build());
+            userList.add(User.builder().username(username).password(passwordEncoder.encode("talktactics")).email(email).firstName(firstName).lastName(lastName).bio(bio).role(Role.USER).totalPoints(0).build());
         }
         userRepository.saveAll(userList);
     }

@@ -9,6 +9,7 @@ import com.example.talktactics.dto.user_course.req.UserCourseGetReqDto;
 import com.example.talktactics.dto.user_course.UserCourseDetailsDto;
 import com.example.talktactics.entity.UserCourse;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 
 import java.util.List;
 
@@ -21,4 +22,6 @@ public interface UserCourseService {
     UserCourse getByUserIdAndCourseId(UserCourseGetReqDto req);
 
     PageResult<UserCourseDto> queryAll(UserCourseQueryCriteria criteria, Pageable pageable);
+    List<UserCourseDto> queryAll(UserCourseQueryCriteria criteria);
+    List<UserCourseDto> queryAll(UserCourseQueryCriteria criteria, Sort sort);
 }
