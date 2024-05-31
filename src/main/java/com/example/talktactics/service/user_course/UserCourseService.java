@@ -21,7 +21,7 @@ public interface UserCourseService {
     void deleteUserCourse(UserCourseDeleteReqDto req);
     UserCourse getByUserIdAndCourseId(UserCourseGetReqDto req);
 
-    PageResult<UserCourseDto> queryAll(UserCourseQueryCriteria criteria, Pageable pageable);
+    PageResult<?> queryAll(UserCourseQueryCriteria criteria, Pageable pageable);
     List<UserCourseDto> queryAll(UserCourseQueryCriteria criteria);
     List<UserCourseDto> queryAll(UserCourseQueryCriteria criteria, Sort sort);
 }

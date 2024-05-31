@@ -6,6 +6,7 @@ import com.example.talktactics.dto.course.CourseDto;
 import com.example.talktactics.dto.course.CourseQueryCriteria;
 import com.example.talktactics.dto.user_course.UserCourseDto;
 import com.example.talktactics.dto.user_course.UserCourseQueryCriteria;
+import com.example.talktactics.dto.user_course.UserCourseTableRowDto;
 import com.example.talktactics.dto.user_course.req.UserCourseDeleteReqDto;
 import com.example.talktactics.dto.user_course.req.UserCourseGetReqDto;
 import com.example.talktactics.dto.user_course.req.UserCourseAddReqDto;
@@ -59,12 +60,15 @@ public class UserCourseServiceImpl implements UserCourseService {
 
 //  PUBLIC
     @Override
-    public PageResult<UserCourseDto> queryAll(UserCourseQueryCriteria criteria, Pageable pageable) {
+    public PageResult<?> queryAll(UserCourseQueryCriteria criteria, Pageable pageable) {
         if (Boolean.TRUE.equals(criteria.getFetchCourses())) {
             return queryAllWithCourses(criteria, pageable);
         }
 
         Page<UserCourse> page = userCourseRepository.findAll((root, criteriaQuery, criteriaBuilder) -> QueryHelp.getPredicate(root, criteria, criteriaBuilder), pageable);
+        if(Boolean.TRUE.equals(criteria.getTableRow())) {
+            return PageUtil.toPage(page.map(UserCourseTableRowDto::from));
+        }
         return PageUtil.toPage(page.map(userCourseMapper::toDto));
     }
 
@@ -139,72 +143,68 @@ public class UserCourseServiceImpl implements UserCourseService {
         }
         return userCourse;
     }
-    private PageResult<UserCourseDto> queryAllWithCourses(UserCourseQueryCriteria criteria, Pageable pageable) {
+    private PageResult<UserCourseTableRowDto> queryAllWithCourses(UserCourseQueryCriteria criteria, Pageable pageable) {
         criteria.setFetchCourses(false);
         Sort sort = pageable.getSort();
         if (isCourseSorted(sort)) {
-            return processCourseSortRequest(criteria, pageable);
+            return processCourseSortWithCourseFetchRequest(criteria, pageable);
         }
-        return processSortRequest(criteria, pageable, SortUtil.isSortAscending(sort));
+        return processSortWithCourseFetchRequest(criteria, pageable, SortUtil.isSortAscending(sort));
     }
 
-    private PageResult<UserCourseDto> processSortRequest(UserCourseQueryCriteria criteria, Pageable pageable, boolean isAscending) {
+    private PageResult<UserCourseTableRowDto> processSortWithCourseFetchRequest(UserCourseQueryCriteria criteria, Pageable pageable, boolean isAscending) {
         long totalElements = courseService.countAll(CourseQueryCriteria.fromUserCourseQueryCriteria(criteria, null));
         int totalPages = (int) Math.ceil((double) totalElements / pageable.getPageSize());
 
         if(isAscending) {
-            List<UserCourseDto> content = getAscendingSortContentWithFetchedCourses(criteria, pageable);
+            List<UserCourseTableRowDto> content = getAscendingSortContentWithFetchedCourses(criteria, pageable);
             return new PageResult<>(content, totalElements, totalPages);
         }
-        List<UserCourseDto> content = getDescendingSortContentWithFetchedCourses(criteria, pageable);
+        List<UserCourseTableRowDto> content = getDescendingSortContentWithFetchedCourses(criteria, pageable);
         return new PageResult<>(content, totalElements, totalPages);
     }
 
-    private List<UserCourseDto> getAscendingSortContentWithFetchedCourses(UserCourseQueryCriteria criteria, Pageable pageable) {
+    private List<UserCourseTableRowDto> getAscendingSortContentWithFetchedCourses(UserCourseQueryCriteria criteria, Pageable pageable) {
         List<UserCourseDto> userCourseList = queryAll(criteria, pageable.getSort());
         Set<Long> excludeCourseIds = userCourseList.stream()
                 .map(userCourse -> userCourse.getCourse().getId())
                 .collect(Collectors.toSet());
 
-        int offset = pageable.getPageNumber() * pageable.getPageSize();
-        Pageable offsetPageable = new OffsetBasedPageRequest(
-                offset,
+        PageRequest pageRequest = PageRequest.of(
+                pageable.getPageNumber(),
                 pageable.getPageSize(),
-                toCoursesSort(pageable.getSort()).and(Sort.by("id").ascending())
+                toCoursesSort(pageable.getSort())
         );
-
         PageResult<CourseDto> courseDtoPageResult = courseService.queryAll(
                 CourseQueryCriteria.fromUserCourseQueryCriteria(criteria, excludeCourseIds),
-                offsetPageable
+                pageRequest
         );
-        List<UserCourseDto> content = courseDtoPageResult.content().stream()
-                .map(UserCourseDto::fromCourseDto)
+        List<UserCourseTableRowDto> content = courseDtoPageResult.content().stream()
+                .map(UserCourseTableRowDto::from)
                 .collect(Collectors.toList());
         if(content.size() == pageable.getPageSize()) {
             return content;
         }
 
-
         int limit = pageable.getPageSize() - content.size();
-        int skip = (int) Math.max(0, offset - courseDtoPageResult.totalElements());
+        long offset = Math.max(0, (long) pageable.getPageSize() * pageable.getPageNumber() - courseDtoPageResult.totalElements());
 
-        userCourseList = userCourseList.stream()
-                .skip(skip)
+        List<UserCourseTableRowDto> offsetBasedData = userCourseList.stream()
+                .skip(offset)
                 .limit(limit)
-                .collect(Collectors.toList());
-        content.addAll(userCourseList);
+                .map(UserCourseTableRowDto::from).toList();
+        content.addAll(offsetBasedData);
 
         return content;
     }
 
-    private List<UserCourseDto> getDescendingSortContentWithFetchedCourses(UserCourseQueryCriteria criteria, Pageable pageable) {
-        int offset = pageable.getPageNumber() * pageable.getPageSize();
-
+    private List<UserCourseTableRowDto> getDescendingSortContentWithFetchedCourses(UserCourseQueryCriteria criteria, Pageable pageable) {
         List<UserCourseDto> userCourseList = queryAll(criteria, pageable.getSort());
 
-        List<UserCourseDto> content = userCourseList.stream()
-                .skip(offset)
+        List<UserCourseTableRowDto> content = userCourseList.stream()
+                .skip((long) pageable.getPageNumber() * pageable.getPageSize())
                 .limit(pageable.getPageSize())
+                .map(UserCourseTableRowDto::from)
                 .collect(Collectors.toList());
         if(content.size() == pageable.getPageSize()) {
             return content;
@@ -215,7 +215,7 @@ public class UserCourseServiceImpl implements UserCourseService {
                 .collect(Collectors.toSet());
 
         int limit = pageable.getPageSize() - content.size();
-        offset = Math.max(0, offset - userCourseList.size() - pageable.getPageSize());
+        int offset = Math.max(0, pageable.getPageSize() * pageable.getPageNumber() - userCourseList.size());
         Pageable offsetPageable = new OffsetBasedPageRequest(
                 offset,
                 limit,
@@ -227,15 +227,15 @@ public class UserCourseServiceImpl implements UserCourseService {
                 offsetPageable
         );
 
-        List<UserCourseDto> courseToUserCourseDtoList = courseDtoPageResult.content().stream()
-                .map(UserCourseDto::fromCourseDto)
+        List<UserCourseTableRowDto> courseToUserCourseTableRowDto = courseDtoPageResult.content().stream()
+                .map(UserCourseTableRowDto::from)
                 .toList();
 
-        content.addAll(courseToUserCourseDtoList);
+        content.addAll(courseToUserCourseTableRowDto);
         return content;
     }
 
-    private PageResult<UserCourseDto> processCourseSortRequest(UserCourseQueryCriteria criteria, Pageable pageable) {
+    private PageResult<UserCourseTableRowDto> processCourseSortWithCourseFetchRequest(UserCourseQueryCriteria criteria, Pageable pageable) {
         PageResult<CourseDto> courseDtoPageResult = courseService.queryAll(
                 CourseQueryCriteria.fromUserCourseQueryCriteria(criteria, null),
                 getAdditionalCoursesPageRequest(pageable)
@@ -247,14 +247,14 @@ public class UserCourseServiceImpl implements UserCourseService {
         criteria.setCourseIds(courseIds);
 
         List<UserCourseDto> userCourseDtoList = queryAll(criteria);
-        Map<Long, UserCourseDto> userCourseDtoMap = userCourseDtoList.stream()
+        Map<Long, UserCourseTableRowDto> userCourseTableRowDtoMap = userCourseDtoList.stream()
                 .collect(Collectors.toMap(
                         userCourse -> userCourse.getCourse().getId(),
-                        userCourse -> userCourse
+                        UserCourseTableRowDto::from
                 ));
 
-        List<UserCourseDto> content = courseDtoPageResult.content().stream()
-                .map(courseDto -> userCourseDtoMap.getOrDefault(courseDto.getId(), UserCourseDto.fromCourseDto(courseDto)))
+        List<UserCourseTableRowDto> content = courseDtoPageResult.content().stream()
+                .map(courseDto -> userCourseTableRowDtoMap.getOrDefault(courseDto.getId(), UserCourseTableRowDto.from(courseDto)))
                 .toList();
 
         return new PageResult<>(content, courseDtoPageResult.totalElements(), courseDtoPageResult.totalPages());

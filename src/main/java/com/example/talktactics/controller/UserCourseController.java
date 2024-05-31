@@ -1,7 +1,6 @@
 package com.example.talktactics.controller;
 
 import com.example.talktactics.common.PageResult;
-import com.example.talktactics.dto.user_course.UserCourseDto;
 import com.example.talktactics.dto.user_course.UserCourseQueryCriteria;
 import com.example.talktactics.dto.user_course.req.UserCourseGetReqDto;
 import com.example.talktactics.dto.user_course.req.UserCourseDeleteReqDto;
@@ -31,7 +30,7 @@ public class UserCourseController {
     private final UserCourseService userCourseService;
 
     @GetMapping("/all")
-    public ResponseEntity<PageResult<UserCourseDto>> queryUserCourses(UserCourseQueryCriteria criteria, Pageable pageable) {
+    public ResponseEntity<PageResult<?>> queryUserCourses(UserCourseQueryCriteria criteria, Pageable pageable) {
         try {
             return new ResponseEntity<>(userCourseService.queryAll(criteria, pageable), HttpStatus.OK);
         } catch(CourseRuntimeException e) {

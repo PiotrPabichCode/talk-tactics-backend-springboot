@@ -5,12 +5,12 @@ import com.example.talktactics.entity.CourseLevel;
 import lombok.Builder;
 import lombok.Data;
 
-import java.util.HashSet;
 import java.util.Set;
 
 @Data
 @Builder
 public class UserCourseQueryCriteria {
+    private Boolean tableRow;
     private Boolean fetchCourses;
     @Query
     private Boolean completed;

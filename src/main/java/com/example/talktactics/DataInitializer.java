@@ -51,13 +51,27 @@ public class DataInitializer implements ApplicationRunner {
     private static final int COURSES_SIZE = 50;
     private static final int BEGINNER_COURSES_BREAKPOINT = 15;
     private static final int INTERMEDIATE_COURSES_BREAKPOINT = 35;
-    public void initData() {
+    @Override
+    public void run(ApplicationArguments args) {
+        Instant start = Instant.now();
+        log.info("Initializing data... | {}", start);
+
+        initData();
+        Instant end = Instant.now();
+
+        Duration duration = Duration.between(start, end);
+
+        log.info("Data initialized successfully! | Took: {} seconds | {}", duration.toMillis() / 1000.0, end);
+    }
+
+    // PRIVATE
+    private void initData() {
         initUsers();
         initCourses();
         initCourseItems();
         initUserCourses();
     }
-    public void initUsers() {
+    private void initUsers() {
         userList.add(User.builder().username("admin").password(passwordEncoder.encode("admin")).email("email@gmail.com").firstName("Piotr").lastName("Pabich").bio("Passionate about technology, design, and the power of innovation. Always seeking new challenges and ways to make an impact.").role(Role.ADMIN).build());
         userList.add(User.builder().username("user").password(passwordEncoder.encode("user")).email("user@gmail.com").firstName("Jan").lastName("Tomczyk").bio("Adventurous soul, chasing dreams one step at a time. Lover of art, nature, and good conversations. Here to make memories").role(Role.USER).build());
         userList.add(User.builder().username("user1").password(passwordEncoder.encode("user1")).email("user1@gmail.com").firstName("Tomasz").lastName("Kukułka").bio("Avid reader, passionate writer, and eternal optimist. Finding beauty in the little things and spreading positivity wherever I go.").role(Role.USER).build());
@@ -72,7 +86,7 @@ public class DataInitializer implements ApplicationRunner {
         }
         userRepository.saveAll(userList);
     }
-    public void initCourses() {
+    private void initCourses() {
         for(int i = 0; i < COURSES_SIZE; i++) {
             String name = CourseDataGenerator.selectCourseTitle(i);
             String description = CourseDataGenerator.selectCourseDescription(i);
@@ -81,7 +95,7 @@ public class DataInitializer implements ApplicationRunner {
         }
         courseRepository.saveAll(courseList);
     }
-    public void initCourseItems() {
+    private void initCourseItems() {
         try {
             JsonNode rootNode = readJsonFile("src/main/java/com/example/talktactics/util/long_words.json");
 
@@ -136,7 +150,7 @@ public class DataInitializer implements ApplicationRunner {
             e.printStackTrace();
         }
     }
-    public void initUserCourses() {
+    private void initUserCourses() {
         for(User user: userList) {
             random.ints(0, courseList.size()).distinct().limit(random.nextInt(COURSES_SIZE / 2) + 1).forEach(value -> {
                 Course course = courseList.get(value);
@@ -151,22 +165,6 @@ public class DataInitializer implements ApplicationRunner {
         }
         userCourseRepository.saveAll(userCourseList);
     }
-
-
-    @Override
-    public void run(ApplicationArguments args) {
-        Instant start = Instant.now();
-        log.info("Initializing data... | {}", start);
-
-        initData();
-        Instant end = Instant.now();
-
-        Duration duration = Duration.between(start, end);
-
-        log.info("Data initialized successfully! | Took: {} seconds | {}", duration.toMillis() / 1000.0, end);
-    }
-
-    // PRIVATE
     private JsonNode readJsonFile(String filePath) throws IOException {
         ObjectMapper objectMapper = new ObjectMapper();
         File jsonFile = new File(filePath);
