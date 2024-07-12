@@ -10,10 +10,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import static com.example.talktactics.common.AppConst.API_V1;
+import static com.example.talktactics.common.AppConst.AUTH_PATH;
+
 @RestController
-@RequestMapping("/api/v1/auth")
+@RequestMapping(API_V1 + AUTH_PATH)
 @RequiredArgsConstructor
-@CrossOrigin(origins = {"http://localhost:3000", "https://talk-tactics-frontend.vercel.app/"}, allowCredentials = "true")
 public class AuthenticationController {
 
     private final AuthenticationService service;

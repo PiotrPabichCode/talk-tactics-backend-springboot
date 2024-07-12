@@ -15,10 +15,12 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Set;
 
+import static com.example.talktactics.common.AppConst.API_V1;
+import static com.example.talktactics.common.AppConst.COURSES_PATH;
+
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1/courses")
-@CrossOrigin(origins = {"http://localhost:3000", "https://talk-tactics-frontend.vercel.app/"}, allowCredentials = "true")
+@RequestMapping(API_V1 + COURSES_PATH)
 @Tag(name = "Courses", description = "Courses management APIs")
 public class CourseController {
     private final CourseService courseService;

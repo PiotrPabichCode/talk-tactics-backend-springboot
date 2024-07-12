@@ -14,17 +14,18 @@ import com.example.talktactics.service.user.UserService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
 
+import static com.example.talktactics.common.AppConst.API_V1;
+import static com.example.talktactics.common.AppConst.USERS_PATH;
+
 @RestController
 @AllArgsConstructor
-@RequestMapping("/api/v1/users")
-@CrossOrigin(origins = {"http://localhost:3000", "https://talk-tactics-frontend.vercel.app/"}, allowCredentials = "true")
+@RequestMapping(API_V1 + USERS_PATH)
 @Tag(name = "Users", description = "Users management APIs")
 public class UserController {
     private final UserService userService;

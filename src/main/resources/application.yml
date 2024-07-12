@@ -25,3 +25,14 @@ application:
 server:
   error:
     include-message: always
+
+web:
+  cors:
+    allowed-origins:
+      - http://localhost:3000
+      - https://talk-tactics-frontend.vercel.app
+    allowed-methods: GET, POST, PATCH, PUT, DELETE, OPTIONS, HEAD
+    max-age: 3600
+    allowed-headers: Origin, x-requested-with, x-user-agent, authorization, accept, content-type, x-auth-token, x-trace-id
+    exposed-headers: date, x-total-count
+    allow-credentials: true

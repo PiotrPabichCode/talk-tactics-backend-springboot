@@ -11,10 +11,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import static com.example.talktactics.common.AppConst.API_V1;
+import static com.example.talktactics.common.AppConst.USER_COURSE_ITEMS_PATH;
+
 @RestController
 @AllArgsConstructor
-@RequestMapping("/api/v1/user-course-items")
-@CrossOrigin(origins = {"http://localhost:3000", "https://talk-tactics-frontend.vercel.app/"}, allowCredentials = "true")
+@RequestMapping(API_V1 + USER_COURSE_ITEMS_PATH)
 @Tag(name = "User course items", description = "User course items management APIs")
 public class UserCourseItemController {
 
