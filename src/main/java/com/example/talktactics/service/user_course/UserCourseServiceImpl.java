@@ -6,19 +6,15 @@ import com.example.talktactics.dto.course.CourseDto;
 import com.example.talktactics.dto.course.CourseQueryCriteria;
 import com.example.talktactics.dto.user_course.UserCourseDto;
 import com.example.talktactics.dto.user_course.UserCourseQueryCriteria;
-import com.example.talktactics.dto.user_course.UserCourseTableRowDto;
 import com.example.talktactics.dto.user_course.req.UserCourseDeleteReqDto;
-import com.example.talktactics.dto.user_course.req.UserCourseGetReqDto;
 import com.example.talktactics.dto.user_course.req.UserCourseAddReqDto;
-import com.example.talktactics.dto.user_course.UserCourseDetailsDto;
-import com.example.talktactics.exception.CourseRuntimeException;
-import com.example.talktactics.exception.UserCourseRuntimeException;
+import com.example.talktactics.exception.EntityExistsException;
+import com.example.talktactics.exception.EntityNotFoundException;
 import com.example.talktactics.entity.*;
 import com.example.talktactics.repository.UserCourseItemRepository;
 import com.example.talktactics.repository.UserCourseRepository;
 import com.example.talktactics.service.course.CourseService;
 import com.example.talktactics.service.user.UserService;
-import com.example.talktactics.util.Constants;
 import com.example.talktactics.util.PageUtil;
 import com.example.talktactics.util.QueryHelp;
 import com.example.talktactics.util.SortUtil;
@@ -35,7 +31,6 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
-@Transactional
 @Slf4j
 public class UserCourseServiceImpl implements UserCourseService {
 
@@ -60,55 +55,31 @@ public class UserCourseServiceImpl implements UserCourseService {
 
 //  PUBLIC
     @Override
-    public PageResult<?> queryAll(UserCourseQueryCriteria criteria, Pageable pageable) {
+    public PageResult<UserCourseDto> queryAll(UserCourseQueryCriteria criteria, Pageable pageable) {
         if (Boolean.TRUE.equals(criteria.getFetchCourses())) {
             return queryAllWithCourses(criteria, pageable);
         }
 
         Page<UserCourse> page = userCourseRepository.findAll((root, criteriaQuery, criteriaBuilder) -> QueryHelp.getPredicate(root, criteria, criteriaBuilder), pageable);
-        if(Boolean.TRUE.equals(criteria.getTableRow())) {
-            return PageUtil.toPage(page.map(UserCourseTableRowDto::from));
-        }
         return PageUtil.toPage(page.map(userCourseMapper::toDto));
     }
-
     @Override
-    public List<UserCourseDto> queryAll(UserCourseQueryCriteria criteria) {
-        List<UserCourse> list = userCourseRepository.findAll((root, criteriaQuery, criteriaBuilder) -> QueryHelp.getPredicate(root, criteria, criteriaBuilder));
-        return userCourseMapper.toDto(list);
-    }
-
-    @Override
-    public List<UserCourseDto> queryAll(UserCourseQueryCriteria criteria, Sort sort) {
-        List<UserCourse> list = userCourseRepository.findAll((root, criteriaQuery, criteriaBuilder) -> QueryHelp.getPredicate(root, criteria, criteriaBuilder), sort);
-        return userCourseMapper.toDto(list);
-    }
-
-    @Override
-    public List<UserCourse> getAllUserCourses() throws UserCourseRuntimeException {
-        userService.validateAdmin();
-        return userCourseRepository.findAll(Sort.by("id"));
-    }
-    @Override
-    public List<UserCourseDetailsDto> getAllByUserId(long userID) throws UserCourseRuntimeException {
-        return userCourseRepository.findAllByUserId(userID).stream().map(UserCourse::toUserCourseDetailsDto).sorted(Comparator.comparing(UserCourseDetailsDto::isCompleted).thenComparing(UserCourseDetailsDto::getProgress).reversed()).toList();
-    }
-    @Override
-    public UserCourse getById(long id) throws UserCourseRuntimeException {
-        UserCourse userCourse = userCourseRepository.findById(id).orElseThrow(() -> new UserCourseRuntimeException(Constants.USER_COURSE_NOT_FOUND_EXCEPTION));
+    public UserCourse getById(long id) {
+        UserCourse userCourse = userCourseRepository.findById(id).orElseThrow(() -> new EntityNotFoundException(UserCourse.class, "id", String.valueOf(id)));
         userService.validateCredentials(userCourse.getUser());
         return userCourse;
     }
     @Override
-    public void addUserCourse(UserCourseAddReqDto req) throws UserCourseRuntimeException, CourseRuntimeException {
-        if (userCourseRepository.existsByCourseIdAndUserId(req.getCourseId(), req.getUserId())) {
-            throw new UserCourseRuntimeException(Constants.USER_COURSE_EXISTS_EXCEPTION);
+    @Transactional(rollbackFor = Exception.class)
+    public void addUserCourse(UserCourseAddReqDto req) {
+        if (userCourseRepository.existsByCourseIdAndUserId(req.courseId(), req.userId())) {
+            throw new EntityExistsException(UserCourse.class, "(courseId | userId)", String.format("(%d %d)", req.courseId(), req.userId()));
         }
 
-        User user = userService.getUserById(req.getUserId());
+        User user = userService.getUserById(req.userId());
         userService.validateCredentials(user);
         // find course
-        Course course = courseService.getById(req.getCourseId());
+        Course course = courseService.getById(req.courseId());
 
         UserCourse userCourse = UserCourse.builder().user(user).course(course).build();
         List<UserCourseItem> userCourseItems = new ArrayList<>();
@@ -120,30 +91,34 @@ public class UserCourseServiceImpl implements UserCourseService {
         userCourseItemRepository.saveAll(userCourseItems);
     }
     @Override
-    public void deleteUserCourse(UserCourseDeleteReqDto req) throws UserCourseRuntimeException {
-        User user = userService.getUserById(req.getUserId());
+    @Transactional(rollbackFor = Exception.class)
+    public void deleteUserCourse(UserCourseDeleteReqDto req) {
+        User user = userService.getUserById(req.userId());
         userService.validateCredentials(user);
-        UserCourse userCourse = getUserCourse(req.getCourseId(), req.getUserId());
+        UserCourse userCourse = getUserCourse(req.courseId(), req.userId());
         userCourseRepository.delete(userCourse);
-    }
-
-    @Override
-    public UserCourse getByUserIdAndCourseId(UserCourseGetReqDto req) throws UserCourseRuntimeException {
-        User user = userService.getUserById(req.getUserId());
-        userService.validateCredentials(user);
-        return getUserCourse(req.getCourseId(), req.getUserId());
     }
 
     //  PRIVATE
 
+    private List<UserCourseDto> queryAll(UserCourseQueryCriteria criteria) {
+        List<UserCourse> list = userCourseRepository.findAll((root, criteriaQuery, criteriaBuilder) -> QueryHelp.getPredicate(root, criteria, criteriaBuilder));
+        return userCourseMapper.toDto(list);
+    }
+
+    private List<UserCourseDto> queryAll(UserCourseQueryCriteria criteria, Sort sort) {
+        List<UserCourse> list = userCourseRepository.findAll((root, criteriaQuery, criteriaBuilder) -> QueryHelp.getPredicate(root, criteria, criteriaBuilder), sort);
+        return userCourseMapper.toDto(list);
+    }
+
     private UserCourse getUserCourse(Long courseId, Long userId) {
         UserCourse userCourse = userCourseRepository.findByCourseIdAndUserId(courseId, userId);
         if(userCourse == null) {
-            throw new UserCourseRuntimeException(Constants.USER_COURSE_NOT_FOUND_EXCEPTION);
+            throw new EntityNotFoundException(UserCourse.class, "courseId", courseId.toString());
         }
         return userCourse;
     }
-    private PageResult<UserCourseTableRowDto> queryAllWithCourses(UserCourseQueryCriteria criteria, Pageable pageable) {
+    private PageResult<UserCourseDto> queryAllWithCourses(UserCourseQueryCriteria criteria, Pageable pageable) {
         criteria.setFetchCourses(false);
         Sort sort = pageable.getSort();
         if (isCourseSorted(sort)) {
@@ -152,22 +127,22 @@ public class UserCourseServiceImpl implements UserCourseService {
         return processSortWithCourseFetchRequest(criteria, pageable, SortUtil.isSortAscending(sort));
     }
 
-    private PageResult<UserCourseTableRowDto> processSortWithCourseFetchRequest(UserCourseQueryCriteria criteria, Pageable pageable, boolean isAscending) {
+    private PageResult<UserCourseDto> processSortWithCourseFetchRequest(UserCourseQueryCriteria criteria, Pageable pageable, boolean isAscending) {
         long totalElements = courseService.countAll(CourseQueryCriteria.fromUserCourseQueryCriteria(criteria, null));
         int totalPages = (int) Math.ceil((double) totalElements / pageable.getPageSize());
 
         if(isAscending) {
-            List<UserCourseTableRowDto> content = getAscendingSortContentWithFetchedCourses(criteria, pageable);
+            List<UserCourseDto> content = getAscendingSortContentWithFetchedCourses(criteria, pageable);
             return new PageResult<>(content, totalElements, totalPages);
         }
-        List<UserCourseTableRowDto> content = getDescendingSortContentWithFetchedCourses(criteria, pageable);
+        List<UserCourseDto> content = getDescendingSortContentWithFetchedCourses(criteria, pageable);
         return new PageResult<>(content, totalElements, totalPages);
     }
 
-    private List<UserCourseTableRowDto> getAscendingSortContentWithFetchedCourses(UserCourseQueryCriteria criteria, Pageable pageable) {
+    private List<UserCourseDto> getAscendingSortContentWithFetchedCourses(UserCourseQueryCriteria criteria, Pageable pageable) {
         List<UserCourseDto> userCourseList = queryAll(criteria, pageable.getSort());
         Set<Long> excludeCourseIds = userCourseList.stream()
-                .map(userCourse -> userCourse.getCourse().getId())
+                .map(userCourse -> userCourse.course().id())
                 .collect(Collectors.toSet());
 
         PageRequest pageRequest = PageRequest.of(
@@ -179,8 +154,8 @@ public class UserCourseServiceImpl implements UserCourseService {
                 CourseQueryCriteria.fromUserCourseQueryCriteria(criteria, excludeCourseIds),
                 pageRequest
         );
-        List<UserCourseTableRowDto> content = courseDtoPageResult.content().stream()
-                .map(UserCourseTableRowDto::from)
+        List<UserCourseDto> content = courseDtoPageResult.content().stream()
+                .map(UserCourseDto::from)
                 .collect(Collectors.toList());
         if(content.size() == pageable.getPageSize()) {
             return content;
@@ -189,29 +164,28 @@ public class UserCourseServiceImpl implements UserCourseService {
         int limit = pageable.getPageSize() - content.size();
         long offset = Math.max(0, (long) pageable.getPageSize() * pageable.getPageNumber() - courseDtoPageResult.totalElements());
 
-        List<UserCourseTableRowDto> offsetBasedData = userCourseList.stream()
+        List<UserCourseDto> offsetBasedData = userCourseList.stream()
                 .skip(offset)
                 .limit(limit)
-                .map(UserCourseTableRowDto::from).toList();
+                .toList();
         content.addAll(offsetBasedData);
 
         return content;
     }
 
-    private List<UserCourseTableRowDto> getDescendingSortContentWithFetchedCourses(UserCourseQueryCriteria criteria, Pageable pageable) {
+    private List<UserCourseDto> getDescendingSortContentWithFetchedCourses(UserCourseQueryCriteria criteria, Pageable pageable) {
         List<UserCourseDto> userCourseList = queryAll(criteria, pageable.getSort());
 
-        List<UserCourseTableRowDto> content = userCourseList.stream()
+        List<UserCourseDto> content = userCourseList.stream()
                 .skip((long) pageable.getPageNumber() * pageable.getPageSize())
                 .limit(pageable.getPageSize())
-                .map(UserCourseTableRowDto::from)
                 .collect(Collectors.toList());
         if(content.size() == pageable.getPageSize()) {
             return content;
         }
 
         Set<Long> excludeCourseIds = userCourseList.stream()
-                .map(userCourse -> userCourse.getCourse().getId())
+                .map(userCourse -> userCourse.course().id())
                 .collect(Collectors.toSet());
 
         int limit = pageable.getPageSize() - content.size();
@@ -227,34 +201,34 @@ public class UserCourseServiceImpl implements UserCourseService {
                 offsetPageable
         );
 
-        List<UserCourseTableRowDto> courseToUserCourseTableRowDto = courseDtoPageResult.content().stream()
-                .map(UserCourseTableRowDto::from)
+        List<UserCourseDto> additionalContent = courseDtoPageResult.content().stream()
+                .map(UserCourseDto::from)
                 .toList();
 
-        content.addAll(courseToUserCourseTableRowDto);
+        content.addAll(additionalContent);
         return content;
     }
 
-    private PageResult<UserCourseTableRowDto> processCourseSortWithCourseFetchRequest(UserCourseQueryCriteria criteria, Pageable pageable) {
+    private PageResult<UserCourseDto> processCourseSortWithCourseFetchRequest(UserCourseQueryCriteria criteria, Pageable pageable) {
         PageResult<CourseDto> courseDtoPageResult = courseService.queryAll(
                 CourseQueryCriteria.fromUserCourseQueryCriteria(criteria, null),
                 getAdditionalCoursesPageRequest(pageable)
         );
 
         Set<Long> courseIds = courseDtoPageResult.content().stream()
-                .map(CourseDto::getId)
+                .map(CourseDto::id)
                 .collect(Collectors.toSet());
         criteria.setCourseIds(courseIds);
 
         List<UserCourseDto> userCourseDtoList = queryAll(criteria);
-        Map<Long, UserCourseTableRowDto> userCourseTableRowDtoMap = userCourseDtoList.stream()
+        Map<Long, UserCourseDto> userCourseDtoMap = userCourseDtoList.stream()
                 .collect(Collectors.toMap(
-                        userCourse -> userCourse.getCourse().getId(),
-                        UserCourseTableRowDto::from
+                        userCourse -> userCourse.course().id(),
+                        userCourse -> userCourse
                 ));
 
-        List<UserCourseTableRowDto> content = courseDtoPageResult.content().stream()
-                .map(courseDto -> userCourseTableRowDtoMap.getOrDefault(courseDto.getId(), UserCourseTableRowDto.from(courseDto)))
+        List<UserCourseDto> content = courseDtoPageResult.content().stream()
+                .map(courseDto -> userCourseDtoMap.getOrDefault(courseDto.id(), UserCourseDto.from(courseDto)))
                 .toList();
 
         return new PageResult<>(content, courseDtoPageResult.totalElements(), courseDtoPageResult.totalPages());

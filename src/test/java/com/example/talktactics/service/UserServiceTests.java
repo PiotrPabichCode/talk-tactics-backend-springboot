@@ -14,7 +14,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.test.context.support.WithAnonymousUser;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 
@@ -23,6 +22,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.willDoNothing;
 
@@ -35,8 +35,6 @@ public class UserServiceTests {
     private FriendInvitationRepository friendInvitationRepository;
     @Mock
     private PasswordEncoder passwordEncoder;
-    @Mock
-    private UserCourseService userCourseService;
 
     @InjectMocks
     private UserServiceImpl userServiceImpl;
@@ -48,7 +46,7 @@ public class UserServiceTests {
     public void init() {
         passwordEncoder = new BCryptPasswordEncoder();
 
-        userServiceImpl = new UserServiceImpl(userRepository, friendInvitationRepository, userCourseService, passwordEncoder);
+        userServiceImpl = new UserServiceImpl(userRepository, friendInvitationRepository, passwordEncoder);
 
         user = User.builder()
                 .email("dwayne_johnson@gmail.com")
@@ -88,33 +86,10 @@ public class UserServiceTests {
                 .repeatNewPassword("pass12!@#")
                 .build();
     }
-
-    @Test
-    @WithAnonymousUser
-    public void UserService_CreateUser_ReturnsUser() {
-        given(userRepository.save(any(User.class))).willReturn(user);
-
-        User createdUser = userServiceImpl.createUser(user);
-
-        Assertions.assertThat(createdUser).isNotNull();
-        Assertions.assertThat(createdUser.getUsername()).isEqualTo("dwayne_johnson");
-    }
-
-    @Test
-    @WithMockUser(authorities = {"ADMIN"})
-    public void UserService_GetUsers_ReturnsListOfUsers() {
-        given(userRepository.findAll()).willReturn(userList);
-
-        List<User> users = userServiceImpl.getUsers();
-
-        Assertions.assertThat(users).isNotNull();
-        Assertions.assertThat(users.size()).isEqualTo(2);
-    }
-
     @Test
     @WithMockUser(username = "dwayne_johnson")
     public void UserService_GetUserById_ReturnsUser() {
-        given(userRepository.findById(any(long.class))).willReturn(Optional.of(user));
+        given(userRepository.findById(anyLong())).willReturn(Optional.of(user));
 
         User foundUser = userServiceImpl.getUserById(1);
 
@@ -136,9 +111,9 @@ public class UserServiceTests {
     @Test
     @WithMockUser(authorities = {"ADMIN"})
     public void UserService_DeleteUser_ReturnsVoid() {
-        given(userRepository.existsById(any(long.class))).willReturn(true);
-        given(userRepository.findById(any(long.class))).willReturn(Optional.of(user));
-        willDoNothing().given(userRepository).deleteById(any(long.class));
+        given(userRepository.existsById(anyLong())).willReturn(true);
+        given(userRepository.findById(anyLong())).willReturn(Optional.of(user));
+        willDoNothing().given(userRepository).deleteById(anyLong());
 
         userServiceImpl.deleteUser(1);
 
@@ -149,7 +124,7 @@ public class UserServiceTests {
     @Test
     @WithMockUser(username = "dwayne_johnson")
     public void UserService_UpdateUser_ReturnsUser() {
-        given(userRepository.findById(any(long.class))).willReturn(Optional.of(user));
+        given(userRepository.findById(anyLong())).willReturn(Optional.of(user));
         given(userRepository.save(any(User.class))).willReturn(user);
 
         Map<String, Object> fields = Map.of("first_name", "Tom", "last_name", "Hanks");
@@ -176,7 +151,7 @@ public class UserServiceTests {
     @Test
     @WithMockUser(username = "dwayne_johnson")
     public void UserService_UpdatePassword_ReturnsUser() {
-        given(userRepository.findById(any(long.class))).willReturn(Optional.of(user));
+        given(userRepository.findById(anyLong())).willReturn(Optional.of(user));
         given(userRepository.save(any(User.class))).willReturn(user);
 
         User updatedUser = userServiceImpl.updatePassword(updatePasswordReqDto);

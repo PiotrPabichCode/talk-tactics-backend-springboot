@@ -1,20 +1,26 @@
 package com.example.talktactics.service.course_item;
 
-import com.example.talktactics.dto.course_item.CourseItemPreviewDto;
-import com.example.talktactics.exception.CourseItemRuntimeException;
+import com.example.talktactics.common.PageResult;
+import com.example.talktactics.dto.course_item.CourseItemQueryCriteria;
+import com.example.talktactics.dto.course_item.CourseItemDto;
 import com.example.talktactics.entity.CourseItem;
 import com.example.talktactics.repository.CourseItemRepository;
 import com.example.talktactics.service.user.UserService;
-import com.example.talktactics.util.Constants;
+import com.example.talktactics.util.PageUtil;
+import com.example.talktactics.util.QueryHelp;
+import jakarta.persistence.criteria.Predicate;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 
 @Service
-@Transactional
 @Slf4j
 @AllArgsConstructor
 public class CourseItemServiceImpl implements CourseItemService{
@@ -23,31 +29,31 @@ public class CourseItemServiceImpl implements CourseItemService{
 
 //  PUBLIC
     @Override
-    public List<CourseItemPreviewDto> getAll() throws CourseItemRuntimeException {
-        List<CourseItem> courseItems = courseItemRepository.findAll();
-        return courseItems.stream()
-                .map(CourseItem::toDTO).toList();
+    public PageResult<CourseItemDto> queryAll(CourseItemQueryCriteria criteria, Pageable pageable) {
+        Page<CourseItem> page = courseItemRepository.findAll((root, criteriaQuery, criteriaBuilder) -> {
+            Predicate filters = QueryHelp.getPredicate(root, criteria, criteriaBuilder);
+            return criteriaBuilder.and(
+                    filters,
+                    criteriaBuilder.equal(root.get("course").get("id"), criteria.getCourseId()));
+        }, pageable);
+        return generatePageResult(page);
     }
     @Override
-    public List<CourseItemPreviewDto> getAllByCourseId(long id) throws CourseItemRuntimeException {
-        return courseItemRepository
-                .findByCourseId(id)
-                .stream()
-                .map(CourseItem::toDTO).toList();
-    }
-    @Override
-    public CourseItem findById(long id) throws CourseItemRuntimeException {
-        return courseItemRepository.findById(id).orElseThrow(() -> new CourseItemRuntimeException(Constants.COURSE_ITEM_NOT_FOUND_EXCEPTION));
-    }
-    @Override
-    public void deleteById(long id) throws CourseItemRuntimeException {
+    @Transactional(rollbackFor = Exception.class)
+    public void delete(Set<Long> ids) {
         userService.validateAdmin();
-        if (!courseItemRepository.existsById(id)) {
-            throw new CourseItemRuntimeException(Constants.COURSE_ITEM_NOT_FOUND_EXCEPTION);
+        for(Long id: ids) {
+            courseItemRepository.deleteById(id);
         }
-        courseItemRepository.deleteById(id);
     }
 
 //  PRIVATE
-
+    private PageResult<CourseItemDto> generatePageResult(Page<CourseItem> page) {
+        Map<String, String> contentMeta = new HashMap<>();
+        if(page.getContent().size() > 0) {
+            CourseItem item = page.getContent().get(0);
+            contentMeta.put("title", item.getCourse().getTitle());
+        }
+        return PageUtil.toPage(page.map(CourseItemDto::toDto), contentMeta);
+    }
 }

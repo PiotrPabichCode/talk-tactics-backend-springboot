@@ -6,14 +6,14 @@ import com.example.talktactics.entity.Course;
 import org.springframework.data.domain.Pageable;
 
 import java.util.List;
+import java.util.Set;
 
 public interface CourseService {
-    void create(Course course);
-    void update(long id, Course newCourse);
-    void delete(long id);
     PageResult<CourseDto> queryAll(CourseQueryCriteria criteria, Pageable pageable);
-    long countAll(CourseQueryCriteria criteria);
     List<CourseNavbarDto> getNavbarList();
     Course getById(long id);
-    List<CoursePreviewProjection> getPreviewList();
+    long countAll(CourseQueryCriteria criteria);
+    void create(Course course);
+    void update(Course resources);
+    void delete(Set<Long> ids);
 }

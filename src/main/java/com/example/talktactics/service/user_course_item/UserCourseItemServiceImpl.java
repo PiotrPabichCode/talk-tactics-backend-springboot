@@ -1,44 +1,48 @@
 package com.example.talktactics.service.user_course_item;
 
-import com.example.talktactics.dto.user_course_item.UserCourseItemPreviewDto;
-import com.example.talktactics.dto.user_course_item.req.GetUserCourseItemsPreviewDtoReq;
-import com.example.talktactics.dto.user_course_item.res.GetUserCourseItemPreviewDtoResponse;
-import com.example.talktactics.dto.user_course_item.res.LearnUserCourseItemDtoResponse;
+import com.example.talktactics.common.PageResult;
+import com.example.talktactics.dto.user_course_item.UserCourseItemQueryCriteria;
+import com.example.talktactics.dto.user_course_item.UserCourseItemDto;
 import com.example.talktactics.entity.*;
-import com.example.talktactics.exception.UserCourseItemRuntimeException;
-import com.example.talktactics.exception.UserCourseRuntimeException;
+import com.example.talktactics.exception.EntityNotFoundException;
 import com.example.talktactics.repository.UserCourseItemRepository;
-import com.example.talktactics.service.course.CourseService;
 import com.example.talktactics.service.user.UserService;
-import com.example.talktactics.util.Constants;
+import com.example.talktactics.util.PageUtil;
+import com.example.talktactics.util.QueryHelp;
+import jakarta.persistence.criteria.Predicate;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Comparator;
-import java.util.List;
-import java.util.stream.Collectors;
+import java.util.HashMap;
+import java.util.Map;
 
 @Service
-@Transactional
 @Slf4j
 @AllArgsConstructor
 public class UserCourseItemServiceImpl implements UserCourseItemService {
     private final UserCourseItemRepository userCourseItemRepository;
-    private final CourseService courseService;
     private final UserService userService;
 
 //  PUBLIC
     @Override
-    public UserCourseItem getById(Long id) {
-        UserCourseItem userCourseItem = userCourseItemRepository.findById(id).orElseThrow(() -> new UserCourseItemRuntimeException(Constants.USER_COURSE_ITEM_NOT_FOUND_EXCEPTION));
-        User user = userCourseItem.getUserCourse().getUser();
-        userService.validateCredentials(user);
-        return userCourseItem;
+    public PageResult<UserCourseItemDto> queryAll(UserCourseItemQueryCriteria criteria,
+                                                  Pageable pageable) {
+        Page<UserCourseItem> page = userCourseItemRepository.findAll((root, criteriaQuery, criteriaBuilder) -> {
+            Predicate filters = QueryHelp.getPredicate(root, criteria, criteriaBuilder);
+            return criteriaBuilder.and(
+                    filters,
+                    criteriaBuilder.equal(root.get("userCourse").get("course").get("id"), criteria.getCourseId()),
+                    criteriaBuilder.equal(root.get("userCourse").get("user").get("id"), criteria.getUserId()));
+        }, pageable);
+        return generatePageResult(page);
     }
     @Override
-    public LearnUserCourseItemDtoResponse updateIsLearned(Long id) {
+    @Transactional(rollbackFor = Exception.class)
+    public void updateIsLearned(Long id) {
         UserCourseItem userCourseItem = getById(id);
         CourseItem courseItem = userCourseItem.getCourseItem();
         UserCourse userCourse = userCourseItem.getUserCourse();
@@ -53,26 +57,23 @@ public class UserCourseItemServiceImpl implements UserCourseItemService {
         userCourse.getUser().setTotalPoints(userCourse.getUser().getTotalPoints() + addedPoints);
 
         userCourseItemRepository.save(userCourseItem);
-
-        return new LearnUserCourseItemDtoResponse(userCourse.getCourse().getId());
-    }
-    @Override
-    public GetUserCourseItemPreviewDtoResponse getUserCourseItemPreviewDtoResponse(GetUserCourseItemsPreviewDtoReq req) {
-        List<UserCourseItemPreviewDto> items = getAllByUserIdAndCourseId(req.getUserId(), req.getCourseId());
-        String courseName = courseService.getById(req.getCourseId()).getTitle();
-        return new GetUserCourseItemPreviewDtoResponse(courseName, items);
     }
 
-//  PRIVATE
-    private List<UserCourseItemPreviewDto> getAllByUserIdAndCourseId(Long userId, Long courseId) {
-        User user = userService.getUserById(userId);
+    //  PRIVATE
+    private UserCourseItem getById(Long id) {
+        UserCourseItem userCourseItem = userCourseItemRepository.findById(id).orElseThrow(() ->
+                new EntityNotFoundException(UserCourseItem.class, "id", String.valueOf(id)));
+        User user = userCourseItem.getUserCourse().getUser();
         userService.validateCredentials(user);
-        List<UserCourseItemPreviewDto> items = userCourseItemRepository.findAllByUserCourseCourseIdAndUserCourseUserId(courseId, userId).stream().map(UserCourseItem::toUserCourseItemPreviewDto).collect(Collectors.toList());
-        if(items.isEmpty()) {
-            throw new UserCourseRuntimeException(Constants.USER_COURSE_ITEM_NOT_FOUND_EXCEPTION);
+        return userCourseItem;
+    }
+    private PageResult<UserCourseItemDto> generatePageResult(Page<UserCourseItem> page) {
+        Map<String, String> contentMeta = new HashMap<>();
+        if(page.getContent().size() > 0) {
+            UserCourseItem item = page.getContent().get(0);
+            contentMeta.put("title", item.getUserCourse().getCourse().getTitle());
         }
-        items.sort(Comparator.comparingLong(UserCourseItemPreviewDto::getId));
-        return items;
+        return PageUtil.toPage(page.map(UserCourseItemDto::toDto), contentMeta);
     }
 
     private boolean checkIfAllLearned(UserCourse userCourse) {

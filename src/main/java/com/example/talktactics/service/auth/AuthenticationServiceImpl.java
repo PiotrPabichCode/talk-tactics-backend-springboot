@@ -4,10 +4,12 @@ import com.example.talktactics.dto.auth.req.AuthenticationRequest;
 import com.example.talktactics.dto.auth.res.AuthenticationResponse;
 import com.example.talktactics.dto.auth.req.RefreshTokenRequest;
 import com.example.talktactics.dto.auth.req.RegisterRequest;
+import com.example.talktactics.exception.BadRequestException;
 import com.example.talktactics.service.jwt.JwtService;
 import com.example.talktactics.entity.Role;
 import com.example.talktactics.entity.User;
 import com.example.talktactics.repository.UserRepository;
+import com.example.talktactics.util.EmailValidator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -28,57 +30,57 @@ public class AuthenticationServiceImpl implements AuthenticationService{
     public AuthenticationResponse register(RegisterRequest request) {
         validateNewUser(request);
         var user = User.builder()
-                .username(request.getUsername())
-                .password(passwordEncoder.encode(request.getPassword()))
-                .email(request.getEmail())
-                .firstName(request.getFirstName())
-                .lastName(request.getLastName())
+                .username(request.username())
+                .password(passwordEncoder.encode(request.password()))
+                .email(request.email())
+                .firstName(request.firstName())
+                .lastName(request.lastName())
                 .role(Role.USER)
                 .build();
         repository.save(user);
         var jwtToken = jwtService.generateToken(user);
         var jwtRefreshToken = jwtService.generateRefreshToken(user);
-        return AuthenticationResponse.builder()
-                .id(user.getId())
-                .username(user.getUsername())
-                .role(user.getRole())
-                .token(jwtToken)
-                .refreshToken(jwtRefreshToken)
-                .build();
+        return new AuthenticationResponse(
+                user.getId(),
+                user.getUsername(),
+                user.getRole(),
+                jwtToken,
+                jwtRefreshToken
+        );
     }
     @Override
     public AuthenticationResponse authenticate(AuthenticationRequest request) {
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
-                        request.getUsername(),
-                        request.getPassword()
+                        request.username(),
+                        request.password()
                 )
         );
-        var user = repository.findByUsername(request.getUsername())
+        var user = repository.findByUsername(request.username())
                 .orElseThrow();
         var jwtToken = jwtService.generateToken(user);
         var jwtRefreshToken = jwtService.generateRefreshToken(user);
-        return AuthenticationResponse.builder()
-                .id(user.getId())
-                .username(user.getUsername())
-                .role(user.getRole())
-                .token(jwtToken)
-                .refreshToken(jwtRefreshToken)
-                .build();
+        return new AuthenticationResponse(
+                user.getId(),
+                user.getUsername(),
+                user.getRole(),
+                jwtToken,
+                jwtRefreshToken
+        );
     }
     @Override
     public AuthenticationResponse reauthenticate(RefreshTokenRequest request) {
-        var user = repository.findByUsername(request.getUsername())
+        var user = repository.findByUsername(request.username())
                 .orElseThrow();
         var jwtToken = jwtService.generateToken(user);
         var jwtRefreshToken = jwtService.generateRefreshToken(user);
-        return AuthenticationResponse.builder()
-                .id(user.getId())
-                .username(user.getUsername())
-                .role(user.getRole())
-                .token(jwtToken)
-                .refreshToken(jwtRefreshToken)
-                .build();
+        return new AuthenticationResponse(
+                user.getId(),
+                user.getUsername(),
+                user.getRole(),
+                jwtToken,
+                jwtRefreshToken
+        );
     }
 
 //  PRIVATE
@@ -86,18 +88,21 @@ public class AuthenticationServiceImpl implements AuthenticationService{
     return value == null || value.isEmpty();
 }
     private void validateNewUser(RegisterRequest request) {
-        if(isEmpty(request.getUsername()) || isEmpty(request.getPassword()) || isEmpty(request.getRepeatPassword())
-                || isEmpty(request.getEmail()) || isEmpty(request.getFirstName()) || isEmpty(request.getLastName())) {
-            throw new RuntimeException("Fields cannot be empty");
+        if( isEmpty(request.username()) || isEmpty(request.password()) || isEmpty(request.repeatPassword())
+                || isEmpty(request.email()) || isEmpty(request.firstName()) || isEmpty(request.lastName())) {
+            throw new BadRequestException("Fields cannot be empty");
         }
-        if(repository.existsByUsername(request.getUsername())) {
-            throw new RuntimeException("Username exists");
+        if(repository.existsByUsername(request.username())) {
+            throw new BadRequestException("Username exists");
         }
-        if(repository.existsByEmail(request.getEmail())) {
-            throw new RuntimeException("Email already used");
+        if(repository.existsByEmail(request.email())) {
+            throw new BadRequestException("Email already used");
         }
-        if(!request.getPassword().equals(request.getRepeatPassword())) {
-            throw new RuntimeException("Passwords must match each other");
+        if(!EmailValidator.isValidEmail(request.email())) {
+            throw new BadRequestException("Email is not valid");
+        }
+        if(!request.password().equals(request.repeatPassword())) {
+            throw new BadRequestException("Passwords must match each other");
         }
     }
 }

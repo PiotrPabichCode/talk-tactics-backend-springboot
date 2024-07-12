@@ -2,11 +2,13 @@ package com.example.talktactics.dto.user_course;
 
 import com.example.talktactics.common.Query;
 import com.example.talktactics.entity.CourseLevel;
+import lombok.Builder;
 import lombok.Data;
 
 import java.util.Set;
 
 @Data
+@Builder
 public class UserCourseQueryCriteria {
     private Boolean fetchCourses;
     @Query

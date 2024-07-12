@@ -1,12 +1,11 @@
 package com.example.talktactics.service.user_course_item;
 
-import com.example.talktactics.dto.user_course_item.req.GetUserCourseItemsPreviewDtoReq;
-import com.example.talktactics.dto.user_course_item.res.GetUserCourseItemPreviewDtoResponse;
-import com.example.talktactics.dto.user_course_item.res.LearnUserCourseItemDtoResponse;
-import com.example.talktactics.entity.UserCourseItem;
+import com.example.talktactics.common.PageResult;
+import com.example.talktactics.dto.user_course_item.UserCourseItemQueryCriteria;
+import com.example.talktactics.dto.user_course_item.UserCourseItemDto;
+import org.springframework.data.domain.Pageable;
 
 public interface UserCourseItemService {
-    UserCourseItem getById(Long id);
-    LearnUserCourseItemDtoResponse updateIsLearned(Long id);
-    GetUserCourseItemPreviewDtoResponse getUserCourseItemPreviewDtoResponse(GetUserCourseItemsPreviewDtoReq req);
+    PageResult<UserCourseItemDto> queryAll(UserCourseItemQueryCriteria criteria, Pageable pageable);
+    void updateIsLearned(Long id);
 }

@@ -1,32 +1,30 @@
 package com.example.talktactics.service;
 
-import com.example.talktactics.dto.course_item.CourseItemPreviewDto;
-import com.example.talktactics.entity.Course;
+import com.example.talktactics.dto.course_item.CourseItemQueryCriteria;
 import com.example.talktactics.entity.CourseItem;
 import com.example.talktactics.repository.CourseItemRepository;
 import com.example.talktactics.repository.FriendInvitationRepository;
 import com.example.talktactics.repository.UserRepository;
-import com.example.talktactics.service.course.CourseServiceImpl;
 import com.example.talktactics.service.course_item.CourseItemServiceImpl;
 import com.example.talktactics.service.user.UserServiceImpl;
-import com.example.talktactics.service.user_course.UserCourseService;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.verify;
 
 @SpringJUnitConfig
 public class CourseItemServiceTests {
@@ -41,19 +39,16 @@ public class CourseItemServiceTests {
 
     @Mock
     private UserServiceImpl userService;
-    @Mock
-    private UserCourseService userCourseService;
     @InjectMocks
     private CourseItemServiceImpl courseItemService;
 
     private CourseItem courseItem;
     private List<CourseItem> courseItemList;
-    private List<CourseItemPreviewDto> courseItemPreviewDtoList;
 
     @BeforeEach
     public void init() {
         passwordEncoder = new BCryptPasswordEncoder();
-        userService = new UserServiceImpl(userRepository, friendInvitationRepository, userCourseService, passwordEncoder);
+        userService = new UserServiceImpl(userRepository, friendInvitationRepository, passwordEncoder);
         courseItemService = new CourseItemServiceImpl(courseItemRepository, userService);
         courseItem = CourseItem.builder()
                 .id(1L)
@@ -64,61 +59,49 @@ public class CourseItemServiceTests {
 
         courseItemList = List.of(
                 CourseItem.builder()
-                        .id(1)
-                        .course(Course.builder().id(1).build())
-                        .word("word")
-                        .phonetic("phonetic")
-                        .partOfSpeech("partOfSpeech")
+                        .id(1L)
+                        .word("sky")
+                        .partOfSpeech("noun")
                         .build(),
                 CourseItem.builder()
-                        .id(2)
-                        .course(Course.builder().id(2).build())
-                        .word("word2")
-                        .phonetic("phonetic2")
-                        .partOfSpeech("partOfSpeech2")
+                        .id(2L)
+                        .word("sea")
+                        .partOfSpeech("noun")
+                        .build(),
+                CourseItem.builder()
+                        .id(3L)
+                        .word("land")
+                        .partOfSpeech("noun")
                         .build()
         );
 
-        courseItemPreviewDtoList = courseItemList.stream().map(CourseItem::toDTO).toList();
     }
 
     @Test
-    public void CourseItemService_GetAll_ReturnsCourseItemPreviewDtoList() {
-        given(courseItemRepository.findAll()).willReturn(courseItemList);
+    public void Given_QueryAll_When_CourseIdIsNotPassed_Then_ThrowsException() {
+        CourseItemQueryCriteria criteria = new CourseItemQueryCriteria();
+        criteria.setCourseId(null);
+        Pageable pageable = PageRequest.of(0, 3);
 
-        List<CourseItemPreviewDto> result = courseItemService.getAll();
+        given(courseItemRepository.findAll(any(Specification.class), any(Pageable.class))).willThrow(new IllegalArgumentException("courseId property cannot be null"));
 
-        Assertions.assertThat(result).isNotNull();
-        Assertions.assertThat(result.size()).isEqualTo(courseItemPreviewDtoList.size());
-        Assertions.assertThat(result.get(0).getCourseName()).isEqualTo(courseItemPreviewDtoList.get(0).getCourseName());
+        Assertions.assertThatThrownBy(() -> courseItemService.queryAll(criteria, pageable))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("courseId property cannot be null");
     }
-
-    @Test
-    public void CourseItemService_GetAllByCourseId_ReturnsCourseItemPreviewDtoList() {
-        given(courseItemRepository.findByCourseId(any(long.class))).willReturn(List.of(courseItemList.get(0)));
-
-        List<CourseItemPreviewDto> result = courseItemService.getAllByCourseId(1);
-
-        Assertions.assertThat(result).isNotNull();
-        Assertions.assertThat(result.size()).isEqualTo(1);
-        Assertions.assertThat(result.get(0).getCourseName()).isEqualTo(courseItemPreviewDtoList.get(0).getCourseName());
-    }
-
-    @Test
-    public void CourseItemService_FindById_ReturnsCourseItem() {
-        given(courseItemRepository.findById(any(long.class))).willReturn(Optional.of(courseItem));
-
-        CourseItem result = courseItemService.findById(1);
-
-        Assertions.assertThat(result).isNotNull();
-        Assertions.assertThat(result.getWord()).isEqualTo(courseItem.getWord());
-    }
+//    @Test
+//    public void Given_QueryAll_When_SortingByIdDesc_Then_ReturnsPageResultInDescendingOrder() {
+//        given(courseItemRepository.findAll(any(CourseItemQueryCriteria.class), any(Pageable.class)).willReturn(courseItemList));
+//
+//        Pageable pageable = PageRequest.of(0, 3);
+//        PageResult<CourseItemTableRowDto> result = courseItemService.queryAll(new CourseItemQueryCriteria(), pageable);
+//    }
 
     @Test
     @WithMockUser(authorities = {"ADMIN"})
     public void CourseItemService_DeleteById_ReturnsVoid() {
-        given(courseItemRepository.existsById(any(long.class))).willReturn(true);
-
-        courseItemService.deleteById(1);
+        Set<Long> ids = new HashSet<>(Arrays.asList(1L, 2L, 3L));
+        courseItemService.delete(ids);
+        ids.forEach(id -> verify(courseItemRepository).deleteById(id));
     }
 }

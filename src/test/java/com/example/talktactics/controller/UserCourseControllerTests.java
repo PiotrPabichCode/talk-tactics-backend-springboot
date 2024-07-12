@@ -2,8 +2,6 @@ package com.example.talktactics.controller;
 
 import com.example.talktactics.dto.user_course.req.UserCourseAddReqDto;
 import com.example.talktactics.dto.user_course.req.UserCourseDeleteReqDto;
-import com.example.talktactics.dto.user_course.req.UserCourseGetReqDto;
-import com.example.talktactics.dto.user_course.UserCourseDetailsDto;
 import com.example.talktactics.entity.*;
 import com.example.talktactics.service.jwt.JwtServiceImpl;
 import com.example.talktactics.service.user.UserServiceImpl;
@@ -26,7 +24,6 @@ import java.util.List;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(controllers = UserCourseController.class)
@@ -54,10 +51,8 @@ public class UserCourseControllerTests {
 
     private UserCourse userCourse;
     private List<UserCourse> userCourseList;
-    private UserCourseGetReqDto userCourseGetReqDto;
     private UserCourseAddReqDto userCourseAddReqDto;
     private UserCourseDeleteReqDto userCourseDeleteReqDto;
-    private UserCourseDetailsDto userCourseDetailsDto;
 
     @BeforeEach
     public void init() {
@@ -83,7 +78,7 @@ public class UserCourseControllerTests {
                 .build();
 
         userCourse = UserCourse.builder()
-                .id(1)
+                .id(1L)
                 .course(courseList.get(0))
                 .user(user)
                 .progress(37.0)
@@ -104,11 +99,6 @@ public class UserCourseControllerTests {
                         .build()
         );
 
-        userCourseGetReqDto = UserCourseGetReqDto.builder()
-                .userId(user.getId())
-                .courseId(courseList.get(0).getId())
-                .build();
-
         userCourseAddReqDto = UserCourseAddReqDto.builder()
                 .userId(user.getId())
                 .courseId(courseList.get(0).getId())
@@ -118,12 +108,10 @@ public class UserCourseControllerTests {
                 .userId(user.getId())
                 .courseId(courseList.get(0).getId())
                 .build();
-
-        userCourseDetailsDto = userCourseList.get(0).toUserCourseDetailsDto();
     }
 
     @Test
-    public void UserCourseController_GetAllUserCourses_ReturnsUserCourses() throws Exception {
+    public void UserCourseController_QueryUserCourses_ReturnsPageResult() throws Exception {
         // TODO: Implement this test with queryAll() functionality
 //        given(userCourseService.getAllUserCourses()).willReturn(userCourseList);
 //
@@ -144,14 +132,13 @@ public class UserCourseControllerTests {
     }
 
     @Test
-    public void UserCourseController_GetById_ReturnsUserCourse() throws Exception {
-        given(userCourseService.getById(any(long.class))).willReturn(userCourse);
+    public void UserCourseController_GetById_ReturnsUserCourse_Status200() throws Exception {
+        given(userCourseService.getById(anyLong())).willReturn(userCourse);
 
         MockHttpServletRequestBuilder request = get(BASE_URL + "/id/" + userCourse.getId())
                 .contentType(MediaType.APPLICATION_JSON);
 
         mockMvc.perform(request)
-                .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.id").value(userCourse.getId()))
@@ -162,51 +149,7 @@ public class UserCourseControllerTests {
     }
 
     @Test
-    public void UserCourseController_GetAllByUserId_ReturnsUserCourses() throws Exception {
-        given(userCourseService.getAllByUserId(any(long.class))).willReturn(List.of(userCourseDetailsDto));
-
-        MockHttpServletRequestBuilder request = get(BASE_URL + "/user-id/" + user.getId())
-                .contentType(MediaType.APPLICATION_JSON);
-
-        mockMvc.perform(request)
-                .andDo(print())
-                .andExpect(status().isOk())
-                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpectAll(
-                        jsonPath("$").isArray(),
-                        jsonPath("$[0].id").value(userCourseDetailsDto.getId()),
-                        jsonPath("$[0].title").value(userCourseDetailsDto.getTitle()),
-                        jsonPath("$[0].description").value(userCourseDetailsDto.getDescription()),
-                        jsonPath("$[0].level").value(userCourseDetailsDto.getLevel().name()),
-                        jsonPath("$[0].quantity").value(userCourseDetailsDto.getQuantity()),
-                        jsonPath("$[0].completed").value(userCourseDetailsDto.isCompleted()),
-                        jsonPath("$[0].progress").value(userCourseDetailsDto.getProgress())
-                );
-
-        verify(userCourseService).getAllByUserId(user.getId());
-    }
-
-    @Test
-    public void UserCourseController_GetByUserIdAndCourseId_ReturnsUserCourse() throws Exception {
-        given(userCourseService.getByUserIdAndCourseId(any(UserCourseGetReqDto.class))).willReturn(userCourse);
-
-        MockHttpServletRequestBuilder request = post(BASE_URL)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(userCourseGetReqDto));
-
-        mockMvc.perform(request)
-                .andDo(print())
-                .andExpect(status().isOk())
-                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.id").value(userCourse.getId()))
-                .andExpect(jsonPath("$.course.id").value(userCourse.getCourse().getId()))
-                .andExpect(jsonPath("$.user.id").value(userCourse.getUser().getId()));
-
-        verify(userCourseService).getByUserIdAndCourseId(any(UserCourseGetReqDto.class));
-    }
-
-    @Test
-    public void UserCourseController_AddCourseToUser_ReturnsNoContent() throws Exception {
+    public void UserCourseController_AddCourseToUser_ReturnsNothing_Status201() throws Exception {
         doNothing().when(userCourseService).addUserCourse(any(UserCourseAddReqDto.class));
 
         MockHttpServletRequestBuilder request = put(BASE_URL)
@@ -214,14 +157,13 @@ public class UserCourseControllerTests {
                 .content(objectMapper.writeValueAsString(userCourseAddReqDto));
 
         mockMvc.perform(request)
-                .andDo(print())
-                .andExpect(status().isOk());
+                .andExpect(status().isCreated());
 
         verify(userCourseService).addUserCourse(any(UserCourseAddReqDto.class));
     }
 
     @Test
-    public void UserCourseController_Delete_ReturnsNoContent() throws Exception {
+    public void UserCourseController_Delete_ReturnsNothing_Status200() throws Exception {
         doNothing().when(userCourseService).deleteUserCourse(any(UserCourseDeleteReqDto.class));
 
         MockHttpServletRequestBuilder request = delete(BASE_URL)
@@ -229,7 +171,6 @@ public class UserCourseControllerTests {
                 .content(objectMapper.writeValueAsString(userCourseDeleteReqDto));
 
         mockMvc.perform(request)
-                .andDo(print())
                 .andExpect(status().isOk());
 
         verify(userCourseService).deleteUserCourse(any(UserCourseDeleteReqDto.class));
