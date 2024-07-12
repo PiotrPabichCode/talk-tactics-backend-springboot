@@ -48,7 +48,7 @@ public class UserCourseRepositoryTests {
                 .build());
 
         userCourse = UserCourse.builder()
-                .id(1)
+                .id(1L)
                 .course(courseList.get(0))
                 .user(user)
                 .progress(37.0)

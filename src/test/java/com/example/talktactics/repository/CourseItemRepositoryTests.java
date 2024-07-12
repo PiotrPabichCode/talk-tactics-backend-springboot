@@ -51,7 +51,7 @@ public class CourseItemRepositoryTests {
 
         courseItemList = List.of(
                 CourseItem.builder()
-                        .id(1)
+                        .id(1L)
                         .course(courseList.get(0))
                         .word("apple")
                         .phonetic("ˈæp.əl")
@@ -59,7 +59,7 @@ public class CourseItemRepositoryTests {
                         .meanings(List.of())
                         .build(),
                 CourseItem.builder()
-                        .id(2)
+                        .id(2L)
                         .course(courseList.get(1))
                         .word("banana")
                         .phonetic("bəˈnɑː.nə")

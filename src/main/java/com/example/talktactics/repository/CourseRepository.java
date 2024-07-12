@@ -1,6 +1,5 @@
 package com.example.talktactics.repository;
 
-import com.example.talktactics.dto.course.CoursePreviewProjection;
 import com.example.talktactics.entity.Course;
 import jakarta.persistence.Tuple;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -17,7 +16,4 @@ public interface CourseRepository extends JpaRepository<Course, Long>, JpaSpecif
             "FROM courses) AS RankedCourses " +
             "WHERE row_num = 1")
     List<Tuple> findNavbarList();
-
-    @Query("SELECT c.id as id, c.title as title, c.description as description, c.level as level, size(c.courseItems) as courseItemsSize FROM Course c ORDER BY c.id")
-    List<CoursePreviewProjection> findCoursePreviews();
 }
