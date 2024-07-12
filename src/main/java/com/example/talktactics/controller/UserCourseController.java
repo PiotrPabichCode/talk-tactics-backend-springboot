@@ -1,14 +1,11 @@
 package com.example.talktactics.controller;
 
 import com.example.talktactics.common.PageResult;
+import com.example.talktactics.dto.user_course.UserCourseDto;
 import com.example.talktactics.dto.user_course.UserCourseQueryCriteria;
-import com.example.talktactics.dto.user_course.req.UserCourseGetReqDto;
 import com.example.talktactics.dto.user_course.req.UserCourseDeleteReqDto;
 import com.example.talktactics.dto.user_course.req.UserCourseAddReqDto;
-import com.example.talktactics.dto.user_course.UserCourseDetailsDto;
 import com.example.talktactics.entity.UserCourse;
-import com.example.talktactics.exception.CourseRuntimeException;
-import com.example.talktactics.exception.UserRuntimeException;
 import com.example.talktactics.service.user_course.UserCourseService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
@@ -16,9 +13,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
-
-import java.util.List;
 
 @RestController
 @AllArgsConstructor
@@ -30,56 +24,24 @@ public class UserCourseController {
     private final UserCourseService userCourseService;
 
     @GetMapping("/all")
-    public ResponseEntity<PageResult<?>> queryUserCourses(UserCourseQueryCriteria criteria, Pageable pageable) {
-        try {
-            return new ResponseEntity<>(userCourseService.queryAll(criteria, pageable), HttpStatus.OK);
-        } catch(CourseRuntimeException e) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
-        }
+    public ResponseEntity<PageResult<UserCourseDto>> queryUserCourses(UserCourseQueryCriteria criteria, Pageable pageable) {
+        return ResponseEntity.ok(userCourseService.queryAll(criteria, pageable));
     }
 
     @GetMapping("/id/{id}")
     public ResponseEntity<UserCourse> getById(@PathVariable Long id) {
-        try {
-            return ResponseEntity.ok(userCourseService.getById(id));
-        } catch (UserRuntimeException e) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
-        }
-    }
-
-    @GetMapping("/user-id/{id}")
-    public ResponseEntity<List<UserCourseDetailsDto>> getAllByUserId(@PathVariable Long id) {
-        try {
-            return ResponseEntity.ok(userCourseService.getAllByUserId(id));
-        } catch (UserRuntimeException e) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
-        }
-    }
-
-    @PostMapping
-    public ResponseEntity<UserCourse> getByUserIdAndCourseId(@RequestBody UserCourseGetReqDto req) {
-        try {
-            return ResponseEntity.ok(userCourseService.getByUserIdAndCourseId(req));
-        } catch (UserRuntimeException e) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
-        }
+        return ResponseEntity.ok(userCourseService.getById(id));
     }
 
     @PutMapping
-    public void addCourseToUser(@RequestBody UserCourseAddReqDto req) {
-        try {
-            userCourseService.addUserCourse(req);
-        } catch (UserRuntimeException e) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
-        }
+    public ResponseEntity<Object> addCourseToUser(@RequestBody UserCourseAddReqDto req) {
+        userCourseService.addUserCourse(req);
+        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
     @DeleteMapping
-    void deleteUserCourse(@RequestBody UserCourseDeleteReqDto req) {
-        try {
-            userCourseService.deleteUserCourse(req);
-        } catch (UserRuntimeException e) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
-        }
+    public ResponseEntity<Object> deleteUserCourse(@RequestBody UserCourseDeleteReqDto req) {
+        userCourseService.deleteUserCourse(req);
+        return ResponseEntity.ok().build();
     }
 }

@@ -6,6 +6,7 @@ import com.example.talktactics.dto.auth.req.RegisterRequest;
 import com.example.talktactics.dto.auth.res.AuthenticationResponse;
 import com.example.talktactics.service.auth.AuthenticationService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,11 +22,7 @@ public class AuthenticationController {
     public ResponseEntity<?> register(
             @RequestBody RegisterRequest request
     ) {
-        try {
-            return ResponseEntity.ok(service.register(request));
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
+        return ResponseEntity.ok(service.register(request));
     }
 
     @PostMapping("/authenticate")

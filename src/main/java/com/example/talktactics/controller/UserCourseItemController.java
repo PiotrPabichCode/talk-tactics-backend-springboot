@@ -1,17 +1,15 @@
 package com.example.talktactics.controller;
 
-import com.example.talktactics.dto.user_course_item.req.GetUserCourseItemsPreviewDtoReq;
-import com.example.talktactics.dto.user_course_item.res.GetUserCourseItemPreviewDtoResponse;
-import com.example.talktactics.dto.user_course_item.res.LearnUserCourseItemDtoResponse;
-import com.example.talktactics.entity.UserCourseItem;
-import com.example.talktactics.exception.UserCourseItemRuntimeException;
+import com.example.talktactics.common.PageResult;
+import com.example.talktactics.dto.user_course_item.UserCourseItemQueryCriteria;
+import com.example.talktactics.dto.user_course_item.UserCourseItemDto;
 import com.example.talktactics.service.user_course_item.UserCourseItemService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
-import org.springframework.http.HttpStatus;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
 
 @RestController
 @AllArgsConstructor
@@ -22,31 +20,14 @@ public class UserCourseItemController {
 
     private final UserCourseItemService userCourseItemService;
 
+    @GetMapping("/all")
+    public ResponseEntity<PageResult<UserCourseItemDto>> queryUserCourseItems(@Validated UserCourseItemQueryCriteria criteria, Pageable pageable) {
+        return ResponseEntity.ok(userCourseItemService.queryAll(criteria, pageable));
+    }
+
     @PostMapping("/learn/id/{id}")
-    public ResponseEntity<LearnUserCourseItemDtoResponse> updateIsLearned(@PathVariable Long id) {
-        try {
-            return ResponseEntity.ok(userCourseItemService.updateIsLearned(id));
-
-        } catch (UserCourseItemRuntimeException e) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
-        }
-    }
-
-    @PostMapping("/all/preview")
-    public ResponseEntity<GetUserCourseItemPreviewDtoResponse> getAllByUserIdAndCourseId(@RequestBody GetUserCourseItemsPreviewDtoReq req) {
-        try {
-            return ResponseEntity.ok(userCourseItemService.getUserCourseItemPreviewDtoResponse(req));
-        } catch (UserCourseItemRuntimeException e) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
-        }
-    }
-
-    @GetMapping("/id/{id}")
-    public ResponseEntity<UserCourseItem> getById(@PathVariable Long id) {
-        try {
-            return ResponseEntity.ok(userCourseItemService.getById(id));
-        } catch (UserCourseItemRuntimeException e) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
-        }
+    public ResponseEntity<Object> learnUserCourseItem(@PathVariable Long id) {
+        userCourseItemService.updateIsLearned(id);
+        return ResponseEntity.noContent().build();
     }
 }
