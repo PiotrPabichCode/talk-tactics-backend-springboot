@@ -7,6 +7,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
@@ -26,19 +28,29 @@ import java.util.List;
 @SuperBuilder(toBuilder = true)
 @EntityListeners(UserEntityListeners.class)
 public class User extends CommonEntity implements UserDetails {
-
+    @NotBlank(message = "Cannot be blank")
     @Column(unique = true)
     private String username;
+
     @JsonIgnore
     private String password;
+
     @JsonProperty("first_name")
+    @NotBlank(message = "Cannot be blank")
     private String firstName;
+
+    @NotBlank(message = "Cannot be blank")
     @JsonProperty("last_name")
     private String lastName;
+
+    @Email(message = "Invalid email address", regexp = "^[a-zA-Z0-9_!#$%&'*+/=?`{|}~^.-]+@[a-zA-Z0-9.-]+$")
+    @NotBlank(message = "Cannot be blank")
     @Column(unique = true)
     private String email;
+
     @Size(max = 250)
     private String bio;
+
     @JsonProperty("total_points")
     private Integer totalPoints = 0;
 
@@ -117,12 +129,12 @@ public class User extends CommonEntity implements UserDetails {
     }
 
     public UserProfilePreviewDto toUserProfilePreviewDto() {
-        return UserProfilePreviewDto.builder()
-                .id(this.getId())
-                .firstName(this.getFirstName())
-                .lastName(this.getLastName())
-                .totalPoints(this.getTotalPoints())
-                .bio(this.getBio())
-                .build();
+        return new UserProfilePreviewDto(
+                this.getId(),
+                this.getFirstName(),
+                this.getLastName(),
+                this.getTotalPoints(),
+                this.getBio()
+        );
     }
 }

@@ -1,7 +1,6 @@
 package com.example.talktactics.entity;
 
 import com.example.talktactics.common.CommonEntity;
-import com.example.talktactics.dto.user_course.UserCourseDetailsDto;
 import com.example.talktactics.listeners.UserCourseEntityListeners;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -40,19 +39,4 @@ public class UserCourse extends CommonEntity {
             fetch = FetchType.LAZY,
             orphanRemoval = true)
     private List<UserCourseItem> userCourseItems;
-
-    public UserCourseDetailsDto toUserCourseDetailsDto() {
-        Course course = this.getCourse();
-
-        return UserCourseDetailsDto.builder()
-                .id(course.getId())
-                .title(course.getTitle())
-                .description(course.getDescription())
-                .level(course.getLevel())
-                .quantity(course.getQuantity())
-                .completed(this.isCompleted())
-                .points(this.getPoints())
-                .progress(this.getProgress())
-                .build();
-    }
 }

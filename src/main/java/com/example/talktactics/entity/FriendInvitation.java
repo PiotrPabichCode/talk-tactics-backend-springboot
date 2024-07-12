@@ -27,16 +27,18 @@ public class FriendInvitation extends CommonEntity {
 
     public FriendInvitationDto toFriendInvitationDto(Boolean withDetails) {
         if(withDetails == null || !withDetails) {
-            return FriendInvitationDto.builder()
-                    .senderId(sender.getId())
-                    .receiverId(receiver.getId())
-                    .build();
+            return new FriendInvitationDto(
+                    sender.getId(),
+                    receiver.getId(),
+                    null,
+                    null
+            );
         }
-        return FriendInvitationDto.builder()
-                .senderId(sender.getId())
-                .receiverId(receiver.getId())
-                .sender(sender.toUserProfilePreviewDto())
-                .receiver(receiver.toUserProfilePreviewDto())
-                .build();
+        return new FriendInvitationDto(
+                sender.getId(),
+                receiver.getId(),
+                sender.toUserProfilePreviewDto(),
+                receiver.toUserProfilePreviewDto()
+        );
     }
 }

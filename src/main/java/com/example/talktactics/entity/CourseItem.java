@@ -1,6 +1,5 @@
 package com.example.talktactics.entity;
 
-import com.example.talktactics.dto.course_item.CourseItemPreviewDto;
 import com.example.talktactics.common.CommonEntity;
 import com.example.talktactics.listeners.CourseItemEntityListeners;
 import com.example.talktactics.util.Constants;
@@ -48,10 +47,6 @@ public class CourseItem extends CommonEntity {
     @ManyToOne
     @JoinColumn(name = "user_course_item_id")
     private UserCourseItem userCourseItem;
-
-    public CourseItemPreviewDto toDTO() {
-        return new CourseItemPreviewDto(this.getId(), this.word, this.partOfSpeech, this.audio, this.phonetic, this.course.getTitle());
-    }
 
     public int getPoints() {
         return switch (this.level) {

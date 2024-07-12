@@ -1,10 +1,14 @@
 package com.example.talktactics.entity;
 
+import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.bean.copier.CopyOptions;
 import com.example.talktactics.common.CommonEntity;
 import com.example.talktactics.listeners.CourseEntityListeners;
 import com.example.talktactics.util.Constants;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 
@@ -19,9 +23,11 @@ import java.util.List;
 @Table(name = "courses")
 @EntityListeners(CourseEntityListeners.class)
 public class Course extends CommonEntity {
+    @NotBlank(message = "Cannot be blank")
     private String title;
     @Column(length = 800)
     private String description;
+    @NotNull
     @Enumerated(EnumType.STRING)
     private CourseLevel level;
 
@@ -45,5 +51,9 @@ public class Course extends CommonEntity {
             case INTERMEDIATE -> Constants.INTERMEDIATE_COMPLETED_POINTS;
             case ADVANCED -> Constants.ADVANCED_COMPLETED_POINTS;
         };
+    }
+
+    public void copy(Course source){
+        BeanUtil.copyProperties(source,this, CopyOptions.create().setIgnoreNullValue(true));
     }
 }

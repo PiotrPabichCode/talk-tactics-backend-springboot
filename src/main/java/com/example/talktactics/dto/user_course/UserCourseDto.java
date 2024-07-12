@@ -1,23 +1,32 @@
 package com.example.talktactics.dto.user_course;
 
 import com.example.talktactics.dto.course.CourseDto;
-import com.example.talktactics.dto.user.UserDto;
-import lombok.Data;
+import com.example.talktactics.entity.UserCourse;
 
-import java.io.Serializable;
+public record UserCourseDto(
+        Long id,
+        Double progress,
+        Boolean completed,
+        Integer points,
+        CourseDto course
+) {
+    public static UserCourseDto from(UserCourse userCourse) {
+        return new UserCourseDto(
+                userCourse.getId(),
+                userCourse.getProgress(),
+                userCourse.isCompleted(),
+                userCourse.getPoints(),
+                CourseDto.from(userCourse.getCourse())
+        );
+    }
 
-@Data
-public class UserCourseDto implements Serializable {
-    private Long id;
-    private Double progress;
-    private Boolean completed;
-    private Integer points;
-    private UserDto user;
-    private CourseDto course;
-
-    public static UserCourseDto fromCourseDto(CourseDto courseDto) {
-        UserCourseDto userCourseDto = new UserCourseDto();
-        userCourseDto.setCourse(courseDto);
-        return userCourseDto;
+    public static UserCourseDto from(CourseDto course) {
+        return new UserCourseDto(
+                null,
+                0.0,
+                false,
+                0,
+                course
+        );
     }
 }

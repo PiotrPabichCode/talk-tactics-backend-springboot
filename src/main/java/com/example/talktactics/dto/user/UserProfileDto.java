@@ -1,27 +1,29 @@
 package com.example.talktactics.dto.user;
 
-import com.example.talktactics.dto.user_course.UserCourseDetailsDto;
-import lombok.*;
-import lombok.experimental.SuperBuilder;
+import com.example.talktactics.dto.user_course.UserCourseDto;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.List;
 
-@Getter
-@Setter
-@AllArgsConstructor
-@NoArgsConstructor
-@SuperBuilder(toBuilder = true)
-public class UserProfileDto extends UserProfilePreviewDto {
-    List<UserCourseDetailsDto> courses;
-
-    public static UserProfileDto toUserProfileDto(UserProfilePreviewDto userProfile, List<UserCourseDetailsDto> courses) {
-        return UserProfileDto.builder()
-                .id(userProfile.getId())
-                .firstName(userProfile.getFirstName())
-                .lastName(userProfile.getLastName())
-                .totalPoints(userProfile.getTotalPoints())
-                .bio(userProfile.getBio())
-                .courses(courses)
-                .build();
+public record UserProfileDto(
+        Long id,
+        @JsonProperty("first_name")
+        String firstName,
+        @JsonProperty("last_name")
+        String lastName,
+        @JsonProperty("total_points")
+        Integer totalPoints,
+        String bio,
+        List<UserCourseDto> courses
+){
+    public static UserProfileDto toUserProfileDto(UserProfilePreviewDto userProfile, List<UserCourseDto> userCourses) {
+        return new UserProfileDto(
+                userProfile.id(),
+                userProfile.firstName(),
+                userProfile.lastName(),
+                userProfile.totalPoints(),
+                userProfile.bio(),
+                userCourses
+        );
     }
 }
