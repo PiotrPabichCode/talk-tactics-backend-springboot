@@ -61,8 +61,12 @@ public class CourseController {
     }
 
     @DeleteMapping
-    public ResponseEntity<Object> deleteCourses(@RequestBody Set<Long> ids) {
-        courseService.delete(ids);
+    public ResponseEntity<Object> deleteCourses(
+            @RequestBody Set<Long> ids,
+            HttpServletRequest request
+    ) {
+        User requester = authenticationService.getUserFromRequest(request);
+        courseService.delete(ids, requester);
         return ResponseEntity.ok().build();
     }
 }

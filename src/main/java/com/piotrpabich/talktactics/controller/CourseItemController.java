@@ -8,10 +8,10 @@ import com.piotrpabich.talktactics.service.auth.AuthenticationService;
 import com.piotrpabich.talktactics.service.course_item.CourseItemService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Set;
@@ -28,7 +28,7 @@ public class CourseItemController {
     private final AuthenticationService authenticationService;
     @GetMapping("/all")
     public ResponseEntity<PageResult<CourseItemDto>> queryCourseItems(
-            @Validated CourseItemQueryCriteria criteria,
+            @Valid CourseItemQueryCriteria criteria,
             Pageable pageable
     ) {
         return ResponseEntity.ok(courseItemService.queryAll(criteria, pageable));

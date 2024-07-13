@@ -9,7 +9,6 @@ import com.piotrpabich.talktactics.entity.*;
 import com.piotrpabich.talktactics.exception.EntityExistsException;
 import com.piotrpabich.talktactics.repository.*;
 import com.piotrpabich.talktactics.service.course.CourseServiceImpl;
-import com.piotrpabich.talktactics.service.user.UserServiceImpl;
 import com.piotrpabich.talktactics.service.user_course.UserCourseMapper;
 import com.piotrpabich.talktactics.service.user_course.UserCourseServiceImpl;
 import org.assertj.core.api.Assertions;
@@ -47,8 +46,6 @@ public class UserCourseServiceTests {
     @Mock
     private UserCourseRepository userCourseRepository;
     @Mock
-    private UserServiceImpl userService;
-    @Mock
     private CourseServiceImpl courseService;
     @Mock
     private UserCourseMapper userCourseMapper;
@@ -64,8 +61,7 @@ public class UserCourseServiceTests {
     @BeforeEach
     public void init() {
         passwordEncoder = new BCryptPasswordEncoder();
-        userCourseService = new UserCourseServiceImpl(userCourseItemRepository, userCourseRepository, userService, courseService, userCourseMapper);
-        userService = new UserServiceImpl(userRepository, friendInvitationRepository, passwordEncoder, userCourseService);
+        userCourseService = new UserCourseServiceImpl(userCourseItemRepository, userCourseRepository, courseService, userCourseMapper);
 
         userList = List.of(
                 User.builder()

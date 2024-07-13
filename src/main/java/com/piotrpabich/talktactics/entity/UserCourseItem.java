@@ -3,10 +3,8 @@ package com.piotrpabich.talktactics.entity;
 import com.piotrpabich.talktactics.common.CommonEntity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import jakarta.persistence.Entity;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
+import com.piotrpabich.talktactics.listeners.UserCourseItemListeners;
+import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 
@@ -17,6 +15,7 @@ import lombok.experimental.SuperBuilder;
 @AllArgsConstructor
 @NoArgsConstructor
 @SuperBuilder(toBuilder = true)
+@EntityListeners(UserCourseItemListeners.class)
 public class UserCourseItem extends CommonEntity {
 
     @JsonProperty("course_item")

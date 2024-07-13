@@ -8,7 +8,7 @@ import com.piotrpabich.talktactics.dto.user_course.req.UserCourseAddReqDto;
 import com.piotrpabich.talktactics.entity.User;
 import com.piotrpabich.talktactics.entity.UserCourse;
 import com.piotrpabich.talktactics.service.auth.AuthenticationService;
-import com.piotrpabich.talktactics.service.user_course.UserCourseService;
+import com.piotrpabich.talktactics.service.user_course.UserCourseFacade;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
@@ -26,7 +26,7 @@ import static com.piotrpabich.talktactics.common.AppConst.USER_COURSES_PATH;
 @RequestMapping(API_V1 + USER_COURSES_PATH)
 @Tag(name = "User courses", description = "User courses management APIs")
 public class UserCourseController {
-    private final UserCourseService userCourseService;
+    private final UserCourseFacade userCourseFacade;
     private final AuthenticationService authenticationService;
 
     @GetMapping("/all")
@@ -36,7 +36,7 @@ public class UserCourseController {
             final HttpServletRequest request
     ) {
         User requester = authenticationService.getUserFromRequest(request);
-        return ResponseEntity.ok(userCourseService.queryAll(criteria, pageable, requester));
+        return ResponseEntity.ok(userCourseFacade.queryAll(criteria, pageable, requester));
     }
 
     @GetMapping("/id/{id}")
@@ -45,7 +45,7 @@ public class UserCourseController {
             final HttpServletRequest request
     ) {
         User requester = authenticationService.getUserFromRequest(request);
-        return ResponseEntity.ok(userCourseService.getById(id, requester));
+        return ResponseEntity.ok(userCourseFacade.getById(id, requester));
     }
 
     @PutMapping
@@ -54,7 +54,7 @@ public class UserCourseController {
             final HttpServletRequest request
     ) {
         User requester = authenticationService.getUserFromRequest(request);
-        userCourseService.addUserCourse(addRequest, requester);
+        userCourseFacade.addUserCourse(addRequest, requester);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
@@ -64,7 +64,7 @@ public class UserCourseController {
             final HttpServletRequest request
     ) {
         User requester = authenticationService.getUserFromRequest(request);
-        userCourseService.deleteUserCourse(deleteRequest, requester);
+        userCourseFacade.deleteUserCourse(deleteRequest, requester);
         return ResponseEntity.ok().build();
     }
 }

@@ -1,7 +1,6 @@
 package com.piotrpabich.talktactics.entity;
 
 import com.piotrpabich.talktactics.common.CommonEntity;
-import com.piotrpabich.talktactics.listeners.CourseItemEntityListeners;
 import com.piotrpabich.talktactics.util.Constants;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -20,7 +19,6 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @SuperBuilder(toBuilder = true)
-@EntityListeners(CourseItemEntityListeners.class)
 public class CourseItem extends CommonEntity {
     private String word;
     private String phonetic;

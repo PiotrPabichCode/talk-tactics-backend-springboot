@@ -125,6 +125,7 @@ public class DataInitializer implements ApplicationRunner {
                         JsonNode courseItemNode = rootNode.get(itemsAssigned).get(0);
                         CourseItem courseItem = createCourseItem(courseItemNode);
                         courseItem.setCourse(course);
+                        course.setLevel(course.getLevel());
                         courseItemList.add(courseItem);
                         courseItemsCount++;
                         itemsAssigned++;
@@ -138,7 +139,9 @@ public class DataInitializer implements ApplicationRunner {
             for(int i = 0; i < remainingItems; i++) {
                 JsonNode courseItemNode = rootNode.get(itemsAssigned).get(0);
                 CourseItem courseItem = createCourseItem(courseItemNode);
-                courseItem.setCourse(courseList.get(random.nextInt(COURSES_SIZE)));
+                Course course = courseList.get(random.nextInt(COURSES_SIZE));
+                courseItem.setCourse(course);
+                courseItem.setLevel(course.getLevel());
                 courseItemList.add(courseItem);
                 itemsAssigned++;
             }

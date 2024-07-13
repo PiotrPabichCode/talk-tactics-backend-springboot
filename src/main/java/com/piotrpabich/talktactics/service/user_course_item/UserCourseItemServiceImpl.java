@@ -15,7 +15,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -30,8 +29,7 @@ public class UserCourseItemServiceImpl implements UserCourseItemService {
     @Override
     public PageResult<UserCourseItemDto> queryAll(
             UserCourseItemQueryCriteria criteria,
-            Pageable pageable,
-            User requester
+            Pageable pageable
     ) {
         Page<UserCourseItem> page = userCourseItemRepository.findAll((root, criteriaQuery, criteriaBuilder) -> {
             Predicate filters = QueryHelp.getPredicate(root, criteria, criteriaBuilder);
@@ -42,30 +40,23 @@ public class UserCourseItemServiceImpl implements UserCourseItemService {
         }, pageable);
         return generatePageResult(page);
     }
+
     @Override
-    @Transactional(rollbackFor = Exception.class)
-    public void updateIsLearned(
-            Long id,
-            User requester
-    ) {
+    public void learnUserCourseItem(Long id, User requester) {
         UserCourseItem userCourseItem = getById(id);
-        AuthUtil.validateIfUserHimselfOrAdmin(requester, userCourseItem.getUserCourse().getUser());
-        CourseItem courseItem = userCourseItem.getCourseItem();
         UserCourse userCourse = userCourseItem.getUserCourse();
+        AuthUtil.validateIfUserHimselfOrAdmin(requester, userCourse.getUser());
 
-        userCourseItem.setLearned(!userCourseItem.isLearned());
-        boolean allLearned = checkIfAllLearned(userCourse);
-        int addedPoints = calculatePoints(userCourseItem, courseItem, allLearned, userCourse.isCompleted());
+        if(userCourseItem.isLearned()) {
+            throw new IllegalArgumentException("UserCourseItem already learned");
+        }
 
-        userCourse.setPoints(userCourse.getPoints() + addedPoints);
-        userCourse.setCompleted(allLearned);
-        userCourse.setProgress(calculateProgress(userCourse));
-        userCourse.getUser().setTotalPoints(userCourse.getUser().getTotalPoints() + addedPoints);
-
+        userCourseItem.setLearned(true);
         userCourseItemRepository.save(userCourseItem);
     }
 
     //  PRIVATE
+
     private UserCourseItem getById(Long id) {
         return userCourseItemRepository.findById(id).orElseThrow(() ->
                 new EntityNotFoundException(UserCourseItem.class, "id", String.valueOf(id)));
@@ -77,32 +68,5 @@ public class UserCourseItemServiceImpl implements UserCourseItemService {
             contentMeta.put("title", item.getUserCourse().getCourse().getTitle());
         }
         return PageUtil.toPage(page.map(UserCourseItemDto::toDto), contentMeta);
-    }
-
-    private boolean checkIfAllLearned(UserCourse userCourse) {
-        return userCourse.getUserCourseItems().stream().allMatch(UserCourseItem::isLearned);
-    }
-
-    private int calculatePoints(UserCourseItem userCourseItem, CourseItem courseItem, boolean allLearned, boolean isCompleted) {
-        int courseCompletionPoints = userCourseItem.getUserCourse().getCourse().getPoints();
-        int addedPoints = userCourseItem.isLearned() ? courseItem.getPoints() : -courseItem.getPoints();
-        if(!allLearned && isCompleted) {
-            addedPoints -= courseCompletionPoints;
-        } else if(allLearned && !isCompleted) {
-            addedPoints += courseCompletionPoints;
-        }
-        return addedPoints;
-    }
-
-    private double calculateProgress(UserCourse userCourse) {
-        if(userCourse.getUserCourseItems() == null) {
-            return 0.0;
-        }
-        int totalItems = userCourse.getUserCourseItems().size();
-        int learnedItems = (int) userCourse.getUserCourseItems().stream()
-                .filter(UserCourseItem::isLearned)
-                .count();
-        double progress = 100.0 * learnedItems / totalItems;
-        return Math.floor(progress * 10) / 10;
     }
 }

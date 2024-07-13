@@ -2,64 +2,50 @@ package com.piotrpabich.talktactics.service.user_course;
 
 import com.piotrpabich.talktactics.common.OffsetBasedPageRequest;
 import com.piotrpabich.talktactics.common.PageResult;
-import com.piotrpabich.talktactics.dto.course.CourseDto;
 import com.piotrpabich.talktactics.dto.course.CourseQueryCriteria;
 import com.piotrpabich.talktactics.dto.user_course.UserCourseDto;
 import com.piotrpabich.talktactics.dto.user_course.UserCourseQueryCriteria;
 import com.piotrpabich.talktactics.dto.user_course.req.UserCourseDeleteReqDto;
-import com.piotrpabich.talktactics.dto.user_course.req.UserCourseAddReqDto;
 import com.piotrpabich.talktactics.exception.EntityExistsException;
 import com.piotrpabich.talktactics.exception.EntityNotFoundException;
 import com.piotrpabich.talktactics.entity.*;
+import com.piotrpabich.talktactics.repository.CourseRepository;
 import com.piotrpabich.talktactics.repository.UserCourseItemRepository;
 import com.piotrpabich.talktactics.repository.UserCourseRepository;
-import com.piotrpabich.talktactics.service.course.CourseService;
-import com.piotrpabich.talktactics.service.user.UserService;
 import com.piotrpabich.talktactics.util.AuthUtil;
 import com.piotrpabich.talktactics.util.PageUtil;
 import com.piotrpabich.talktactics.util.QueryHelp;
 import com.piotrpabich.talktactics.util.SortUtil;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
 @Slf4j
+@RequiredArgsConstructor
 public class UserCourseServiceImpl implements UserCourseService {
 
     private final UserCourseItemRepository userCourseItemRepository;
     private final UserCourseRepository userCourseRepository;
-    private final UserService userService;
-    private final CourseService courseService;
+    private final CourseRepository courseRepository;
     private final UserCourseMapper userCourseMapper;
-
-    public UserCourseServiceImpl(
-            UserCourseItemRepository userCourseItemRepository,
-            UserCourseRepository userCourseRepository,
-            @Lazy UserService userService,
-            CourseService courseService,
-            UserCourseMapper userCourseMapper) {
-        this.userCourseItemRepository = userCourseItemRepository;
-        this.userCourseRepository = userCourseRepository;
-        this.userService = userService;
-        this.courseService = courseService;
-        this.userCourseMapper = userCourseMapper;
-    }
 
 //  PUBLIC
     @Override
     public PageResult<UserCourseDto> queryAll(
             UserCourseQueryCriteria criteria,
-            Pageable pageable
+            Pageable pageable,
+            User requester
     ) {
+        final var userIds = criteria.getUserIds();
+        validateQueryAll(userIds, requester);
         if (Boolean.TRUE.equals(criteria.getFetchCourses())) {
             return queryAllWithCourses(criteria, pageable);
         }
@@ -74,54 +60,69 @@ public class UserCourseServiceImpl implements UserCourseService {
         return userCourse;
     }
     @Override
-    @Transactional(rollbackFor = Exception.class)
-    public void addUserCourse(UserCourseAddReqDto req, User requester) {
-        User user = userService.getUserById(req.userId());
+    public void addUserCourse(User user, Course course, User requester) {
         AuthUtil.validateIfUserHimselfOrAdmin(requester, user);
+        validateIfUserCourseExists(course.getId(), user.getId());
 
-        if (userCourseRepository.existsByCourseIdAndUserId(req.courseId(), req.userId())) {
-            throw new EntityExistsException(UserCourse.class, "(courseId | userId)", String.format("(%d %d)", req.courseId(), req.userId()));
-        }
-
-        // find course
-        Course course = courseService.getById(req.courseId());
-
-        UserCourse userCourse = UserCourse.builder().user(user).course(course).build();
-        List<UserCourseItem> userCourseItems = new ArrayList<>();
-        for(CourseItem courseItem: course.getCourseItems()) {
-            userCourseItems.add(UserCourseItem.builder().courseItem(courseItem).userCourse(userCourse).build());
-        }
+        final var userCourse = buildUserCourse(user, course);
+        final var userCourseItems = buildUserCourseItems(userCourse);
 
         userCourseRepository.save(userCourse);
         userCourseItemRepository.saveAll(userCourseItems);
     }
     @Override
-    @Transactional(rollbackFor = Exception.class)
-    public void deleteUserCourse(UserCourseDeleteReqDto req, User requester) {
-        User user = userService.getUserById(req.userId());
-        AuthUtil.validateIfUserHimselfOrAdmin(requester, user);
-        UserCourse userCourse = getUserCourse(req.courseId(), req.userId());
+    public void deleteUserCourse(UserCourseDeleteReqDto request) {
+        final var userCourse = getUserCourse(
+                request.courseId(),
+                request.userId()
+        );
         userCourseRepository.delete(userCourse);
     }
 
     //  PRIVATE
 
+    private UserCourse buildUserCourse(User user, Course course) {
+        return UserCourse.builder()
+                .user(user)
+                .course(course)
+                .build();
+    }
+
+    private List<UserCourseItem> buildUserCourseItems(UserCourse userCourse) {
+        return userCourse.getCourse().getCourseItems().stream()
+                .map(courseItem -> UserCourseItem.builder()
+                        .courseItem(courseItem)
+                        .userCourse(userCourse)
+                        .build()
+                )
+                .collect(Collectors.toList());
+    }
+    private void validateQueryAll(Set<Long> userIds, User requester) {
+        if(!AuthUtil.isUserAdmin(requester)) {
+            userIds.stream().findAny().ifPresent(userId -> {
+                if(!userId.equals(requester.getId())) {
+                    throw new IllegalArgumentException("You can only query multiple users if you are an admin or the user himself");
+                }
+            });
+        }
+    }
     private List<UserCourseDto> queryAll(UserCourseQueryCriteria criteria) {
-        List<UserCourse> list = userCourseRepository.findAll((root, criteriaQuery, criteriaBuilder) -> QueryHelp.getPredicate(root, criteria, criteriaBuilder));
-        return userCourseMapper.toDto(list);
+        final var items = userCourseRepository.findAll((root, criteriaQuery, criteriaBuilder) -> QueryHelp.getPredicate(root, criteria, criteriaBuilder));
+        return userCourseMapper.toDto(items);
     }
 
     private List<UserCourseDto> queryAll(UserCourseQueryCriteria criteria, Sort sort) {
-        List<UserCourse> list = userCourseRepository.findAll((root, criteriaQuery, criteriaBuilder) -> QueryHelp.getPredicate(root, criteria, criteriaBuilder), sort);
-        return userCourseMapper.toDto(list);
+        final var items = userCourseRepository.findAll((root, criteriaQuery, criteriaBuilder) -> QueryHelp.getPredicate(root, criteria, criteriaBuilder), sort);
+        return userCourseMapper.toDto(items);
     }
 
     private UserCourse getUserCourse(Long courseId, Long userId) {
-        UserCourse userCourse = userCourseRepository.findByCourseIdAndUserId(courseId, userId);
-        if(userCourse == null) {
-            throw new EntityNotFoundException(UserCourse.class, "courseId", courseId.toString());
-        }
-        return userCourse;
+        return userCourseRepository.findByCourseIdAndUserId(courseId, userId)
+                .orElseThrow(() -> new EntityNotFoundException(
+                        UserCourse.class,
+                        "(courseId | userId)",
+                        String.format("(%d %d)", courseId, userId)
+                        ));
     }
     private PageResult<UserCourseDto> queryAllWithCourses(UserCourseQueryCriteria criteria, Pageable pageable) {
         criteria.setFetchCourses(false);
@@ -133,7 +134,7 @@ public class UserCourseServiceImpl implements UserCourseService {
     }
 
     private PageResult<UserCourseDto> processSortWithCourseFetchRequest(UserCourseQueryCriteria criteria, Pageable pageable, boolean isAscending) {
-        long totalElements = courseService.countAll(CourseQueryCriteria.fromUserCourseQueryCriteria(criteria, null));
+        long totalElements = courseRepository.count((root, criteriaQuery, criteriaBuilder) -> QueryHelp.getPredicate(root, criteria, criteriaBuilder));
         int totalPages = (int) Math.ceil((double) totalElements / pageable.getPageSize());
 
         if(isAscending) {
@@ -155,19 +156,17 @@ public class UserCourseServiceImpl implements UserCourseService {
                 pageable.getPageSize(),
                 toCoursesSort(pageable.getSort())
         );
-        PageResult<CourseDto> courseDtoPageResult = courseService.queryAll(
+        final var courses = fetchCourses(
                 CourseQueryCriteria.fromUserCourseQueryCriteria(criteria, excludeCourseIds),
                 pageRequest
         );
-        List<UserCourseDto> content = courseDtoPageResult.content().stream()
-                .map(UserCourseDto::from)
-                .collect(Collectors.toList());
+        final var content = courses.content();
         if(content.size() == pageable.getPageSize()) {
-            return content;
+            return courses.content();
         }
 
         int limit = pageable.getPageSize() - content.size();
-        long offset = Math.max(0, (long) pageable.getPageSize() * pageable.getPageNumber() - courseDtoPageResult.totalElements());
+        long offset = Math.max(0, (long) pageable.getPageSize() * pageable.getPageNumber() - courses.totalElements());
 
         List<UserCourseDto> offsetBasedData = userCourseList.stream()
                 .skip(offset)
@@ -201,42 +200,50 @@ public class UserCourseServiceImpl implements UserCourseService {
                 toCoursesSort(pageable.getSort()).and(Sort.by("id").ascending())
         );
 
-        PageResult<CourseDto> courseDtoPageResult = courseService.queryAll(
+        final var courses = fetchCourses(
                 CourseQueryCriteria.fromUserCourseQueryCriteria(criteria, excludeCourseIds),
                 offsetPageable
         );
 
-        List<UserCourseDto> additionalContent = courseDtoPageResult.content().stream()
-                .map(UserCourseDto::from)
-                .toList();
-
-        content.addAll(additionalContent);
+        content.addAll(courses.content());
         return content;
     }
 
+    private PageResult<UserCourseDto> fetchCourses(CourseQueryCriteria criteria,
+                                             Pageable pageable) {
+        var result = courseRepository.findAll((root, criteriaQuery, criteriaBuilder) ->
+                        QueryHelp.getPredicate(root, criteria, criteriaBuilder), pageable);
+        final var content = result.getContent()
+                .stream()
+                .map(UserCourseDto::from)
+                .toList();
+
+        return new PageResult<>(content, result.getTotalElements(), result.getTotalPages());
+    }
+
     private PageResult<UserCourseDto> processCourseSortWithCourseFetchRequest(UserCourseQueryCriteria criteria, Pageable pageable) {
-        PageResult<CourseDto> courseDtoPageResult = courseService.queryAll(
+        final var courses = fetchCourses(
                 CourseQueryCriteria.fromUserCourseQueryCriteria(criteria, null),
                 getAdditionalCoursesPageRequest(pageable)
         );
 
-        Set<Long> courseIds = courseDtoPageResult.content().stream()
-                .map(CourseDto::id)
+        Set<Long> courseIds = courses.content().stream()
+                .map(UserCourseDto::id)
                 .collect(Collectors.toSet());
         criteria.setCourseIds(courseIds);
 
-        List<UserCourseDto> userCourseDtoList = queryAll(criteria);
-        Map<Long, UserCourseDto> userCourseDtoMap = userCourseDtoList.stream()
+        final var userCourses = queryAll(criteria);
+        Map<Long, UserCourseDto> userCourseDtoMap = userCourses.stream()
                 .collect(Collectors.toMap(
                         userCourse -> userCourse.course().id(),
                         userCourse -> userCourse
                 ));
 
-        List<UserCourseDto> content = courseDtoPageResult.content().stream()
-                .map(courseDto -> userCourseDtoMap.getOrDefault(courseDto.id(), UserCourseDto.from(courseDto)))
+        List<UserCourseDto> content = courses.content().stream()
+                .map(courseDto -> userCourseDtoMap.getOrDefault(courseDto.id(), courseDto))
                 .toList();
 
-        return new PageResult<>(content, courseDtoPageResult.totalElements(), courseDtoPageResult.totalPages());
+        return new PageResult<>(content, courses.totalElements(), courses.totalPages());
     }
     private PageRequest getAdditionalCoursesPageRequest(Pageable pageable) {
         return PageRequest.of(
@@ -255,5 +262,15 @@ public class UserCourseServiceImpl implements UserCourseService {
                 .filter(Objects::nonNull)
                 .collect(Collectors.toList());
         return Sort.by(orders);
+    }
+
+    private void validateIfUserCourseExists(Long courseId, Long userId) {
+        if(userCourseRepository.existsByCourseIdAndUserId(courseId, userId)) {
+            throw new EntityExistsException(
+                    UserCourse.class,
+                    "(courseId | userId)",
+                    String.format("(%d | %d)", courseId, userId)
+            );
+        }
     }
 }

@@ -51,11 +51,10 @@ public class UserServiceImpl implements UserService {
     @Override
     public PageResult<UserDto> queryAll(
             UserQueryCriteria criteria,
-            Pageable pageable,
-            User requester
+            Pageable pageable
     ) {
-        AuthUtil.validateIfUserAdmin(requester);
-        return queryAll(criteria, pageable);
+        Page<User> page = userRepository.findAll((root, criteriaQuery, criteriaBuilder) -> QueryHelp.getPredicate(root, criteria, criteriaBuilder), pageable);
+        return PageUtil.toPage(page.map(UserDto::from));
     }
     @Override
     public User getUserById(long id, User requester) {
@@ -79,47 +78,20 @@ public class UserServiceImpl implements UserService {
             User requester
     ) {
         AuthUtil.validateIfUserAdmin(requester);
-        if(!userRepository.existsById(id)) {
-            throw new EntityNotFoundException(User.class, "id", String.valueOf(id));
-        }
-
         User user = getUserById(id);
-        if(user.getRole().toString().equals(Constants.ADMIN)) {
+        if(Constants.ADMIN.equals(user.getRole().toString())) {
             throw new BadCredentialsException("Cannot delete admin user");
         }
         userRepository.deleteById(id);
     }
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public User updateUser(long id, Map<String, Object> fields, User requester) {
+    public User updateUser(long id, Map<String, Object> newValues, User requester) {
         User user = getUserById(id);
         AuthUtil.validateIfUserHimselfOrAdmin(requester, user);
-        validateFields(fields);
-
-        Map<String, String> fieldMap = getJsonPropertyFieldMap(UpdateUserDto.class);
-
-        fields.forEach((key, value) -> {
-            String fieldName = fieldMap.get(key);
-            if (fieldName == null) {
-                throw new BadRequestException("Illegal fields given: " + key);
-            }
-            Field field = ReflectionUtils.findField(User.class, fieldName);
-            if (field == null) {
-                throw new BadRequestException("Field not found: " + fieldName);
-            }
-            field.setAccessible(true);
-            ReflectionUtils.setField(field, user, value);
-        });
+        validateUpdateUserRequest(user, newValues);
 
         return userRepository.save(user);
-    }
-    private void validateFields(Map<String, Object> fields) {
-        if(fields.containsKey("email")) {
-            String email = (String) fields.get("email");
-            if(!isValidEmail(email)) {
-                throw new BadCredentialsException(Constants.EMAIL_FORBIDDEN_VALUES_EXCEPTION);
-            }
-        }
     }
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -227,15 +199,29 @@ public class UserServiceImpl implements UserService {
     }
 
     //  PRIVATE
+    private void validateUpdateUserRequest(User user, Map<String, Object> newValues) {
+        if(newValues.containsKey("email")) {
+            String email = (String) newValues.get("email");
+            if(!isValidEmail(email)) {
+                throw new BadCredentialsException(Constants.EMAIL_FORBIDDEN_VALUES_EXCEPTION);
+            }
+        }
 
-    private PageResult<UserDto> queryAll(
-            UserQueryCriteria criteria,
-            Pageable pageable
-    ) {
-        Page<User> page = userRepository.findAll((root, criteriaQuery, criteriaBuilder) -> QueryHelp.getPredicate(root, criteria, criteriaBuilder), pageable);
-        return PageUtil.toPage(page.map(UserDto::from));
+        Map<String, String> fieldMap = getJsonPropertyFieldMap(UpdateUserDto.class);
+
+        newValues.forEach((key, value) -> {
+            String fieldName = fieldMap.get(key);
+            if (fieldName == null) {
+                throw new BadRequestException("Illegal new values given: " + key);
+            }
+            Field field = ReflectionUtils.findField(User.class, fieldName);
+            if (field == null) {
+                throw new BadRequestException("Field not found: " + fieldName);
+            }
+            field.setAccessible(true);
+            ReflectionUtils.setField(field, user, value);
+        });
     }
-
     private void validatePassword(User user, UpdatePasswordReqDto req) {
         if(req.oldPassword().isBlank() || req.newPassword().isBlank() || req.repeatNewPassword().isBlank()) {
             throw new BadRequestException(Constants.ALL_FIELDS_REQUIRED);

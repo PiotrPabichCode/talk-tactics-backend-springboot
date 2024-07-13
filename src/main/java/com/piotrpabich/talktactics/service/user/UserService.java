@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.Map;
 
 public interface UserService {
-    PageResult<UserDto> queryAll(UserQueryCriteria criteria, Pageable pageable, User requester);
+    PageResult<UserDto> queryAll(UserQueryCriteria criteria, Pageable pageable);
     User getUserById(long id, User requester);
     User getUserById(long id);
     User getUserByUsername(String username, User requester);

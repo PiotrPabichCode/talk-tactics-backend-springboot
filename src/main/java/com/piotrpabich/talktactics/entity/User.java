@@ -2,7 +2,6 @@ package com.piotrpabich.talktactics.entity;
 
 import com.piotrpabich.talktactics.common.CommonEntity;
 import com.piotrpabich.talktactics.dto.user.UserProfilePreviewDto;
-import com.piotrpabich.talktactics.listeners.UserEntityListeners;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -26,7 +25,6 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @SuperBuilder(toBuilder = true)
-@EntityListeners(UserEntityListeners.class)
 public class User extends CommonEntity implements UserDetails {
     @NotBlank(message = "Cannot be blank")
     @Column(unique = true)

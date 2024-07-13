@@ -13,7 +13,6 @@ public interface CourseService {
     PageResult<CourseDto> queryAll(CourseQueryCriteria criteria, Pageable pageable);
     List<CourseNavbarDto> getNavbarList();
     Course getById(long id);
-    long countAll(CourseQueryCriteria criteria);
     void create(Course course, User requester);
     void update(Course resources, User requester);
     void delete(Set<Long> ids, User requester);

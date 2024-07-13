@@ -10,6 +10,7 @@ import com.piotrpabich.talktactics.util.PageUtil;
 import com.piotrpabich.talktactics.util.QueryHelp;
 import com.piotrpabich.talktactics.util.ValidationUtil;
 import jakarta.persistence.Tuple;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -23,17 +24,10 @@ import java.util.Set;
 
 @Service
 @Slf4j
+@RequiredArgsConstructor
 public class CourseServiceImpl implements CourseService {
     private final CourseRepository courseRepository;
     private final CourseMapper courseMapper;
-
-    public CourseServiceImpl(
-            CourseRepository courseRepository,
-            CourseMapper courseMapper
-    ) {
-        this.courseRepository = courseRepository;
-        this.courseMapper = courseMapper;
-    }
 
 //  PUBLIC
 
@@ -50,10 +44,6 @@ public class CourseServiceImpl implements CourseService {
     @Override
     public Course getById(long id) {
         return courseRepository.findById(id).orElseThrow(() -> new EntityNotFoundException(Course.class, "id", String.valueOf(id)));
-    }
-    @Override
-    public long countAll(CourseQueryCriteria criteria) {
-        return courseRepository.count((root, criteriaQuery, criteriaBuilder) -> QueryHelp.getPredicate(root, criteria, criteriaBuilder));
     }
     @Override
     @Transactional(rollbackFor = Exception.class)
