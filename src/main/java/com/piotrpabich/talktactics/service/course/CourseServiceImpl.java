@@ -5,13 +5,12 @@ import com.piotrpabich.talktactics.dto.course.*;
 import com.piotrpabich.talktactics.entity.*;
 import com.piotrpabich.talktactics.exception.EntityNotFoundException;
 import com.piotrpabich.talktactics.repository.*;
-import com.piotrpabich.talktactics.service.user.UserService;
+import com.piotrpabich.talktactics.util.AuthUtil;
 import com.piotrpabich.talktactics.util.PageUtil;
 import com.piotrpabich.talktactics.util.QueryHelp;
 import com.piotrpabich.talktactics.util.ValidationUtil;
 import jakarta.persistence.Tuple;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -26,15 +25,13 @@ import java.util.Set;
 @Slf4j
 public class CourseServiceImpl implements CourseService {
     private final CourseRepository courseRepository;
-    private final UserService userService;
     private final CourseMapper courseMapper;
 
     public CourseServiceImpl(
             CourseRepository courseRepository,
-            @Lazy UserService userService,
-            CourseMapper courseMapper) {
+            CourseMapper courseMapper
+    ) {
         this.courseRepository = courseRepository;
-        this.userService = userService;
         this.courseMapper = courseMapper;
     }
 
@@ -60,14 +57,14 @@ public class CourseServiceImpl implements CourseService {
     }
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void create(Course course) {
-        userService.validateAdmin();
+    public void create(Course course, User requester) {
+        AuthUtil.validateIfUserAdmin(requester);
         courseRepository.save(course);
     }
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void update(Course resources) {
-        userService.validateAdmin();
+    public void update(Course resources, User requester) {
+        AuthUtil.validateIfUserAdmin(requester);
         Course course = courseRepository.findById(resources.getId()).orElseGet(() -> {
             log.warn("Course not found with id: {}", resources.getId());
             return new Course();
@@ -78,8 +75,8 @@ public class CourseServiceImpl implements CourseService {
     }
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void delete(Set<Long> ids) {
-        userService.validateAdmin();
+    public void delete(Set<Long> ids, User requester) {
+        AuthUtil.validateIfUserAdmin(requester);
         for(Long id: ids) {
             courseRepository.deleteById(id);
         }

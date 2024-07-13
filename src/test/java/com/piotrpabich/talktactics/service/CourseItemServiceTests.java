@@ -6,7 +6,6 @@ import com.piotrpabich.talktactics.repository.CourseItemRepository;
 import com.piotrpabich.talktactics.repository.FriendInvitationRepository;
 import com.piotrpabich.talktactics.repository.UserRepository;
 import com.piotrpabich.talktactics.service.course_item.CourseItemServiceImpl;
-import com.piotrpabich.talktactics.service.user.UserServiceImpl;
 import com.piotrpabich.talktactics.service.user_course.UserCourseServiceImpl;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -37,9 +36,6 @@ public class CourseItemServiceTests {
     private UserRepository userRepository;
     @Mock
     private PasswordEncoder passwordEncoder;
-
-    @Mock
-    private UserServiceImpl userService;
     @Mock
     private UserCourseServiceImpl userCourseService;
     @InjectMocks
@@ -51,8 +47,7 @@ public class CourseItemServiceTests {
     @BeforeEach
     public void init() {
         passwordEncoder = new BCryptPasswordEncoder();
-        userService = new UserServiceImpl(userRepository, friendInvitationRepository, passwordEncoder, userCourseService);
-        courseItemService = new CourseItemServiceImpl(courseItemRepository, userService);
+        courseItemService = new CourseItemServiceImpl(courseItemRepository);
         courseItem = CourseItem.builder()
                 .id(1L)
                 .word("word")

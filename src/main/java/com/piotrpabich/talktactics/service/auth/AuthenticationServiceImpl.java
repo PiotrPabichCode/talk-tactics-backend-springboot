@@ -5,11 +5,13 @@ import com.piotrpabich.talktactics.dto.auth.res.AuthenticationResponse;
 import com.piotrpabich.talktactics.dto.auth.req.RefreshTokenRequest;
 import com.piotrpabich.talktactics.dto.auth.req.RegisterRequest;
 import com.piotrpabich.talktactics.exception.BadRequestException;
+import com.piotrpabich.talktactics.exception.EntityNotFoundException;
 import com.piotrpabich.talktactics.service.jwt.JwtService;
 import com.piotrpabich.talktactics.entity.Role;
 import com.piotrpabich.talktactics.entity.User;
 import com.piotrpabich.talktactics.repository.UserRepository;
 import com.piotrpabich.talktactics.util.EmailValidator;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -83,7 +85,19 @@ public class AuthenticationServiceImpl implements AuthenticationService{
         );
     }
 
+    @Override
+    public User getUserFromRequest(final HttpServletRequest request) {
+        var token = getTokenFromRequest(request);
+        var username = jwtService.extractUsername(token);
+        return repository.findByUsername(username)
+                .orElseThrow(() -> new EntityNotFoundException(User.class, "username", username));
+    }
+
 //  PRIVATE
+
+    private String getTokenFromRequest(final HttpServletRequest request) {
+        return request.getHeader("Authorization");
+    }
     private boolean isEmpty(String value) {
     return value == null || value.isEmpty();
 }

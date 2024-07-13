@@ -137,4 +137,8 @@ public class User extends CommonEntity implements UserDetails {
                 this.getBio()
         );
     }
+
+    public boolean isAdmin() {
+        return this.role.equals(Role.ADMIN);
+    }
 }

@@ -4,8 +4,9 @@ import com.piotrpabich.talktactics.common.PageResult;
 import com.piotrpabich.talktactics.dto.course_item.CourseItemQueryCriteria;
 import com.piotrpabich.talktactics.dto.course_item.CourseItemDto;
 import com.piotrpabich.talktactics.entity.CourseItem;
+import com.piotrpabich.talktactics.entity.User;
 import com.piotrpabich.talktactics.repository.CourseItemRepository;
-import com.piotrpabich.talktactics.service.user.UserService;
+import com.piotrpabich.talktactics.util.AuthUtil;
 import com.piotrpabich.talktactics.util.PageUtil;
 import com.piotrpabich.talktactics.util.QueryHelp;
 import jakarta.persistence.criteria.Predicate;
@@ -23,9 +24,8 @@ import java.util.Set;
 @Service
 @Slf4j
 @AllArgsConstructor
-public class CourseItemServiceImpl implements CourseItemService{
+public class CourseItemServiceImpl implements CourseItemService {
     private final CourseItemRepository courseItemRepository;
-    private final UserService userService;
 
 //  PUBLIC
     @Override
@@ -40,8 +40,8 @@ public class CourseItemServiceImpl implements CourseItemService{
     }
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void delete(Set<Long> ids) {
-        userService.validateAdmin();
+    public void delete(Set<Long> ids, User requester) {
+        AuthUtil.validateIfUserAdmin(requester);
         for(Long id: ids) {
             courseItemRepository.deleteById(id);
         }

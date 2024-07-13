@@ -3,8 +3,10 @@ package com.piotrpabich.talktactics.controller;
 import com.piotrpabich.talktactics.common.PageResult;
 import com.piotrpabich.talktactics.dto.course.*;
 import com.piotrpabich.talktactics.entity.*;
+import com.piotrpabich.talktactics.service.auth.AuthenticationService;
 import com.piotrpabich.talktactics.service.course.CourseService;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -24,9 +26,13 @@ import static com.piotrpabich.talktactics.common.AppConst.COURSES_PATH;
 @Tag(name = "Courses", description = "Courses management APIs")
 public class CourseController {
     private final CourseService courseService;
+    private final AuthenticationService authenticationService;
 
     @GetMapping("/all")
-    public ResponseEntity<PageResult<CourseDto>> queryCourses(CourseQueryCriteria criteria, Pageable pageable) {
+    public ResponseEntity<PageResult<CourseDto>> queryCourses(
+            CourseQueryCriteria criteria,
+            Pageable pageable
+    ) {
         return ResponseEntity.ok(courseService.queryAll(criteria, pageable));
     }
 
@@ -36,13 +42,21 @@ public class CourseController {
     }
 
     @PostMapping
-    public ResponseEntity<Object> createCourse(@Validated @RequestBody Course course) {
-        courseService.create(course);
+    public ResponseEntity<Object> createCourse(
+            @Validated @RequestBody Course course,
+            HttpServletRequest request
+    ) {
+        User requester = authenticationService.getUserFromRequest(request);
+        courseService.create(course, requester);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
     @PutMapping
-    public ResponseEntity<Object> updateCourse(@RequestBody Course resources) {
-        courseService.update(resources);
+    public ResponseEntity<Object> updateCourse(
+            @RequestBody Course resources,
+            HttpServletRequest request
+    ) {
+        User requester = authenticationService.getUserFromRequest(request);
+        courseService.update(resources, requester);
         return ResponseEntity.noContent().build();
     }
 

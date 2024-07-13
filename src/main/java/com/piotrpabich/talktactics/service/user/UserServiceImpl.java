@@ -15,6 +15,7 @@ import com.piotrpabich.talktactics.entity.*;
 import com.piotrpabich.talktactics.repository.FriendInvitationRepository;
 import com.piotrpabich.talktactics.repository.UserRepository;
 import com.piotrpabich.talktactics.service.user_course.UserCourseService;
+import com.piotrpabich.talktactics.util.AuthUtil;
 import com.piotrpabich.talktactics.util.Constants;
 import com.piotrpabich.talktactics.util.PageUtil;
 import com.piotrpabich.talktactics.util.QueryHelp;
@@ -25,8 +26,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -50,23 +49,36 @@ public class UserServiceImpl implements UserService {
 
 //  PUBLIC
     @Override
-    public PageResult<UserDto> queryAll(UserQueryCriteria criteria, Pageable pageable) {
-        validateAdmin();
-        Page<User> page = userRepository.findAll((root, criteriaQuery, criteriaBuilder) -> QueryHelp.getPredicate(root, criteria, criteriaBuilder), pageable);
-        return PageUtil.toPage(page.map(UserDto::from));
+    public PageResult<UserDto> queryAll(
+            UserQueryCriteria criteria,
+            Pageable pageable,
+            User requester
+    ) {
+        AuthUtil.validateIfUserAdmin(requester);
+        return queryAll(criteria, pageable);
     }
+    @Override
+    public User getUserById(long id, User requester) {
+        User user = getUserById(id);
+        AuthUtil.validateIfUserHimselfOrAdmin(requester, user);
+        return user;
+    }
+
     @Override
     public User getUserById(long id) {
         return userRepository.findById(id).orElseThrow(() -> new EntityNotFoundException(User.class, "id", String.valueOf(id)));
     }
     @Override
-    public User getUserByUsername(String username) {
+    public User getUserByUsername(String username, User requester) {
         return userRepository.findByUsername(username).orElseThrow(() -> new EntityNotFoundException(User.class, "username", username));
     }
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void deleteUser(long id) {
-        validateAdmin();
+    public void deleteUser(
+            long id,
+            User requester
+    ) {
+        AuthUtil.validateIfUserAdmin(requester);
         if(!userRepository.existsById(id)) {
             throw new EntityNotFoundException(User.class, "id", String.valueOf(id));
         }
@@ -79,9 +91,9 @@ public class UserServiceImpl implements UserService {
     }
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public User updateUser(long id, Map<String, Object> fields) {
+    public User updateUser(long id, Map<String, Object> fields, User requester) {
         User user = getUserById(id);
-        validateCredentials(user);
+        AuthUtil.validateIfUserHimselfOrAdmin(requester, user);
         validateFields(fields);
 
         Map<String, String> fieldMap = getJsonPropertyFieldMap(UpdateUserDto.class);
@@ -101,18 +113,6 @@ public class UserServiceImpl implements UserService {
 
         return userRepository.save(user);
     }
-    @Override
-    public void validateAdmin() {
-        if(!isAdmin()) {
-            throw new BadCredentialsException(Constants.NOT_ENOUGH_AUTHORITIES_EXCEPTION);
-        }
-    }
-    @Override
-    public void validateCredentials(User user) {
-        if(!isAdmin() && !isCurrentUser(user)) {
-            throw new BadCredentialsException(Constants.NOT_ENOUGH_AUTHORITIES_EXCEPTION);
-        }
-    }
     private void validateFields(Map<String, Object> fields) {
         if(fields.containsKey("email")) {
             String email = (String) fields.get("email");
@@ -123,13 +123,15 @@ public class UserServiceImpl implements UserService {
     }
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public User updatePassword(UpdatePasswordReqDto req) {
-        User user = getUserById(req.id());
+    public User updatePassword(
+            UpdatePasswordReqDto updatePasswordRequest,
+            User requester
+    ) {
+        User user = getUserById(updatePasswordRequest.id());
+        AuthUtil.validateIfUserHimselfOrAdmin(requester, user);
+        validatePassword(user, updatePasswordRequest);
 
-        validateCredentials(user);
-        validatePassword(user, req);
-
-        user.setPassword(passwordEncoder.encode(req.newPassword()));
+        user.setPassword(passwordEncoder.encode(updatePasswordRequest.newPassword()));
         return userRepository.save(user);
     }
 
@@ -154,9 +156,9 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<UserProfilePreviewDto> getFriends(Long id) {
+    public List<UserProfilePreviewDto> getFriends(Long id, User requester) {
         User user = getUserById(id);
-        validateCredentials(user);
+        AuthUtil.validateIfUserHimselfOrAdmin(requester, user);
 
         return user.getFriends().stream()
                 .sorted(Comparator.comparingInt(User::getTotalPoints).reversed())
@@ -166,21 +168,24 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void handleFriendInvitationRequest(FriendInvitationRequest request) {
+    public void handleFriendInvitationRequest(FriendInvitationRequest request, User requester) {
         switch (request.action()) {
-            case SEND -> sendFriendInvitation(request);
-            case ACCEPT -> acceptFriendInvitation(request);
-            case REJECT -> rejectFriendInvitation(request);
-            case DELETE -> deleteSentFriendInvitation(request);
+            case SEND -> sendFriendInvitation(request, requester);
+            case ACCEPT -> acceptFriendInvitation(request, requester);
+            case REJECT -> rejectFriendInvitation(request, requester);
+            case DELETE -> deleteSentFriendInvitation(request, requester);
             default -> throw new BadRequestException("Invalid action: " + request.action());
         }
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void deleteFriend(DeleteFriendDto request) {
+    public void deleteFriend(
+            DeleteFriendDto request,
+            User requester
+    ) {
         User user = getUserById(request.userId());
-        validateCredentials(user);
+        AuthUtil.validateIfUserHimselfOrAdmin(requester, user);
         User friend = getUserById(request.friendId());
 
         if(!user.getFriends().contains(friend)) {
@@ -194,9 +199,13 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<FriendInvitationDto> getReceivedFriendInvitations(Long id, Boolean withDetails) {
+    public List<FriendInvitationDto> getReceivedFriendInvitations(
+            Long id,
+            Boolean withDetails,
+            User requester
+    ) {
         User user = getUserById(id);
-        validateCredentials(user);
+        AuthUtil.validateIfUserHimselfOrAdmin(requester, user);
 
         return user.getReceivedFriendInvitations().stream()
                 .map(friendInvitation -> friendInvitation.toFriendInvitationDto(withDetails))
@@ -204,9 +213,13 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<FriendInvitationDto> getSentFriendInvitations(Long id, Boolean withDetails) {
+    public List<FriendInvitationDto> getSentFriendInvitations(
+            Long id,
+            Boolean withDetails,
+            User requester
+    ) {
         User user = getUserById(id);
-        validateCredentials(user);
+        AuthUtil.validateIfUserHimselfOrAdmin(requester, user);
 
         return user.getSentFriendInvitations().stream()
                 .map(friendInvitation -> friendInvitation.toFriendInvitationDto(withDetails))
@@ -214,15 +227,13 @@ public class UserServiceImpl implements UserService {
     }
 
     //  PRIVATE
-    private boolean isAdmin() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        return authentication.getAuthorities().stream().anyMatch(auth -> auth.getAuthority().equals(Constants.ADMIN));
-    }
 
-
-    private boolean isCurrentUser(User user) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        return authentication.getName().equals(user.getUsername());
+    private PageResult<UserDto> queryAll(
+            UserQueryCriteria criteria,
+            Pageable pageable
+    ) {
+        Page<User> page = userRepository.findAll((root, criteriaQuery, criteriaBuilder) -> QueryHelp.getPredicate(root, criteria, criteriaBuilder), pageable);
+        return PageUtil.toPage(page.map(UserDto::from));
     }
 
     private void validatePassword(User user, UpdatePasswordReqDto req) {
@@ -249,9 +260,9 @@ public class UserServiceImpl implements UserService {
         }
     }
 
-    private void sendFriendInvitation(FriendInvitationRequest request) {
+    private void sendFriendInvitation(FriendInvitationRequest request, User requester) {
         User sender = getUserById(request.senderId());
-        validateCredentials(sender);
+        AuthUtil.validateIfUserHimselfOrAdmin(requester, sender);
         User receiver = getUserById(request.receiverId());
 
         validateFriendInvitationRequest(sender, receiver);
@@ -267,9 +278,9 @@ public class UserServiceImpl implements UserService {
         // Add notitfication to receiver
     }
 
-    private void acceptFriendInvitation(FriendInvitationRequest request) {
+    private void acceptFriendInvitation(FriendInvitationRequest request, User requester) {
         User receiver = getUserById(request.receiverId());
-        validateCredentials(receiver);
+        AuthUtil.validateIfUserHimselfOrAdmin(requester, receiver);
         User sender = getUserById(request.senderId());
 
         validateFriendInvitationRequest(receiver, sender);
@@ -284,9 +295,9 @@ public class UserServiceImpl implements UserService {
         // Add notification to sender
     }
 
-    private void rejectFriendInvitation(FriendInvitationRequest request) {
+    private void rejectFriendInvitation(FriendInvitationRequest request, User requester) {
         User receiver = getUserById(request.receiverId());
-        validateCredentials(receiver);
+        AuthUtil.validateIfUserHimselfOrAdmin(requester, receiver);
         User sender = getUserById(request.senderId());
 
         validateFriendInvitationRequest(receiver, sender);
@@ -297,9 +308,9 @@ public class UserServiceImpl implements UserService {
         // Add notification to sender
     }
 
-    private void deleteSentFriendInvitation(FriendInvitationRequest request) {
+    private void deleteSentFriendInvitation(FriendInvitationRequest request, User requester) {
         User sender = getUserById(request.senderId());
-        validateCredentials(sender);
+        AuthUtil.validateIfUserHimselfOrAdmin(requester, sender);
         User receiver = getUserById(request.receiverId());
 
         validateFriendInvitationRequest(sender, receiver);

@@ -6,7 +6,7 @@ import com.piotrpabich.talktactics.dto.user_course_item.UserCourseItemDto;
 import com.piotrpabich.talktactics.entity.*;
 import com.piotrpabich.talktactics.exception.EntityNotFoundException;
 import com.piotrpabich.talktactics.repository.UserCourseItemRepository;
-import com.piotrpabich.talktactics.service.user.UserService;
+import com.piotrpabich.talktactics.util.AuthUtil;
 import com.piotrpabich.talktactics.util.PageUtil;
 import com.piotrpabich.talktactics.util.QueryHelp;
 import jakarta.persistence.criteria.Predicate;
@@ -25,12 +25,14 @@ import java.util.Map;
 @AllArgsConstructor
 public class UserCourseItemServiceImpl implements UserCourseItemService {
     private final UserCourseItemRepository userCourseItemRepository;
-    private final UserService userService;
 
 //  PUBLIC
     @Override
-    public PageResult<UserCourseItemDto> queryAll(UserCourseItemQueryCriteria criteria,
-                                                  Pageable pageable) {
+    public PageResult<UserCourseItemDto> queryAll(
+            UserCourseItemQueryCriteria criteria,
+            Pageable pageable,
+            User requester
+    ) {
         Page<UserCourseItem> page = userCourseItemRepository.findAll((root, criteriaQuery, criteriaBuilder) -> {
             Predicate filters = QueryHelp.getPredicate(root, criteria, criteriaBuilder);
             return criteriaBuilder.and(
@@ -42,8 +44,12 @@ public class UserCourseItemServiceImpl implements UserCourseItemService {
     }
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void updateIsLearned(Long id) {
+    public void updateIsLearned(
+            Long id,
+            User requester
+    ) {
         UserCourseItem userCourseItem = getById(id);
+        AuthUtil.validateIfUserHimselfOrAdmin(requester, userCourseItem.getUserCourse().getUser());
         CourseItem courseItem = userCourseItem.getCourseItem();
         UserCourse userCourse = userCourseItem.getUserCourse();
 
@@ -61,11 +67,8 @@ public class UserCourseItemServiceImpl implements UserCourseItemService {
 
     //  PRIVATE
     private UserCourseItem getById(Long id) {
-        UserCourseItem userCourseItem = userCourseItemRepository.findById(id).orElseThrow(() ->
+        return userCourseItemRepository.findById(id).orElseThrow(() ->
                 new EntityNotFoundException(UserCourseItem.class, "id", String.valueOf(id)));
-        User user = userCourseItem.getUserCourse().getUser();
-        userService.validateCredentials(user);
-        return userCourseItem;
     }
     private PageResult<UserCourseItemDto> generatePageResult(Page<UserCourseItem> page) {
         Map<String, String> contentMeta = new HashMap<>();

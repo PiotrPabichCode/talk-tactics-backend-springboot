@@ -5,7 +5,6 @@ import com.piotrpabich.talktactics.entity.CourseLevel;
 import com.piotrpabich.talktactics.repository.CourseRepository;
 import com.piotrpabich.talktactics.service.course.CourseMapper;
 import com.piotrpabich.talktactics.service.course.CourseServiceImpl;
-import com.piotrpabich.talktactics.service.user.UserService;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -27,8 +26,6 @@ public class CourseServiceTests {
     @Mock
     private CourseRepository courseRepository;
     @Mock
-    private UserService userService;
-    @Mock
     private CourseMapper courseMapper;
 
     @InjectMocks
@@ -40,7 +37,7 @@ public class CourseServiceTests {
 
     @BeforeEach
     public void init() {
-        courseService = new CourseServiceImpl(courseRepository, userService, courseMapper);
+        courseService = new CourseServiceImpl(courseRepository, courseMapper);
         course = Course.builder()
                 .id(1L)
                 .title("English for Beginners")

@@ -17,7 +17,7 @@ public class Constants {
     public static final String USER_COURSE_NOT_FOUND_EXCEPTION = "User course not found";
     public static final String USER_COURSE_EXISTS_EXCEPTION = "User course exists";
     public static final String USER_COURSE_ITEM_NOT_FOUND_EXCEPTION = "User course item not found";
-    public static final String NOT_ENOUGH_AUTHORITIES_EXCEPTION = "Not enough authorities";
+    public static final String FORBIDDEN = "User does not have enough authorities to perform this action";
     public static final String EMAIL_FORBIDDEN_VALUES_EXCEPTION = "Email has forbidden characters";
     public static final String INVALID_PASSWORD_EXCEPTION = "Invalid password";
 

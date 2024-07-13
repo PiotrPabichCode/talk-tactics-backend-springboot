@@ -13,20 +13,19 @@ import java.util.List;
 import java.util.Map;
 
 public interface UserService {
-    PageResult<UserDto> queryAll(UserQueryCriteria criteria, Pageable pageable);
+    PageResult<UserDto> queryAll(UserQueryCriteria criteria, Pageable pageable, User requester);
+    User getUserById(long id, User requester);
     User getUserById(long id);
-    User getUserByUsername(String username);
-    void deleteUser(long id);
-    User updateUser(long id, Map<String, Object> fields);
-    void validateCredentials(User user);
-    void validateAdmin();
-    User updatePassword(UpdatePasswordReqDto req);
+    User getUserByUsername(String username, User requester);
+    void deleteUser(long id, User requester);
+    User updateUser(long id, Map<String, Object> fields, User requester);
+    User updatePassword(UpdatePasswordReqDto req, User requester);
     List<UserProfilePreviewDto> getUserProfiles();
     UserProfileDto getUserProfileById(Long id);
-    List<UserProfilePreviewDto> getFriends(Long id);
-    void handleFriendInvitationRequest(FriendInvitationRequest request);
-    void deleteFriend(DeleteFriendDto request);
-    List<FriendInvitationDto> getReceivedFriendInvitations(Long id, Boolean withDetails);
-    List<FriendInvitationDto> getSentFriendInvitations(Long id, Boolean withDetails);
+    List<UserProfilePreviewDto> getFriends(Long id, User requester);
+    void handleFriendInvitationRequest(FriendInvitationRequest request, User requester);
+    void deleteFriend(DeleteFriendDto request, User requester);
+    List<FriendInvitationDto> getReceivedFriendInvitations(Long id, Boolean withDetails, User requester);
+    List<FriendInvitationDto> getSentFriendInvitations(Long id, Boolean withDetails, User requester);
 
 }

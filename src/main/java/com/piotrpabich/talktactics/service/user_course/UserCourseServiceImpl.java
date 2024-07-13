@@ -15,6 +15,7 @@ import com.piotrpabich.talktactics.repository.UserCourseItemRepository;
 import com.piotrpabich.talktactics.repository.UserCourseRepository;
 import com.piotrpabich.talktactics.service.course.CourseService;
 import com.piotrpabich.talktactics.service.user.UserService;
+import com.piotrpabich.talktactics.util.AuthUtil;
 import com.piotrpabich.talktactics.util.PageUtil;
 import com.piotrpabich.talktactics.util.QueryHelp;
 import com.piotrpabich.talktactics.util.SortUtil;
@@ -55,7 +56,10 @@ public class UserCourseServiceImpl implements UserCourseService {
 
 //  PUBLIC
     @Override
-    public PageResult<UserCourseDto> queryAll(UserCourseQueryCriteria criteria, Pageable pageable) {
+    public PageResult<UserCourseDto> queryAll(
+            UserCourseQueryCriteria criteria,
+            Pageable pageable
+    ) {
         if (Boolean.TRUE.equals(criteria.getFetchCourses())) {
             return queryAllWithCourses(criteria, pageable);
         }
@@ -64,20 +68,21 @@ public class UserCourseServiceImpl implements UserCourseService {
         return PageUtil.toPage(page.map(userCourseMapper::toDto));
     }
     @Override
-    public UserCourse getById(long id) {
+    public UserCourse getById(long id, User requester) {
         UserCourse userCourse = userCourseRepository.findById(id).orElseThrow(() -> new EntityNotFoundException(UserCourse.class, "id", String.valueOf(id)));
-        userService.validateCredentials(userCourse.getUser());
+        AuthUtil.validateIfUserHimselfOrAdmin(requester, userCourse.getUser());
         return userCourse;
     }
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void addUserCourse(UserCourseAddReqDto req) {
+    public void addUserCourse(UserCourseAddReqDto req, User requester) {
+        User user = userService.getUserById(req.userId());
+        AuthUtil.validateIfUserHimselfOrAdmin(requester, user);
+
         if (userCourseRepository.existsByCourseIdAndUserId(req.courseId(), req.userId())) {
             throw new EntityExistsException(UserCourse.class, "(courseId | userId)", String.format("(%d %d)", req.courseId(), req.userId()));
         }
 
-        User user = userService.getUserById(req.userId());
-        userService.validateCredentials(user);
         // find course
         Course course = courseService.getById(req.courseId());
 
@@ -92,9 +97,9 @@ public class UserCourseServiceImpl implements UserCourseService {
     }
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void deleteUserCourse(UserCourseDeleteReqDto req) {
+    public void deleteUserCourse(UserCourseDeleteReqDto req, User requester) {
         User user = userService.getUserById(req.userId());
-        userService.validateCredentials(user);
+        AuthUtil.validateIfUserHimselfOrAdmin(requester, user);
         UserCourse userCourse = getUserCourse(req.courseId(), req.userId());
         userCourseRepository.delete(userCourse);
     }

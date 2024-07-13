@@ -140,18 +140,6 @@ public class UserServiceTests {
     }
 
     @Test
-    @WithMockUser(authorities = {"ADMIN"})
-    public void UserService_ValidateAdmin_ReturnsVoid() {
-        userServiceImpl.validateAdmin();
-    }
-
-    @Test
-    @WithMockUser(username = "dwayne_johnson")
-    public void UserService_ValidateCredentials_ReturnsVoid() {
-        userServiceImpl.validateCredentials(user);
-    }
-
-    @Test
     @WithMockUser(username = "dwayne_johnson")
     public void UserService_UpdatePassword_ReturnsUser() {
         given(userRepository.findById(anyLong())).willReturn(Optional.of(user));
