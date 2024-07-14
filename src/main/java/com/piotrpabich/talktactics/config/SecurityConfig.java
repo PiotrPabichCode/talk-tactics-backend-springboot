@@ -10,11 +10,14 @@ import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
+
+import static org.springframework.security.config.Customizer.withDefaults;
 
 @Configuration
 @Slf4j
@@ -52,41 +55,37 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         log.info("Creating securityFilterChain for App Server...");
         http
-                .cors()
-                .and()
-                .csrf()
-                .disable()
-                .authorizeHttpRequests()
-                .requestMatchers(PERMITTED_ENDPOINTS).permitAll()
-                .requestMatchers(WHITELIST_URLS).permitAll()
-                .requestMatchers(HttpMethod.POST, "/api/v1/courses").hasAnyAuthority(AuthConstants.ADMIN)
-                .requestMatchers(HttpMethod.PUT, "/api/v1/courses").hasAnyAuthority(AuthConstants.ADMIN)
-                .requestMatchers(HttpMethod.DELETE, "/api/v1/courses").hasAnyAuthority(AuthConstants.ADMIN)
-                .requestMatchers(HttpMethod.DELETE,"/api/v1/course-items").hasAnyAuthority(AuthConstants.ADMIN)
-                .requestMatchers("/api/v1/users/all").hasAnyAuthority(AuthConstants.ADMIN)
-                .requestMatchers(HttpMethod.GET, "/api/v1/users/id/{id}").hasAnyAuthority(AuthConstants.USER, AuthConstants.ADMIN)
-                .requestMatchers( "/api/v1/users/id/{id}/friends").hasAnyAuthority(AuthConstants.USER, AuthConstants.ADMIN)
-                .requestMatchers( "/api/v1/users/friend-invitation").hasAnyAuthority(AuthConstants.USER, AuthConstants.ADMIN)
-                .requestMatchers( "/api/v1/users/delete-friend").hasAnyAuthority(AuthConstants.USER, AuthConstants.ADMIN)
-                .requestMatchers( "/api/v1/users/id/{id}/received-friend-invitations").hasAnyAuthority(AuthConstants.USER, AuthConstants.ADMIN)
-                .requestMatchers( "/api/v1/users/id/{id}/sent-friend-invitations").hasAnyAuthority(AuthConstants.USER, AuthConstants.ADMIN)
-                .requestMatchers(HttpMethod.PATCH, "/api/v1/users/id/{id}").hasAnyAuthority(AuthConstants.USER, AuthConstants.ADMIN)
-                .requestMatchers(HttpMethod.DELETE, "/api/v1/users/id/{id}").hasAnyAuthority(AuthConstants.ADMIN)
-                .requestMatchers("/api/v1/users/password").hasAnyAuthority(AuthConstants.USER, AuthConstants.ADMIN)
-                .requestMatchers("/api/v1/users/username/{username}").hasAnyAuthority(AuthConstants.USER, AuthConstants.ADMIN)
-                .requestMatchers("/api/v1/user-courses/all").hasAnyAuthority(AuthConstants.USER, AuthConstants.ADMIN)
-                .requestMatchers("/api/v1/user-courses/all-with-courses").hasAnyAuthority(AuthConstants.USER, AuthConstants.ADMIN)
-                .requestMatchers("/api/v1/user-courses/id/{id}").hasAnyAuthority(AuthConstants.USER, AuthConstants.ADMIN)
-                .requestMatchers("/api/v1/user-courses/user-id/{id}").hasAnyAuthority(AuthConstants.USER, AuthConstants.ADMIN)
-                .requestMatchers("/api/v1/user-courses").hasAnyAuthority(AuthConstants.USER, AuthConstants.ADMIN)
-                .requestMatchers("/api/v1/user-course-items/all").hasAnyAuthority(AuthConstants.USER, AuthConstants.ADMIN)
-                .requestMatchers("/api/v1/user-course-items/learn/id/{id}").hasAnyAuthority(AuthConstants.USER, AuthConstants.ADMIN)
-                .anyRequest()
-                .authenticated()
-                .and()
-                .sessionManagement()
-                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                .and()
+                .csrf(AbstractHttpConfigurer::disable)
+                .cors(withDefaults())
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers(PERMITTED_ENDPOINTS).permitAll()
+                        .requestMatchers(WHITELIST_URLS).permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/v1/courses").hasAnyAuthority(AuthConstants.ADMIN)
+                        .requestMatchers(HttpMethod.PUT, "/api/v1/courses").hasAnyAuthority(AuthConstants.ADMIN)
+                        .requestMatchers(HttpMethod.DELETE, "/api/v1/courses").hasAnyAuthority(AuthConstants.ADMIN)
+                        .requestMatchers(HttpMethod.DELETE,"/api/v1/course-items").hasAnyAuthority(AuthConstants.ADMIN)
+                        .requestMatchers("/api/v1/users/all").hasAnyAuthority(AuthConstants.ADMIN)
+                        .requestMatchers(HttpMethod.GET, "/api/v1/users/id/{id}").hasAnyAuthority(AuthConstants.USER, AuthConstants.ADMIN)
+                        .requestMatchers( "/api/v1/users/id/{id}/friends").hasAnyAuthority(AuthConstants.USER, AuthConstants.ADMIN)
+                        .requestMatchers( "/api/v1/users/friend-invitation").hasAnyAuthority(AuthConstants.USER, AuthConstants.ADMIN)
+                        .requestMatchers( "/api/v1/users/delete-friend").hasAnyAuthority(AuthConstants.USER, AuthConstants.ADMIN)
+                        .requestMatchers( "/api/v1/users/id/{id}/received-friend-invitations").hasAnyAuthority(AuthConstants.USER, AuthConstants.ADMIN)
+                        .requestMatchers( "/api/v1/users/id/{id}/sent-friend-invitations").hasAnyAuthority(AuthConstants.USER, AuthConstants.ADMIN)
+                        .requestMatchers(HttpMethod.PATCH, "/api/v1/users/id/{id}").hasAnyAuthority(AuthConstants.USER, AuthConstants.ADMIN)
+                        .requestMatchers(HttpMethod.DELETE, "/api/v1/users/id/{id}").hasAnyAuthority(AuthConstants.ADMIN)
+                        .requestMatchers("/api/v1/users/password").hasAnyAuthority(AuthConstants.USER, AuthConstants.ADMIN)
+                        .requestMatchers("/api/v1/users/username/{username}").hasAnyAuthority(AuthConstants.USER, AuthConstants.ADMIN)
+                        .requestMatchers("/api/v1/user-courses/all").hasAnyAuthority(AuthConstants.USER, AuthConstants.ADMIN)
+                        .requestMatchers("/api/v1/user-courses/all-with-courses").hasAnyAuthority(AuthConstants.USER, AuthConstants.ADMIN)
+                        .requestMatchers("/api/v1/user-courses/id/{id}").hasAnyAuthority(AuthConstants.USER, AuthConstants.ADMIN)
+                        .requestMatchers("/api/v1/user-courses/user-id/{id}").hasAnyAuthority(AuthConstants.USER, AuthConstants.ADMIN)
+                        .requestMatchers("/api/v1/user-courses").hasAnyAuthority(AuthConstants.USER, AuthConstants.ADMIN)
+                        .requestMatchers("/api/v1/user-course-items/all").hasAnyAuthority(AuthConstants.USER, AuthConstants.ADMIN)
+                        .requestMatchers("/api/v1/user-course-items/learn/id/{id}").hasAnyAuthority(AuthConstants.USER, AuthConstants.ADMIN)
+                        .anyRequest()
+                        .authenticated()
+                )
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authenticationProvider(authenticationProvider)
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 

@@ -38,7 +38,7 @@ public class Course extends CommonEntity {
             orphanRemoval = true)
     private List<CourseItem> courseItems;
 
-    private int quantity = 0;
+    private int quantity;
 
     @JsonIgnore
     @OneToMany(mappedBy = "course",

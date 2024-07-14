@@ -21,10 +21,10 @@ import java.util.List;
 @SuperBuilder(toBuilder = true)
 @EntityListeners(UserCourseEntityListeners.class)
 public class UserCourse extends CommonEntity {
-    private double progress = 0.0;
+    private double progress;
     @JsonProperty("is_completed")
-    private boolean completed = false;
-    private int points = 0;
+    private boolean completed;
+    private int points;
 
     @ManyToOne
     @JoinColumn(name = "user_id")

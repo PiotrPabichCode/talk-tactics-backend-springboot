@@ -51,7 +51,7 @@ public class User extends CommonEntity implements UserDetails {
     private String bio;
 
     @JsonProperty("total_points")
-    private Integer totalPoints = 0;
+    private int totalPoints;
 
     @Enumerated(EnumType.STRING)
     private Role role;

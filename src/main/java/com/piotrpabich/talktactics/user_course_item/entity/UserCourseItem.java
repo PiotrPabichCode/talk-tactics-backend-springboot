@@ -25,7 +25,7 @@ public class UserCourseItem extends CommonEntity {
     @JoinColumn(name = "course_item_id")
     private CourseItem courseItem;
     @JsonProperty("is_learned")
-    private boolean isLearned = false;
+    private boolean isLearned;
 
     @JsonProperty("user_course")
     @JsonIgnore
