@@ -2,7 +2,7 @@ package com.piotrpabich.talktactics.exception.handler;
 
 import com.piotrpabich.talktactics.exception.EntityExistsException;
 import com.piotrpabich.talktactics.exception.EntityNotFoundException;
-import com.piotrpabich.talktactics.util.ThrowableUtil;
+import com.piotrpabich.talktactics.common.util.ThrowableUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

@@ -1,6 +1,6 @@
 package com.piotrpabich.talktactics.config;
 
-import com.piotrpabich.talktactics.repository.UserRepository;
+import com.piotrpabich.talktactics.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

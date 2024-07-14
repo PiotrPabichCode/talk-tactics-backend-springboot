@@ -1,7 +1,7 @@
 package com.piotrpabich.talktactics.config.security;
 
-import com.piotrpabich.talktactics.service.jwt.JwtService;
-import com.piotrpabich.talktactics.util.Constants;
+import com.piotrpabich.talktactics.auth.AuthConstants;
+import com.piotrpabich.talktactics.auth.token.TokenService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -26,7 +26,7 @@ import static com.piotrpabich.talktactics.config.SecurityConfig.WHITELIST_URLS;
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
-    private final JwtService jwtService;
+    private final TokenService tokenService;
 
     @Override
     protected void doFilterInternal(
@@ -48,9 +48,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         }
         jwt = authHeader.substring(7);
         if(SecurityContextHolder.getContext().getAuthentication() == null) {
-            Optional<UserDetails> userDetails = jwtService.validateToken(jwt);
+            Optional<UserDetails> userDetails = tokenService.validateToken(jwt);
             if(userDetails.isEmpty()) {
-                response.sendError(HttpStatus.UNAUTHORIZED.value(), Constants.JWT_INVALID_EXCEPTION);
+                response.sendError(HttpStatus.UNAUTHORIZED.value(), AuthConstants.JWT_INVALID_EXCEPTION);
                 return;
             }
             UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
