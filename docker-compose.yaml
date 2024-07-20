@@ -1,0 +1,11 @@
+version: "3.8"
+services:
+  database:
+    container_name: "talk_tactics-postgres"
+    ports:
+      - 6599:5432
+    image: "postgres:12.3"
+    environment:
+      POSTGRES_DB: talk_tactics
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: admin

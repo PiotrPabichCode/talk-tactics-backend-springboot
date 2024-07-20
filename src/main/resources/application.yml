@@ -1,27 +1,22 @@
-spring:
-  config:
-    import: optional:secrets.local.properties
-  datasource:
-    url: jdbc:postgresql://${DB_HOST}:${DB_PORT}/${DB_DATABASE}
-    username: ${DB_USERNAME}
-    password: ${DB_PASSWORD}
-    driver-class-name: org.postgresql.Driver
-  jpa:
-    hibernate:
-      ddl-auto: create
-      format_sql: true
-    show-sql: false
-    open-in-view: false
-
-    database: postgresql
-    database-platform: org.hibernate.dialect.PostgreSQLDialect
 application:
   security:
     jwt:
-      secret-key: ${JWT_SECRET_KEY}
-      expiration: ${JWT_TOKEN_EXPIRATION}
+      secret-key: 46294A404D635166546A576E5A7234753778214125442A472D4B615064526755
+      expiration: 86400000
       refresh-token:
-        expiration: ${JWT_REFRESH_TOKEN_EXPIRATION}
+        expiration: 604800000
+
 server:
   error:
     include-message: always
+
+web:
+  cors:
+    allowed-origins:
+      - http://localhost:3000
+      - https://talk-tactics-frontend.vercel.app
+    allowed-methods: GET, POST, PATCH, PUT, DELETE, OPTIONS, HEAD
+    max-age: 3600
+    allowed-headers: Origin, x-requested-with, x-user-agent, authorization, accept, content-type, x-auth-token, x-trace-id
+    exposed-headers: date, x-total-count
+    allow-credentials: true
