@@ -1,4 +1,4 @@
-FROM gradle:8.2-jdk21 AS build
+FROM gradle:jdk21 AS build
 COPY --chown=gradle:gradle . /home/gradle/project
 WORKDIR /home/gradle/project
 RUN gradle clean build --no-daemon
