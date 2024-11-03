@@ -1,9 +1,9 @@
-FROM gradle:8.2-jdk21 AS build
-COPY --chown=gradle:gradle . /home/gradle/project
-WORKDIR /home/gradle/project
-RUN gradle clean build --no-daemon
-
-FROM openjdk:21
-COPY --from=build /home/gradle/project/build/libs/talk-tactics-0.0.1-SNAPSHOT.jar app.jar
+FROM gradle:jdk21-alpine AS build
 WORKDIR /app
-ENTRYPOINT ["java", "-jar", "/app.jar"]
+COPY . /app
+RUN gradle bootJar
+
+FROM openjdk:21-jdk-slim AS runtime
+COPY --from=build /app/build/libs/*.jar /app/app.jar
+WORKDIR /app
+ENTRYPOINT ["java", "-jar", "app.jar"]
