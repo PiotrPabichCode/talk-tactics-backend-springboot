@@ -13,14 +13,15 @@ public record UserCourseItemDto(
         Boolean isLearned
 ) {
 
-    public static UserCourseItemDto toDto(UserCourseItem userCourseItem) {
+    public static UserCourseItemDto toDto(final UserCourseItem userCourseItem) {
+        final var courseItem = userCourseItem.getCourseItem();
         return new UserCourseItemDto(
                 userCourseItem.getId(),
-                userCourseItem.getCourseItem().getWord(),
-                userCourseItem.getCourseItem().getPartOfSpeech(),
-                userCourseItem.getCourseItem().getPhonetic(),
-                userCourseItem.getCourseItem().getAudio(),
-                userCourseItem.getCourseItem().getLevel(),
+                courseItem.getWord(),
+                courseItem.getPartOfSpeech(),
+                courseItem.getPhonetic(),
+                courseItem.getAudio(),
+                courseItem.getLevel(),
                 userCourseItem.isLearned()
         );
     }

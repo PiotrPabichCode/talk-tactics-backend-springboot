@@ -6,12 +6,13 @@ import com.piotrpabich.talktactics.user_course_item.dto.UserCourseItemDto;
 import com.piotrpabich.talktactics.user_course_item.dto.UserCourseItemQueryCriteria;
 import com.piotrpabich.talktactics.user.entity.User;
 import com.piotrpabich.talktactics.user.UserService;
-import com.piotrpabich.talktactics.auth.AuthUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import static com.piotrpabich.talktactics.auth.AuthUtil.validateIfUserHimselfOrAdmin;
 
 @Slf4j
 @Service
@@ -22,18 +23,17 @@ public class UserCourseItemFacade {
     private final UserCourseItemService userCourseItemService;
 
     public PageResult<UserCourseItemDto> queryAll(
-            UserCourseItemQueryCriteria criteria,
-            Pageable pageable,
-            User requester
+            final UserCourseItemQueryCriteria criteria,
+            final Pageable pageable,
+            final User requester
     ) {
-        User user = userService.getUserById(requester.getId());
-        AuthUtil.validateIfUserHimselfOrAdmin(requester, user);
+        final var user = userService.getUserById(requester.getId());
+        validateIfUserHimselfOrAdmin(requester, user);
         return userCourseItemService.queryAll(criteria, pageable);
     }
 
     @Transactional
-    public void learnUserCourseItem(Long id, User requester) {
+    public void learnUserCourseItem(final Long id, final User requester) {
         userCourseItemService.learnUserCourseItem(id, requester);
     }
-
 }

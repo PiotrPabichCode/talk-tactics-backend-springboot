@@ -24,6 +24,7 @@ public class UserCourseItem extends CommonEntity {
     @ManyToOne
     @JoinColumn(name = "course_item_id")
     private CourseItem courseItem;
+
     @JsonProperty("is_learned")
     private boolean isLearned;
 

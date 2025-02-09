@@ -7,9 +7,9 @@ import lombok.Data;
 @Data
 public class UserCourseItemQueryCriteria {
     @NotNull(message = "courseId property cannot be null")
-    Long courseId;
+    private Long courseId;
     @NotNull(message = "userId property cannot be null")
-    Long userId;
+    private Long userId;
     @Query
     private Boolean isLearned;
     @Query(propName = "word", joinName = "courseItem" , type = Query.Type.INNER_LIKE)

@@ -15,7 +15,7 @@ public class UserCourseItemListeners {
     private ObjectFactory<UserCourseRepository> userCourseRepositoryProvider;
 
     @PostUpdate
-    public void afterUpdate(UserCourseItem userCourseItem) {
+    public void afterUpdate(final UserCourseItem userCourseItem) {
         final var userCourse = userCourseItem.getUserCourse();
 
         userCourse.setCompleted(isCompleted(userCourse));
@@ -26,18 +26,20 @@ public class UserCourseItemListeners {
         userCourseRepository.save(userCourse);
     }
 
-    private boolean isCompleted(UserCourse userCourse) {
-        return userCourse.getUserCourseItems().stream().allMatch(UserCourseItem::isLearned);
+    private boolean isCompleted(final UserCourse userCourse) {
+        return userCourse.getUserCourseItems()
+                .stream()
+                .allMatch(UserCourseItem::isLearned);
     }
 
-    private int calculateTotalPoints(UserCourse userCourse) {
+    private int calculateTotalPoints(final UserCourse userCourse) {
         return userCourse.getUserCourseItems().stream()
                 .filter(UserCourseItem::isLearned)
                 .mapToInt(item -> item.getCourseItem().getPoints())
                 .sum() + (userCourse.isCompleted() ? userCourse.getPoints() : 0);
     }
 
-    private double calculateProgress(UserCourse userCourse) {
+    private double calculateProgress(final UserCourse userCourse) {
         final var totalItems = userCourse.getUserCourseItems().size();
         final var learnedItems = (int) userCourse.getUserCourseItems().stream()
                 .filter(UserCourseItem::isLearned)

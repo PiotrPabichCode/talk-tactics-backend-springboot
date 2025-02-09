@@ -5,50 +5,44 @@ import com.piotrpabich.talktactics.user_course_item.dto.UserCourseItemQueryCrite
 import com.piotrpabich.talktactics.user_course_item.dto.UserCourseItemDto;
 import com.piotrpabich.talktactics.exception.EntityNotFoundException;
 import com.piotrpabich.talktactics.user.entity.User;
-import com.piotrpabich.talktactics.user_course.entity.UserCourse;
 import com.piotrpabich.talktactics.user_course_item.entity.UserCourseItem;
-import com.piotrpabich.talktactics.auth.AuthUtil;
 import com.piotrpabich.talktactics.common.util.PageUtil;
-import com.piotrpabich.talktactics.common.QueryHelp;
-import jakarta.persistence.criteria.Predicate;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
 import java.util.Map;
 
+import static com.piotrpabich.talktactics.auth.AuthUtil.validateIfUserHimselfOrAdmin;
+import static com.piotrpabich.talktactics.common.QueryHelp.getPredicate;
+
 @Service
 @Slf4j
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class UserCourseItemServiceImpl implements UserCourseItemService {
+
     private final UserCourseItemRepository userCourseItemRepository;
 
-//  PUBLIC
     @Override
     public PageResult<UserCourseItemDto> queryAll(
-            UserCourseItemQueryCriteria criteria,
-            Pageable pageable
+            final UserCourseItemQueryCriteria criteria,
+            final Pageable pageable
     ) {
-        Page<UserCourseItem> page = userCourseItemRepository.findAll((root, criteriaQuery, criteriaBuilder) -> {
-            Predicate filters = QueryHelp.getPredicate(root, criteria, criteriaBuilder);
-            return criteriaBuilder.and(
-                    filters,
-                    criteriaBuilder.equal(root.get("userCourse").get("course").get("id"), criteria.getCourseId()),
-                    criteriaBuilder.equal(root.get("userCourse").get("user").get("id"), criteria.getUserId()));
-        }, pageable);
+        final var page = userCourseItemRepository.findAll(getUserCourseItemSpecification(criteria), pageable);
         return generatePageResult(page);
     }
 
     @Override
-    public void learnUserCourseItem(Long id, User requester) {
-        UserCourseItem userCourseItem = getById(id);
-        UserCourse userCourse = userCourseItem.getUserCourse();
-        AuthUtil.validateIfUserHimselfOrAdmin(requester, userCourse.getUser());
+    public void learnUserCourseItem(final Long id, final User requester) {
+        final var userCourseItem = getById(id);
+        final var userCourse = userCourseItem.getUserCourse();
+        validateIfUserHimselfOrAdmin(requester, userCourse.getUser());
 
-        if(userCourseItem.isLearned()) {
+        if (userCourseItem.isLearned()) {
             throw new IllegalArgumentException("UserCourseItem already learned");
         }
 
@@ -56,17 +50,32 @@ public class UserCourseItemServiceImpl implements UserCourseItemService {
         userCourseItemRepository.save(userCourseItem);
     }
 
-    //  PRIVATE
-
-    private UserCourseItem getById(Long id) {
-        return userCourseItemRepository.findById(id).orElseThrow(() ->
-                new EntityNotFoundException(UserCourseItem.class, "id", String.valueOf(id)));
+    private Specification<UserCourseItem> getUserCourseItemSpecification(
+            final UserCourseItemQueryCriteria criteria
+    ) {
+        return (root, criteriaQuery, criteriaBuilder) -> {
+            final var userCourseRoot = root.get("userCourse");
+            return criteriaBuilder.and(
+                    getPredicate(root, criteria, criteriaBuilder),
+                    criteriaBuilder.equal(userCourseRoot.get("course").get("id"), criteria.getCourseId()),
+                    criteriaBuilder.equal(userCourseRoot.get("user").get("id"), criteria.getUserId())
+            );
+        };
     }
-    private PageResult<UserCourseItemDto> generatePageResult(Page<UserCourseItem> page) {
+
+    private UserCourseItem getById(final Long id) {
+        return userCourseItemRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException(UserCourseItem.class, "id", String.valueOf(id)));
+    }
+
+    private PageResult<UserCourseItemDto> generatePageResult(final Page<UserCourseItem> page) {
         Map<String, String> contentMeta = new HashMap<>();
-        if(page.getContent().size() > 0) {
-            UserCourseItem item = page.getContent().get(0);
-            contentMeta.put("title", item.getUserCourse().getCourse().getTitle());
+        if (!page.getContent().isEmpty()) {
+            final var title = page.getContent().getFirst()
+                    .getUserCourse()
+                    .getCourse()
+                    .getTitle();
+            contentMeta.put("title", title);
         }
         return PageUtil.toPage(page.map(UserCourseItemDto::toDto), contentMeta);
     }
