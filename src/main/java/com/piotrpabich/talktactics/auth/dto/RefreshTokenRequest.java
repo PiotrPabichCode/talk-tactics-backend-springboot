@@ -1,4 +1,4 @@
-package com.piotrpabich.talktactics.auth.dto.req;
+package com.piotrpabich.talktactics.auth.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 

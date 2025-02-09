@@ -12,10 +12,10 @@ import lombok.experimental.SuperBuilder;
 @Table(name = "meanings")
 @Getter
 @Setter
-@AllArgsConstructor
-@NoArgsConstructor
+@RequiredArgsConstructor
 @SuperBuilder(toBuilder = true)
 public class Meaning extends CommonEntity {
+
     private String definition;
     private String example;
 

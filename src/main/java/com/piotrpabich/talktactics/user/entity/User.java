@@ -23,8 +23,7 @@ import java.util.List;
 @Table(name = "users")
 @Getter
 @Setter
-@AllArgsConstructor
-@NoArgsConstructor
+@RequiredArgsConstructor
 @SuperBuilder(toBuilder = true)
 public class User extends CommonEntity implements UserDetails {
     @NotBlank(message = "Cannot be blank")

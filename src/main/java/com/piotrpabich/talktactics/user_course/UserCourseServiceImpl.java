@@ -6,7 +6,7 @@ import com.piotrpabich.talktactics.course.entity.Course;
 import com.piotrpabich.talktactics.course.dto.CourseQueryCriteria;
 import com.piotrpabich.talktactics.user_course.dto.UserCourseDto;
 import com.piotrpabich.talktactics.user_course.dto.UserCourseQueryCriteria;
-import com.piotrpabich.talktactics.user_course.dto.req.UserCourseDeleteRequest;
+import com.piotrpabich.talktactics.user_course.dto.UserCourseDeleteRequest;
 import com.piotrpabich.talktactics.exception.EntityExistsException;
 import com.piotrpabich.talktactics.exception.EntityNotFoundException;
 import com.piotrpabich.talktactics.course.CourseRepository;
@@ -19,14 +19,12 @@ import com.piotrpabich.talktactics.common.QueryHelp;
 import com.piotrpabich.talktactics.common.util.SortUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 import static com.piotrpabich.talktactics.auth.AuthUtil.isUserAdmin;
 import static com.piotrpabich.talktactics.auth.AuthUtil.validateIfUserHimselfOrAdmin;

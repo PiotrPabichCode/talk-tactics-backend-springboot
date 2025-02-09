@@ -7,7 +7,7 @@ import com.piotrpabich.talktactics.auth.AuthenticationService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -18,9 +18,9 @@ import static com.piotrpabich.talktactics.common.AppConst.API_V1;
 import static com.piotrpabich.talktactics.common.AppConst.COURSE_ITEMS_PATH;
 
 @RestController
-@AllArgsConstructor
+@RequiredArgsConstructor
 @RequestMapping(API_V1 + COURSE_ITEMS_PATH)
-@Tag(name = "Course items", description = "Course items management APIs")
+@Tag(name = "CourseItemController", description = "Course items management APIs")
 public class CourseItemController {
     private final CourseItemService courseItemService;
     private final AuthenticationService authenticationService;

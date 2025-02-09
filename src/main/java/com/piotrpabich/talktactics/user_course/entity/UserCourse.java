@@ -16,8 +16,7 @@ import java.util.List;
 @Table(name = "user_courses")
 @Getter
 @Setter
-@AllArgsConstructor
-@NoArgsConstructor
+@RequiredArgsConstructor
 @SuperBuilder(toBuilder = true)
 @EntityListeners(UserCourseEntityListeners.class)
 public class UserCourse extends CommonEntity {

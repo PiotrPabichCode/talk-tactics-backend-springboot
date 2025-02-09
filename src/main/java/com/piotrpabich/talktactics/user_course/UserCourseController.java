@@ -3,14 +3,14 @@ package com.piotrpabich.talktactics.user_course;
 import com.piotrpabich.talktactics.common.PageResult;
 import com.piotrpabich.talktactics.user_course.dto.UserCourseDto;
 import com.piotrpabich.talktactics.user_course.dto.UserCourseQueryCriteria;
-import com.piotrpabich.talktactics.user_course.dto.req.UserCourseDeleteRequest;
-import com.piotrpabich.talktactics.user_course.dto.req.UserCourseAddRequest;
+import com.piotrpabich.talktactics.user_course.dto.UserCourseDeleteRequest;
+import com.piotrpabich.talktactics.user_course.dto.UserCourseAddRequest;
 import com.piotrpabich.talktactics.user_course.entity.UserCourse;
 import com.piotrpabich.talktactics.auth.AuthenticationService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,7 +20,7 @@ import static com.piotrpabich.talktactics.common.AppConst.API_V1;
 import static com.piotrpabich.talktactics.common.AppConst.USER_COURSES_PATH;
 
 @RestController
-@AllArgsConstructor
+@RequiredArgsConstructor
 @RequestMapping(API_V1 + USER_COURSES_PATH)
 @Tag(name = "UserCourseController", description = "User courses management APIs")
 public class UserCourseController {

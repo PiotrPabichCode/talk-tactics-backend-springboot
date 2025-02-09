@@ -23,10 +23,10 @@ import java.util.function.Function;
 @RequiredArgsConstructor
 @Slf4j
 public class TokenServiceImpl implements TokenService {
+
     private final UserDetailsService userDetailsService;
     private final TokenConfig tokenConfig;
 
-//  PUBLIC
     @Override
     public String extractUsername(String token) {
         return extractClaim(token, Claims::getSubject);
@@ -81,7 +81,6 @@ public class TokenServiceImpl implements TokenService {
         }
     }
 
-//  PRIVATE
     private String buildToken(
             Map<String, Object> extraClaims,
             UserDetails userDetails,

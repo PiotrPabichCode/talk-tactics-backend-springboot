@@ -1,4 +1,4 @@
-package com.piotrpabich.talktactics.user_course.dto.req;
+package com.piotrpabich.talktactics.user_course.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.NotNull;

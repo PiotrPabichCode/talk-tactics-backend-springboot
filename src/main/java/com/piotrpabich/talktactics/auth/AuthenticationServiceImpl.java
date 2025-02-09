@@ -1,9 +1,9 @@
 package com.piotrpabich.talktactics.auth;
 
-import com.piotrpabich.talktactics.auth.dto.req.AuthenticationRequest;
-import com.piotrpabich.talktactics.auth.dto.res.AuthenticationResponse;
-import com.piotrpabich.talktactics.auth.dto.req.RefreshTokenRequest;
-import com.piotrpabich.talktactics.auth.dto.req.RegisterRequest;
+import com.piotrpabich.talktactics.auth.dto.AuthenticationRequest;
+import com.piotrpabich.talktactics.auth.dto.AuthenticationResponse;
+import com.piotrpabich.talktactics.auth.dto.RefreshTokenRequest;
+import com.piotrpabich.talktactics.auth.dto.RegisterRequest;
 import com.piotrpabich.talktactics.auth.token.TokenService;
 import com.piotrpabich.talktactics.exception.BadRequestException;
 import com.piotrpabich.talktactics.exception.EntityNotFoundException;
@@ -27,11 +27,10 @@ public class AuthenticationServiceImpl implements AuthenticationService{
     private final TokenService tokenService;
     private final AuthenticationManager authenticationManager;
 
-//  PUBLIC
     @Override
-    public AuthenticationResponse register(RegisterRequest request) {
+    public AuthenticationResponse register(final RegisterRequest request) {
         validateNewUser(request);
-        var user = User.builder()
+        final var user = User.builder()
                 .username(request.username())
                 .password(passwordEncoder.encode(request.password()))
                 .email(request.email())
@@ -40,8 +39,8 @@ public class AuthenticationServiceImpl implements AuthenticationService{
                 .role(Role.USER)
                 .build();
         repository.save(user);
-        var jwtToken = tokenService.generateToken(user);
-        var jwtRefreshToken = tokenService.generateRefreshToken(user);
+        final var jwtToken = tokenService.generateToken(user);
+        final var jwtRefreshToken = tokenService.generateRefreshToken(user);
         return new AuthenticationResponse(
                 user.getId(),
                 user.getUsername(),
@@ -51,7 +50,7 @@ public class AuthenticationServiceImpl implements AuthenticationService{
         );
     }
     @Override
-    public AuthenticationResponse authenticate(AuthenticationRequest request) {
+    public AuthenticationResponse authenticate(final AuthenticationRequest request) {
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         request.username(),
@@ -93,16 +92,16 @@ public class AuthenticationServiceImpl implements AuthenticationService{
                 .orElseThrow(() -> new EntityNotFoundException(User.class, "username", username));
     }
 
-//  PRIVATE
-
     private String getTokenFromRequest(final HttpServletRequest request) {
         return request.getHeader("Authorization");
     }
-    private boolean isEmpty(String value) {
-    return value == null || value.isEmpty();
-}
-    private void validateNewUser(RegisterRequest request) {
-        if( isEmpty(request.username()) || isEmpty(request.password()) || isEmpty(request.repeatPassword())
+
+    private boolean isEmpty(final String value) {
+        return value == null || value.isEmpty();
+    }
+
+    private void validateNewUser(final RegisterRequest request) {
+        if(isEmpty(request.username()) || isEmpty(request.password()) || isEmpty(request.repeatPassword())
                 || isEmpty(request.email()) || isEmpty(request.firstName()) || isEmpty(request.lastName())) {
             throw new BadRequestException("Fields cannot be empty");
         }

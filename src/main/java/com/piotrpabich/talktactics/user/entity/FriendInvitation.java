@@ -3,18 +3,14 @@ package com.piotrpabich.talktactics.user.entity;
 import com.piotrpabich.talktactics.common.CommonEntity;
 import com.piotrpabich.talktactics.user.dto.FriendInvitationResponse;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import lombok.experimental.SuperBuilder;
 
 @Entity
 @Table(name = "friend_requests")
 @Getter
 @Setter
-@AllArgsConstructor
-@NoArgsConstructor
+@RequiredArgsConstructor
 @SuperBuilder(toBuilder = true)
 public class FriendInvitation extends CommonEntity {
     @ManyToOne

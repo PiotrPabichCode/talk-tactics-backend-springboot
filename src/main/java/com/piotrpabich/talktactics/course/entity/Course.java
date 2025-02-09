@@ -16,8 +16,7 @@ import java.util.List;
 @Entity
 @Getter
 @Setter
-@AllArgsConstructor
-@NoArgsConstructor
+@RequiredArgsConstructor
 @SuperBuilder(toBuilder = true)
 @Table(name = "courses")
 @EntityListeners(CourseEntityListeners.class)

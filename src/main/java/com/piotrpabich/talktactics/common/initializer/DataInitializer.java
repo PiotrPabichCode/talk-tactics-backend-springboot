@@ -68,7 +68,6 @@ public class DataInitializer implements ApplicationRunner {
 //        log.info("Data initialized successfully! | Took: {} seconds | {}", duration.toMillis() / 1000.0, end);
     }
 
-    // PRIVATE
     private void initData() {
         initUsers();
         initCourses();

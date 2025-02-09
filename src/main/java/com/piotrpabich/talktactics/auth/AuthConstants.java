@@ -11,7 +11,6 @@ public class AuthConstants {
     public static final String DUPLICATED_PASSWORD_EXCEPTION = "New password must be different than the old one";
     public static final String ALL_FIELDS_REQUIRED = "All fields required";
 
-    //    JWT
     public static final String JWT_INVALID_EXCEPTION = "The JWT token has expired";
     public static final String JWT_EXPIRED_EXCEPTION = "The JWT token has expired";
     public static final String JWT_UNSUPPORTED_EXCEPTION = "The JWT token is not supported";

@@ -14,8 +14,7 @@ import lombok.experimental.SuperBuilder;
 @Table(name = "user_course_items")
 @Getter
 @Setter
-@AllArgsConstructor
-@NoArgsConstructor
+@RequiredArgsConstructor
 @SuperBuilder(toBuilder = true)
 @EntityListeners(UserCourseItemListeners.class)
 public class UserCourseItem extends CommonEntity {

@@ -18,8 +18,7 @@ import java.util.List;
 @Table(name = "course_items")
 @Getter
 @Setter
-@AllArgsConstructor
-@NoArgsConstructor
+@RequiredArgsConstructor
 @SuperBuilder(toBuilder = true)
 public class CourseItem extends CommonEntity {
     private String word;
