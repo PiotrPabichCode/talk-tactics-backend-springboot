@@ -14,7 +14,7 @@ import java.util.Set;
 public interface CourseService {
     PageResult<CourseDto> queryAll(CourseQueryCriteria criteria, Pageable pageable);
     List<CourseNavbarDto> getNavbarList();
-    Course getById(long id);
+    Course getById(Long id);
     void create(Course course, User requester);
     void update(Course resources, User requester);
     void delete(Set<Long> ids, User requester);

@@ -6,7 +6,6 @@ import com.piotrpabich.talktactics.course.dto.CourseNavbarDto;
 import com.piotrpabich.talktactics.course.dto.CourseQueryCriteria;
 import com.piotrpabich.talktactics.course.entity.Course;
 import com.piotrpabich.talktactics.auth.AuthenticationService;
-import com.piotrpabich.talktactics.user.entity.User;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -25,15 +24,15 @@ import static com.piotrpabich.talktactics.common.AppConst.COURSES_PATH;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping(API_V1 + COURSES_PATH)
-@Tag(name = "Courses", description = "Courses management APIs")
+@Tag(name = "CourseController", description = "Courses management APIs")
 public class CourseController {
     private final CourseService courseService;
     private final AuthenticationService authenticationService;
 
     @GetMapping("/all")
     public ResponseEntity<PageResult<CourseDto>> queryCourses(
-            CourseQueryCriteria criteria,
-            Pageable pageable
+            final CourseQueryCriteria criteria,
+            final Pageable pageable
     ) {
         return ResponseEntity.ok(courseService.queryAll(criteria, pageable));
     }
@@ -44,30 +43,30 @@ public class CourseController {
     }
 
     @PostMapping
-    public ResponseEntity<Object> createCourse(
-            @Validated @RequestBody Course course,
-            HttpServletRequest request
+    public ResponseEntity<Void> createCourse(
+            @Validated @RequestBody final Course course,
+            final HttpServletRequest request
     ) {
-        User requester = authenticationService.getUserFromRequest(request);
+        final var requester = authenticationService.getUserFromRequest(request);
         courseService.create(course, requester);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
     @PutMapping
-    public ResponseEntity<Object> updateCourse(
-            @RequestBody Course resources,
-            HttpServletRequest request
+    public ResponseEntity<Void> updateCourse(
+            @RequestBody final Course resources,
+            final HttpServletRequest request
     ) {
-        User requester = authenticationService.getUserFromRequest(request);
+        final var requester = authenticationService.getUserFromRequest(request);
         courseService.update(resources, requester);
         return ResponseEntity.noContent().build();
     }
 
     @DeleteMapping
-    public ResponseEntity<Object> deleteCourses(
-            @RequestBody Set<Long> ids,
-            HttpServletRequest request
+    public ResponseEntity<Void> deleteCourses(
+            @RequestBody final Set<Long> ids,
+            final HttpServletRequest request
     ) {
-        User requester = authenticationService.getUserFromRequest(request);
+        final var requester = authenticationService.getUserFromRequest(request);
         courseService.delete(ids, requester);
         return ResponseEntity.ok().build();
     }

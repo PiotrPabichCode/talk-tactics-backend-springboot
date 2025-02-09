@@ -1,35 +1,20 @@
 package com.piotrpabich.talktactics.course.entity;
 
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+
 import java.util.HashMap;
 import java.util.Map;
 
+@Getter
+@RequiredArgsConstructor
 public enum CourseLevel {
-    BEGINNER((short) 0),
-    INTERMEDIATE((short) 1),
-    ADVANCED((short) 2);
+    BEGINNER(0),
+    INTERMEDIATE(1),
+    ADVANCED(2);
 
-    private final short value;
-    private static final Map<Short, CourseLevel> map = new HashMap<>();
-
-    static {
-        for (CourseLevel level : CourseLevel.values()) {
-            map.put(level.value, level);
-        }
-    }
-
-    CourseLevel(short value) {
-        this.value = value;
-    }
-
-    public short getValue() {
-        return value;
-    }
-
-    public static CourseLevel fromShort(short value) {
-        return map.get(value);
-    }
-
-    public static CourseLevel fromString(String value) {
+    private final int value;
+    public static CourseLevel fromString(final String value) {
         return switch (value) {
             case "BEGINNER" -> BEGINNER;
             case "INTERMEDIATE" -> INTERMEDIATE;

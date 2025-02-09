@@ -2,7 +2,6 @@ package com.piotrpabich.talktactics.common;
 
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.ObjectUtil;
-import com.piotrpabich.talktactics.common.Query;
 import jakarta.persistence.criteria.*;
 import lombok.extern.slf4j.Slf4j;
 import java.lang.reflect.Field;

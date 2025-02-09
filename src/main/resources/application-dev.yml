@@ -3,9 +3,7 @@ spring:
     url: jdbc:postgresql://localhost:6599/talk_tactics
     username: postgres
     password: admin
-    driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:
-      ddl-auto: validate
       format_sql: true
     show-sql: true

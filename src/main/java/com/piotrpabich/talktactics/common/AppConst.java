@@ -8,5 +8,4 @@ public class AppConst {
     public static final String USERS_PATH = "/users";
     public static final String USER_COURSES_PATH = "/user-courses";
     public static final String USER_COURSE_ITEMS_PATH = "/user-course-items";
-
 }

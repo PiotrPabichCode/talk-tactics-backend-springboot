@@ -17,11 +17,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.piotrpabich.talktactics.user_course.UserCourseRepository;
 import com.piotrpabich.talktactics.user_course.entity.UserCourse;
 import com.piotrpabich.talktactics.user_course_item.entity.UserCourseItem;
-import com.piotrpabich.talktactics.user_course_item.UserCourseItemRepository;
 import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.datafaker.Faker;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -36,22 +35,15 @@ import java.util.*;
 @Component
 @Transactional
 @Slf4j
+@RequiredArgsConstructor
 public class DataInitializer implements ApplicationRunner {
 
-    @Autowired
-    private CourseRepository courseRepository;
-    @Autowired
-    private UserRepository userRepository;
-    @Autowired
-    private MeaningRepository meaningRepository;
-    @Autowired
-    private CourseItemRepository courseItemRepository;
-    @Autowired
-    private UserCourseRepository userCourseRepository;
-    @Autowired
-    private UserCourseItemRepository userCourseItemRepository;
-    @Autowired
-    private PasswordEncoder passwordEncoder;
+    private final CourseRepository courseRepository;
+    private final UserRepository userRepository;
+    private final MeaningRepository meaningRepository;
+    private final CourseItemRepository courseItemRepository;
+    private final UserCourseRepository userCourseRepository;
+    private final PasswordEncoder passwordEncoder;
     private final Faker faker = new Faker();
     private final Random random = new Random();
 
@@ -68,12 +60,12 @@ public class DataInitializer implements ApplicationRunner {
         Instant start = Instant.now();
         log.info("Initializing data... | {}", start);
 
-        initData();
-        Instant end = Instant.now();
+//        initData();
+//        Instant end = Instant.now();
+//
+//        Duration duration = Duration.between(start, end);
 
-        Duration duration = Duration.between(start, end);
-
-        log.info("Data initialized successfully! | Took: {} seconds | {}", duration.toMillis() / 1000.0, end);
+//        log.info("Data initialized successfully! | Took: {} seconds | {}", duration.toMillis() / 1000.0, end);
     }
 
     // PRIVATE

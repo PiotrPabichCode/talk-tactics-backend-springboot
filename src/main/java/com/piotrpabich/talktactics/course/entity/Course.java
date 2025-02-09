@@ -1,7 +1,5 @@
 package com.piotrpabich.talktactics.course.entity;
 
-import cn.hutool.core.bean.BeanUtil;
-import cn.hutool.core.bean.copier.CopyOptions;
 import com.piotrpabich.talktactics.common.CommonEntity;
 import com.piotrpabich.talktactics.course.CourseConstants;
 import com.piotrpabich.talktactics.course_item.entity.CourseItem;
@@ -52,9 +50,5 @@ public class Course extends CommonEntity {
             case INTERMEDIATE -> CourseConstants.INTERMEDIATE_COMPLETED_POINTS;
             case ADVANCED -> CourseConstants.ADVANCED_COMPLETED_POINTS;
         };
-    }
-
-    public void copy(Course source){
-        BeanUtil.copyProperties(source,this, CopyOptions.create().setIgnoreNullValue(true));
     }
 }

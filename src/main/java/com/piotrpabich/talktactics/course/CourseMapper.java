@@ -6,7 +6,7 @@ import com.piotrpabich.talktactics.course.entity.Course;
 import org.mapstruct.Mapper;
 import org.mapstruct.ReportingPolicy;
 
-@Mapper(componentModel = "spring",uses = {},unmappedTargetPolicy = ReportingPolicy.IGNORE)
+@Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface CourseMapper extends BaseMapper<CourseDto, Course> {
 
 }

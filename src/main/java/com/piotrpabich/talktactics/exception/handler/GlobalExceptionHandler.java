@@ -2,7 +2,6 @@ package com.piotrpabich.talktactics.exception.handler;
 
 import com.piotrpabich.talktactics.exception.EntityExistsException;
 import com.piotrpabich.talktactics.exception.EntityNotFoundException;
-import com.piotrpabich.talktactics.common.util.ThrowableUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,28 +17,28 @@ import static org.springframework.http.HttpStatus.NOT_FOUND;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler(value = Throwable.class)
-    public ResponseEntity<ApiError> handleException(Throwable e){
-        log.error(ThrowableUtil.getStackTrace(e));
+    @ExceptionHandler(value = Exception.class)
+    public ResponseEntity<ApiError> handleException(final Exception e){
+        log.error(e.getMessage(), e);
         return buildResponseEntity(ApiError.error(e.getMessage()));
     }
 
     @ExceptionHandler(value = EntityNotFoundException.class)
-    public ResponseEntity<ApiError> handleEntityNotFoundException(EntityNotFoundException e) {
-        log.error(ThrowableUtil.getStackTrace(e));
+    public ResponseEntity<ApiError> handleEntityNotFoundException(final EntityNotFoundException e) {
+        log.error(e.getMessage(), e);
         return buildResponseEntity(ApiError.error(NOT_FOUND.value(),e.getMessage()));
     }
 
     @ExceptionHandler(value = EntityExistsException.class)
-    public ResponseEntity<ApiError> entityExistException(EntityExistsException e) {
-        log.error(ThrowableUtil.getStackTrace(e));
+    public ResponseEntity<ApiError> entityExistException(final EntityExistsException e) {
+        log.error(e.getMessage(), e);
         return buildResponseEntity(ApiError.error(e.getMessage()));
     }
 
     @ExceptionHandler(value = MethodArgumentNotValidException.class)
-    public ResponseEntity<ApiError> handleMethodArgumentNotValidException(MethodArgumentNotValidException e){
-        log.error(ThrowableUtil.getStackTrace(e));
-        ObjectError objectError = e.getBindingResult().getAllErrors().get(0);
+    public ResponseEntity<ApiError> handleMethodArgumentNotValidException(final MethodArgumentNotValidException e){
+        log.error(e.getMessage(), e);
+        ObjectError objectError = e.getBindingResult().getAllErrors().getFirst();
         String message = objectError.getDefaultMessage();
         if (objectError instanceof FieldError) {
             message = ((FieldError) objectError).getField() + ": " + message;

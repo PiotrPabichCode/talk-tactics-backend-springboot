@@ -8,7 +8,7 @@ public record CourseNavbarDto(
         String level,
         Integer quantity
 ) {
-    public static CourseNavbarDto fromTuple(Tuple tuple) {
+    public static CourseNavbarDto fromTuple(final Tuple tuple) {
         return new CourseNavbarDto(
                 tuple.get("id", Long.class),
                 tuple.get("title", String.class),

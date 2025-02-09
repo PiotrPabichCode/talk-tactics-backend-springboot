@@ -10,7 +10,6 @@ import java.util.List;
 
 
 public interface CourseRepository extends JpaRepository<Course, Long>, JpaSpecificationExecutor<Course> {
-    Course findByTitle(String title);
     @Query(nativeQuery = true, value = "SELECT id, title, level, quantity " +
             "FROM (SELECT *, ROW_NUMBER() OVER (PARTITION BY level ORDER BY random()) AS row_num " +
             "FROM courses) AS RankedCourses " +
