@@ -14,7 +14,7 @@ public record CourseItemDto(
         CourseLevel level
 ) {
 
-    public static CourseItemDto toDto(CourseItem courseItem) {
+    public static CourseItemDto toDto(final CourseItem courseItem) {
         return new CourseItemDto(
                 courseItem.getId(),
                 courseItem.getWord(),

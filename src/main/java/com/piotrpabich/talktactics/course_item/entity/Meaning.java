@@ -4,7 +4,6 @@ import com.piotrpabich.talktactics.common.CommonEntity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.piotrpabich.talktactics.course.entity.Course;
-import com.piotrpabich.talktactics.course_item.entity.CourseItem;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
@@ -17,9 +16,7 @@ import lombok.experimental.SuperBuilder;
 @NoArgsConstructor
 @SuperBuilder(toBuilder = true)
 public class Meaning extends CommonEntity {
-    @Column(length = 800)
     private String definition;
-    @Column(length = 800)
     private String example;
 
     @JsonIgnoreProperties("meanings")

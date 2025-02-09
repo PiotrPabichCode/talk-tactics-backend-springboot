@@ -8,7 +8,6 @@ import com.piotrpabich.talktactics.user_course_item.entity.UserCourseItem;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
@@ -27,7 +26,6 @@ public class CourseItem extends CommonEntity {
     private String phonetic;
     @JsonProperty("part_of_speech")
     private String partOfSpeech;
-    @Nullable
     private String audio;
     @Enumerated(EnumType.STRING)
     private CourseLevel level;

@@ -6,13 +6,11 @@ import com.piotrpabich.talktactics.course_item.dto.CourseItemDto;
 import com.piotrpabich.talktactics.course_item.entity.CourseItem;
 import com.piotrpabich.talktactics.user.entity.User;
 import com.piotrpabich.talktactics.auth.AuthUtil;
-import com.piotrpabich.talktactics.common.util.PageUtil;
-import com.piotrpabich.talktactics.common.QueryHelp;
-import jakarta.persistence.criteria.Predicate;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,39 +18,47 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
+import static com.piotrpabich.talktactics.common.QueryHelp.getPredicate;
+import static com.piotrpabich.talktactics.common.util.PageUtil.toPage;
+
 @Service
 @Slf4j
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class CourseItemServiceImpl implements CourseItemService {
+
     private final CourseItemRepository courseItemRepository;
 
-//  PUBLIC
     @Override
-    public PageResult<CourseItemDto> queryAll(CourseItemQueryCriteria criteria, Pageable pageable) {
-        Page<CourseItem> page = courseItemRepository.findAll((root, criteriaQuery, criteriaBuilder) -> {
-            Predicate filters = QueryHelp.getPredicate(root, criteria, criteriaBuilder);
-            return criteriaBuilder.and(
-                    filters,
-                    criteriaBuilder.equal(root.get("course").get("id"), criteria.getCourseId()));
-        }, pageable);
+    public PageResult<CourseItemDto> queryAll(
+            final CourseItemQueryCriteria criteria,
+            final Pageable pageable
+    ) {
+        final var page = courseItemRepository.findAll(getCourseItemSpecification(criteria), pageable);
         return generatePageResult(page);
     }
     @Override
-    @Transactional(rollbackFor = Exception.class)
-    public void delete(Set<Long> ids, User requester) {
+    @Transactional
+    public void delete(final Set<Long> ids, final User requester) {
         AuthUtil.validateIfUserAdmin(requester);
-        for(Long id: ids) {
-            courseItemRepository.deleteById(id);
-        }
+        courseItemRepository.deleteAllById(ids);
     }
 
-//  PRIVATE
-    private PageResult<CourseItemDto> generatePageResult(Page<CourseItem> page) {
+    private Specification<CourseItem> getCourseItemSpecification(
+            final CourseItemQueryCriteria criteria
+    ) {
+        return (root, criteriaQuery, criteriaBuilder) ->
+                criteriaBuilder.and(
+                        getPredicate(root, criteria, criteriaBuilder),
+                        criteriaBuilder.equal(root.get("course").get("id"), criteria.getCourseId())
+                );
+    }
+
+    private PageResult<CourseItemDto> generatePageResult(final Page<CourseItem> page) {
         Map<String, String> contentMeta = new HashMap<>();
-        if(page.getContent().size() > 0) {
-            CourseItem item = page.getContent().get(0);
+        if(!page.getContent().isEmpty()) {
+            CourseItem item = page.getContent().getFirst();
             contentMeta.put("title", item.getCourse().getTitle());
         }
-        return PageUtil.toPage(page.map(CourseItemDto::toDto), contentMeta);
+        return toPage(page.map(CourseItemDto::toDto), contentMeta);
     }
 }

@@ -1,18 +1,14 @@
 package com.piotrpabich.talktactics.exception;
 
-import org.springframework.http.HttpStatus;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.web.bind.annotation.ResponseStatus;
 
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 
+@Slf4j
+@ResponseStatus(BAD_REQUEST)
 public class BadRequestException extends RuntimeException {
-    private Integer status = BAD_REQUEST.value();
-
-    public BadRequestException(String msg){
+    public BadRequestException(final String msg) {
         super(msg);
-    }
-
-    public BadRequestException(HttpStatus status, String msg){
-        super(msg);
-        this.status = status.value();
     }
 }

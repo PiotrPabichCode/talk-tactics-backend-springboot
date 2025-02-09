@@ -4,11 +4,11 @@ import org.springframework.data.domain.Sort;
 
 public class SortUtil {
 
-    public static String getSortProperty(Sort sort) {
+    public static String getSortProperty(final Sort sort) {
         return sort.stream().findFirst().map(Sort.Order::getProperty).orElse(null);
     }
 
-    public static Sort.Direction getSortDirection(Sort sort) {
+    public static Sort.Direction getSortDirection(final Sort sort) {
         return sort.stream().findFirst().map(Sort.Order::getDirection).orElse(null);
     }
 

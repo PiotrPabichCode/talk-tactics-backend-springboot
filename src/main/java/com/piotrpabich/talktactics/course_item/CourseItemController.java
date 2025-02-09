@@ -3,7 +3,6 @@ package com.piotrpabich.talktactics.course_item;
 import com.piotrpabich.talktactics.common.PageResult;
 import com.piotrpabich.talktactics.course_item.dto.CourseItemDto;
 import com.piotrpabich.talktactics.course_item.dto.CourseItemQueryCriteria;
-import com.piotrpabich.talktactics.user.entity.User;
 import com.piotrpabich.talktactics.auth.AuthenticationService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
@@ -25,20 +24,21 @@ import static com.piotrpabich.talktactics.common.AppConst.COURSE_ITEMS_PATH;
 public class CourseItemController {
     private final CourseItemService courseItemService;
     private final AuthenticationService authenticationService;
+
     @GetMapping("/all")
     public ResponseEntity<PageResult<CourseItemDto>> queryCourseItems(
-            @Valid CourseItemQueryCriteria criteria,
-            Pageable pageable
+            @Valid final CourseItemQueryCriteria criteria,
+            final Pageable pageable
     ) {
         return ResponseEntity.ok(courseItemService.queryAll(criteria, pageable));
     }
 
     @DeleteMapping
-    public ResponseEntity<Object> deleteCourseItems(
-            @RequestBody Set<Long> ids,
+    public ResponseEntity<Void> deleteCourseItems(
+            @RequestBody final Set<Long> ids,
             final HttpServletRequest request
     ) {
-        User requester = authenticationService.getUserFromRequest(request);
+        final var requester = authenticationService.getUserFromRequest(request);
         courseItemService.delete(ids, requester);
         return ResponseEntity.ok().build();
     }

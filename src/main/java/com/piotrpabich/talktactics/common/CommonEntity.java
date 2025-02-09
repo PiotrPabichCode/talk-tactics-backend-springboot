@@ -7,7 +7,6 @@ import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
-import java.io.Serializable;
 import java.util.Date;
 
 @MappedSuperclass
@@ -16,7 +15,7 @@ import java.util.Date;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public abstract class CommonEntity implements Serializable {
+public abstract class CommonEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

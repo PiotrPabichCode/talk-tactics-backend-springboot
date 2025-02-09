@@ -1,6 +1,6 @@
 package com.piotrpabich.talktactics.exception;
 
-import org.springframework.util.StringUtils;
+import static org.springframework.util.StringUtils.capitalize;
 
 public class EntityExistsException extends RuntimeException {
 
@@ -9,7 +9,6 @@ public class EntityExistsException extends RuntimeException {
     }
 
     private static String buildMessage(String entity, String field, String val) {
-        return StringUtils.capitalize(entity)
-                + " with " + field + " "+ val + " exists";
+        return capitalize(entity) + " with " + field + " " + val + " exists";
     }
 }
