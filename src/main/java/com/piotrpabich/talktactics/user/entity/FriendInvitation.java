@@ -1,7 +1,7 @@
 package com.piotrpabich.talktactics.user.entity;
 
 import com.piotrpabich.talktactics.common.CommonEntity;
-import com.piotrpabich.talktactics.user.dto.res.FriendInvitationDto;
+import com.piotrpabich.talktactics.user.dto.FriendInvitationResponse;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -25,16 +25,16 @@ public class FriendInvitation extends CommonEntity {
     @JoinColumn(name = "receiver_id")
     private User receiver;
 
-    public FriendInvitationDto toFriendInvitationDto(Boolean withDetails) {
+    public FriendInvitationResponse toFriendInvitationDto(Boolean withDetails) {
         if(withDetails == null || !withDetails) {
-            return new FriendInvitationDto(
+            return new FriendInvitationResponse(
                     sender.getId(),
                     receiver.getId(),
                     null,
                     null
             );
         }
-        return new FriendInvitationDto(
+        return new FriendInvitationResponse(
                 sender.getId(),
                 receiver.getId(),
                 sender.toUserProfilePreviewDto(),

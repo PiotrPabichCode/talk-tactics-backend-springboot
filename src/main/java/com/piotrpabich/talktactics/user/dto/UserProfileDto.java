@@ -16,7 +16,10 @@ public record UserProfileDto(
         String bio,
         List<UserCourseDto> courses
 ){
-    public static UserProfileDto toUserProfileDto(UserProfilePreviewDto userProfile, List<UserCourseDto> userCourses) {
+    public static UserProfileDto toUserProfileDto(
+            final UserProfilePreviewDto userProfile,
+            final List<UserCourseDto> userCourses
+    ) {
         return new UserProfileDto(
                 userProfile.id(),
                 userProfile.firstName(),

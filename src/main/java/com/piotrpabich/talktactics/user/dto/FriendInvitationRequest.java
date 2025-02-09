@@ -1,6 +1,5 @@
-package com.piotrpabich.talktactics.user.dto.req;
+package com.piotrpabich.talktactics.user.dto;
 
-import com.piotrpabich.talktactics.user.dto.FriendInvitationAction;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public record FriendInvitationRequest(

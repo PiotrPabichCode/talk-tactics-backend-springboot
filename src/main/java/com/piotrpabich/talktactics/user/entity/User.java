@@ -35,15 +35,12 @@ public class User extends CommonEntity implements UserDetails {
     private String password;
 
     @JsonProperty("first_name")
-    @NotBlank(message = "Cannot be blank")
     private String firstName;
 
-    @NotBlank(message = "Cannot be blank")
     @JsonProperty("last_name")
     private String lastName;
 
     @Email(message = "Invalid email address", regexp = "^[a-zA-Z0-9_!#$%&'*+/=?`{|}~^.-]+@[a-zA-Z0-9.-]+$")
-    @NotBlank(message = "Cannot be blank")
     @Column(unique = true)
     private String email;
 

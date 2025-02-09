@@ -67,7 +67,6 @@ public class UserProfileBioGenerator {
         List<String> selectedSentences = new ArrayList<>();
         Random random = new Random();
 
-        // Ensure we select unique sentences
         while (selectedSentences.size() < count) {
             String randomSentence = SENTENCES[random.nextInt(SENTENCES.length)];
             if (!selectedSentences.contains(randomSentence)) {

@@ -1,9 +1,9 @@
-package com.piotrpabich.talktactics.user.dto.req;
+package com.piotrpabich.talktactics.user.dto;
 
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public record UpdatePasswordReqDto(
+public record UpdatePasswordRequest(
         @JsonProperty("id")
         Long id,
         @JsonProperty("old_password")
