@@ -21,6 +21,7 @@ import java.util.List;
 @SuperBuilder(toBuilder = true)
 @EntityListeners(UserCourseEntityListeners.class)
 public class UserCourse extends CommonEntity {
+
     private double progress;
     @JsonProperty("is_completed")
     private boolean completed;
@@ -33,7 +34,6 @@ public class UserCourse extends CommonEntity {
     @ManyToOne
     @JoinColumn(name = "course_id")
     private Course course;
-
 
     @JsonIgnore
     @OneToMany(mappedBy = "userCourse",

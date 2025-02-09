@@ -18,7 +18,7 @@ import static com.piotrpabich.talktactics.common.AppConst.USER_COURSE_ITEMS_PATH
 @RestController
 @RequiredArgsConstructor
 @RequestMapping(API_V1 + USER_COURSE_ITEMS_PATH)
-@Tag(name = "User course items", description = "User course items management APIs")
+@Tag(name = "UserCourseItemController", description = "User course items management APIs")
 public class UserCourseItemController {
 
     private final UserCourseItemFacade userCourseItemFacade;

@@ -11,7 +11,7 @@ public record UserCourseDto(
         Integer points,
         CourseDto course
 ) {
-    public static UserCourseDto from(UserCourse userCourse) {
+    public static UserCourseDto from(final UserCourse userCourse) {
         return new UserCourseDto(
                 userCourse.getId(),
                 userCourse.getProgress(),
@@ -21,23 +21,13 @@ public record UserCourseDto(
         );
     }
 
-    public static UserCourseDto from(Course course) {
+    public static UserCourseDto from(final Course course) {
         return new UserCourseDto(
                 null,
                 0.0,
                 false,
                 0,
                 CourseDto.from(course)
-        );
-    }
-
-    public static UserCourseDto from(CourseDto course) {
-        return new UserCourseDto(
-                null,
-                0.0,
-                false,
-                0,
-                course
         );
     }
 }

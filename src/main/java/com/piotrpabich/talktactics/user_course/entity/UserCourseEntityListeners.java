@@ -14,15 +14,13 @@ public class UserCourseEntityListeners {
     private ObjectFactory<UserRepository> userRepositoryProvider;
 
     @PostUpdate
-    public void afterUpdate(UserCourse userCourse) {
-        User user = userCourse.getUser();
+    public void afterUpdate(final UserCourse userCourse) {
+        final var user = userCourse.getUser();
         updateUserTotalPoints(user);
-
-        UserRepository userRepository = this.userRepositoryProvider.getObject();
-        userRepository.save(user);
+        this.userRepositoryProvider.getObject().save(user);
     }
 
-    private void updateUserTotalPoints(User user) {
+    private void updateUserTotalPoints(final User user) {
         final var totalPoints = user.getUserCourses().stream()
                 .mapToInt(UserCourse::getPoints)
                 .sum();
