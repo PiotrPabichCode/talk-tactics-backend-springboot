@@ -60,12 +60,12 @@ public class DataInitializer implements ApplicationRunner {
         Instant start = Instant.now();
         log.info("Initializing data... | {}", start);
 
-//        initData();
-//        Instant end = Instant.now();
-//
-//        Duration duration = Duration.between(start, end);
+        initData();
+        Instant end = Instant.now();
 
-//        log.info("Data initialized successfully! | Took: {} seconds | {}", duration.toMillis() / 1000.0, end);
+        Duration duration = Duration.between(start, end);
+
+        log.info("Data initialized successfully! | Took: {} seconds | {}", duration.toMillis() / 1000.0, end);
     }
 
     private void initData() {

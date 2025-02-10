@@ -93,7 +93,7 @@ public class AuthenticationServiceImpl implements AuthenticationService{
     }
 
     private String getTokenFromRequest(final HttpServletRequest request) {
-        return request.getHeader("Authorization");
+        return request.getHeader("Authorization").substring(7);
     }
 
     private boolean isEmpty(final String value) {

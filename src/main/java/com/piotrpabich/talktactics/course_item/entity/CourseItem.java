@@ -21,11 +21,16 @@ import java.util.List;
 @RequiredArgsConstructor
 @SuperBuilder(toBuilder = true)
 public class CourseItem extends CommonEntity {
+
     private String word;
+
     private String phonetic;
+
     @JsonProperty("part_of_speech")
     private String partOfSpeech;
+
     private String audio;
+
     @Enumerated(EnumType.STRING)
     private CourseLevel level;
 

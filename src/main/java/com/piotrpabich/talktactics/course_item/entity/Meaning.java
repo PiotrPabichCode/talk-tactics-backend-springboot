@@ -16,7 +16,10 @@ import lombok.experimental.SuperBuilder;
 @SuperBuilder(toBuilder = true)
 public class Meaning extends CommonEntity {
 
+    @Column(length = 800)
     private String definition;
+
+    @Column(length = 800)
     private String example;
 
     @JsonIgnoreProperties("meanings")

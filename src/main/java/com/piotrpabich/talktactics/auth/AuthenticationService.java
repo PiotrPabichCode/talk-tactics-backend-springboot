@@ -11,5 +11,5 @@ public interface AuthenticationService {
     AuthenticationResponse register(RegisterRequest request);
     AuthenticationResponse authenticate(AuthenticationRequest request);
     AuthenticationResponse reauthenticate(RefreshTokenRequest request);
-    User getUserFromRequest(final HttpServletRequest request);
+    User getUserFromRequest(HttpServletRequest request);
 }

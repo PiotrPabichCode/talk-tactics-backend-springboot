@@ -21,11 +21,12 @@ import java.util.List;
 @Table(name = "courses")
 @EntityListeners(CourseEntityListeners.class)
 public class Course extends CommonEntity {
-    @NotBlank(message = "Cannot be blank")
+
     private String title;
+
     @Column(length = 800)
     private String description;
-    @NotNull
+
     @Enumerated(EnumType.STRING)
     private CourseLevel level;
 

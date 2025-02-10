@@ -78,7 +78,6 @@ public class SecurityConfig {
                         .requestMatchers("/api/v1/user-courses/all").hasAnyAuthority(AuthConstants.USER, AuthConstants.ADMIN)
                         .requestMatchers("/api/v1/user-courses/all-with-courses").hasAnyAuthority(AuthConstants.USER, AuthConstants.ADMIN)
                         .requestMatchers("/api/v1/user-courses/id/{id}").hasAnyAuthority(AuthConstants.USER, AuthConstants.ADMIN)
-                        .requestMatchers("/api/v1/user-courses/user-id/{id}").hasAnyAuthority(AuthConstants.USER, AuthConstants.ADMIN)
                         .requestMatchers("/api/v1/user-courses").hasAnyAuthority(AuthConstants.USER, AuthConstants.ADMIN)
                         .requestMatchers("/api/v1/user-course-items/all").hasAnyAuthority(AuthConstants.USER, AuthConstants.ADMIN)
                         .requestMatchers("/api/v1/user-course-items/learn/id/{id}").hasAnyAuthority(AuthConstants.USER, AuthConstants.ADMIN)

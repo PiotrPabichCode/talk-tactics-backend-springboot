@@ -47,7 +47,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             return;
         }
         jwt = authHeader.substring(7);
-        if(SecurityContextHolder.getContext().getAuthentication() == null) {
+         if(SecurityContextHolder.getContext().getAuthentication() == null) {
             Optional<UserDetails> userDetails = tokenService.validateToken(jwt);
             if(userDetails.isEmpty()) {
                 response.sendError(HttpStatus.UNAUTHORIZED.value(), AuthConstants.JWT_INVALID_EXCEPTION);

@@ -5,7 +5,6 @@ import com.piotrpabich.talktactics.course_item.dto.CourseItemQueryCriteria;
 import com.piotrpabich.talktactics.course_item.dto.CourseItemDto;
 import com.piotrpabich.talktactics.course_item.entity.CourseItem;
 import com.piotrpabich.talktactics.user.entity.User;
-import com.piotrpabich.talktactics.auth.AuthUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -18,6 +17,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
+import static com.piotrpabich.talktactics.auth.AuthUtil.validateIfUserAdmin;
 import static com.piotrpabich.talktactics.common.QueryHelp.getPredicate;
 import static com.piotrpabich.talktactics.common.util.PageUtil.toPage;
 
@@ -39,7 +39,7 @@ public class CourseItemServiceImpl implements CourseItemService {
     @Override
     @Transactional
     public void delete(final Set<Long> ids, final User requester) {
-        AuthUtil.validateIfUserAdmin(requester);
+        validateIfUserAdmin(requester);
         courseItemRepository.deleteAllById(ids);
     }
 
