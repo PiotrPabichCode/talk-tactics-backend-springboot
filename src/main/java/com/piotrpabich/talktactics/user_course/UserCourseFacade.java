@@ -1,6 +1,5 @@
 package com.piotrpabich.talktactics.user_course;
 
-import com.piotrpabich.talktactics.common.PageResult;
 import com.piotrpabich.talktactics.user_course.dto.UserCourseDto;
 import com.piotrpabich.talktactics.user_course.dto.UserCourseQueryCriteria;
 import com.piotrpabich.talktactics.user_course.dto.UserCourseAddRequest;
@@ -11,6 +10,7 @@ import com.piotrpabich.talktactics.user.UserService;
 import com.piotrpabich.talktactics.user_course.entity.UserCourse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,7 +26,7 @@ public class UserCourseFacade {
     private final UserService userService;
     private final CourseService courseService;
 
-    public PageResult<UserCourseDto> queryAll(
+    public Page<UserCourseDto> queryAll(
             final UserCourseQueryCriteria criteria,
             final Pageable pageable,
             final User requester

@@ -1,6 +1,5 @@
 package com.piotrpabich.talktactics.user;
 
-import com.piotrpabich.talktactics.common.PageResult;
 import com.piotrpabich.talktactics.user.dto.UserDto;
 import com.piotrpabich.talktactics.user.dto.UserProfileDto;
 import com.piotrpabich.talktactics.user.dto.UserProfilePreviewDto;
@@ -14,6 +13,7 @@ import com.piotrpabich.talktactics.user.entity.User;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -33,8 +33,8 @@ public class UserController {
     private final UserService userService;
     private final AuthenticationService authenticationService;
 
-    @GetMapping("/all")
-    public ResponseEntity<PageResult<UserDto>> queryUsers(
+    @GetMapping
+    public ResponseEntity<Page<UserDto>> queryUsers(
             final UserQueryCriteria criteria,
             final Pageable pageable
     ) {

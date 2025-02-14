@@ -1,6 +1,5 @@
 package com.piotrpabich.talktactics.user_course_item;
 
-import com.piotrpabich.talktactics.common.PageResult;
 import com.piotrpabich.talktactics.user_course_item.dto.UserCourseItemQueryCriteria;
 import com.piotrpabich.talktactics.user_course_item.dto.UserCourseItemDto;
 import com.piotrpabich.talktactics.auth.AuthenticationService;
@@ -8,6 +7,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -24,8 +24,8 @@ public class UserCourseItemController {
     private final UserCourseItemFacade userCourseItemFacade;
     private final AuthenticationService authenticationService;
 
-    @GetMapping("/all")
-    public ResponseEntity<PageResult<UserCourseItemDto>> queryUserCourseItems(
+    @GetMapping
+    public ResponseEntity<Page<UserCourseItemDto>> queryUserCourseItems(
             @Valid final UserCourseItemQueryCriteria criteria,
             final Pageable pageable,
             final HttpServletRequest request

@@ -1,6 +1,5 @@
 package com.piotrpabich.talktactics.course;
 
-import com.piotrpabich.talktactics.common.PageResult;
 import com.piotrpabich.talktactics.course.dto.CourseDto;
 import com.piotrpabich.talktactics.course.dto.CourseNavbarDto;
 import com.piotrpabich.talktactics.course.dto.CourseQueryCriteria;
@@ -9,6 +8,7 @@ import com.piotrpabich.talktactics.auth.AuthenticationService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -29,8 +29,8 @@ public class CourseController {
     private final CourseService courseService;
     private final AuthenticationService authenticationService;
 
-    @GetMapping("/all")
-    public ResponseEntity<PageResult<CourseDto>> queryCourses(
+    @GetMapping
+    public ResponseEntity<Page<CourseDto>> queryCourses(
             final CourseQueryCriteria criteria,
             final Pageable pageable
     ) {

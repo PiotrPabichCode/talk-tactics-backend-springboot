@@ -1,9 +1,10 @@
 package com.piotrpabich.talktactics.course_item;
 
-import com.piotrpabich.talktactics.common.PageResult;
-import com.piotrpabich.talktactics.course_item.dto.CourseItemQueryCriteria;
 import com.piotrpabich.talktactics.course_item.dto.CourseItemDto;
+import com.piotrpabich.talktactics.course_item.dto.CourseItemQueryCriteria;
+import com.piotrpabich.talktactics.course_item.dto.CourseItemPreview;
 import com.piotrpabich.talktactics.course_item.entity.CourseItem;
+import com.piotrpabich.talktactics.exception.EntityNotFoundException;
 import com.piotrpabich.talktactics.user.entity.User;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -13,13 +14,10 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Set;
 
 import static com.piotrpabich.talktactics.auth.AuthUtil.validateIfUserAdmin;
 import static com.piotrpabich.talktactics.common.QueryHelp.getPredicate;
-import static com.piotrpabich.talktactics.common.util.PageUtil.toPage;
 
 @Service
 @Slf4j
@@ -29,13 +27,21 @@ public class CourseItemServiceImpl implements CourseItemService {
     private final CourseItemRepository courseItemRepository;
 
     @Override
-    public PageResult<CourseItemDto> queryAll(
+    public Page<CourseItemPreview> queryAll(
             final CourseItemQueryCriteria criteria,
             final Pageable pageable
     ) {
-        final var page = courseItemRepository.findAll(getCourseItemSpecification(criteria), pageable);
-        return generatePageResult(page);
+        return courseItemRepository.findAll(getCourseItemSpecification(criteria), pageable)
+                .map(CourseItemPreview::toDto);
     }
+
+    @Override
+    public CourseItemDto getById(final Long id) {
+        return courseItemRepository.findById(id)
+                .map(CourseItemDto::toDto)
+                .orElseThrow(() -> new EntityNotFoundException(CourseItemDto.class, "id", id.toString()));
+    }
+
     @Override
     @Transactional
     public void delete(final Set<Long> ids, final User requester) {
@@ -51,14 +57,5 @@ public class CourseItemServiceImpl implements CourseItemService {
                         getPredicate(root, criteria, criteriaBuilder),
                         criteriaBuilder.equal(root.get("course").get("id"), criteria.getCourseId())
                 );
-    }
-
-    private PageResult<CourseItemDto> generatePageResult(final Page<CourseItem> page) {
-        Map<String, String> contentMeta = new HashMap<>();
-        if(!page.getContent().isEmpty()) {
-            CourseItem item = page.getContent().getFirst();
-            contentMeta.put("title", item.getCourse().getTitle());
-        }
-        return toPage(page.map(CourseItemDto::toDto), contentMeta);
     }
 }

@@ -1,16 +1,15 @@
 package com.piotrpabich.talktactics.course;
 
-import com.piotrpabich.talktactics.common.PageResult;
 import com.piotrpabich.talktactics.course.dto.CourseDto;
 import com.piotrpabich.talktactics.course.dto.CourseNavbarDto;
 import com.piotrpabich.talktactics.course.dto.CourseQueryCriteria;
 import com.piotrpabich.talktactics.course.entity.Course;
 import com.piotrpabich.talktactics.exception.EntityNotFoundException;
 import com.piotrpabich.talktactics.user.entity.User;
-import com.piotrpabich.talktactics.common.util.PageUtil;
 import com.piotrpabich.talktactics.common.QueryHelp;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
@@ -30,16 +29,17 @@ import static org.springframework.beans.BeanUtils.copyProperties;
 @Slf4j
 @RequiredArgsConstructor
 public class CourseServiceImpl implements CourseService {
+
     private final CourseRepository courseRepository;
     private final CourseMapper courseMapper;
 
     @Override
-    public PageResult<CourseDto> queryAll(
+    public Page<CourseDto> queryAll(
             final CourseQueryCriteria criteria,
             final Pageable pageable
     ) {
-        final var page = courseRepository.findAll(queryAllSpecification(criteria), pageable);
-        return PageUtil.toPage(page.map(courseMapper::toDto));
+        return courseRepository.findAll(queryAllSpecification(criteria), pageable)
+                .map(courseMapper::toDto);
     }
 
     @Override

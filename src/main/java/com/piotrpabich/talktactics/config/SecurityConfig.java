@@ -44,9 +44,7 @@ public class SecurityConfig {
     public static final RequestMatcher[] WHITELIST_URLS = {
         new AntPathRequestMatcher("/error"),
         new AntPathRequestMatcher("/api/v1/auth/**"),
-        new AntPathRequestMatcher("/api/v1/courses/all"),
         new AntPathRequestMatcher("/api/v1/courses/navbar"),
-        new AntPathRequestMatcher("/api/v1/course-items/all"),
         new AntPathRequestMatcher("/api/v1/users/profiles"),
         new AntPathRequestMatcher("/api/v1/users/profiles/{userId}")
     };
@@ -60,11 +58,14 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(PERMITTED_ENDPOINTS).permitAll()
                         .requestMatchers(WHITELIST_URLS).permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/v1/courses").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/v1/courses").hasAnyAuthority(AuthConstants.ADMIN)
                         .requestMatchers(HttpMethod.PUT, "/api/v1/courses").hasAnyAuthority(AuthConstants.ADMIN)
                         .requestMatchers(HttpMethod.DELETE, "/api/v1/courses").hasAnyAuthority(AuthConstants.ADMIN)
                         .requestMatchers(HttpMethod.DELETE,"/api/v1/course-items").hasAnyAuthority(AuthConstants.ADMIN)
-                        .requestMatchers("/api/v1/users/all").hasAnyAuthority(AuthConstants.ADMIN)
+                        .requestMatchers(HttpMethod.GET,"/api/v1/course-items").permitAll()
+                        .requestMatchers(HttpMethod.GET,"/api/v1/course-items/{id}").permitAll()
+                        .requestMatchers("/api/v1/users").hasAnyAuthority(AuthConstants.ADMIN)
                         .requestMatchers(HttpMethod.GET, "/api/v1/users/id/{id}").hasAnyAuthority(AuthConstants.USER, AuthConstants.ADMIN)
                         .requestMatchers( "/api/v1/users/id/{id}/friends").hasAnyAuthority(AuthConstants.USER, AuthConstants.ADMIN)
                         .requestMatchers( "/api/v1/users/friend-invitation").hasAnyAuthority(AuthConstants.USER, AuthConstants.ADMIN)
@@ -75,11 +76,10 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.DELETE, "/api/v1/users/id/{id}").hasAnyAuthority(AuthConstants.ADMIN)
                         .requestMatchers("/api/v1/users/password").hasAnyAuthority(AuthConstants.USER, AuthConstants.ADMIN)
                         .requestMatchers("/api/v1/users/username/{username}").hasAnyAuthority(AuthConstants.USER, AuthConstants.ADMIN)
-                        .requestMatchers("/api/v1/user-courses/all").hasAnyAuthority(AuthConstants.USER, AuthConstants.ADMIN)
-                        .requestMatchers("/api/v1/user-courses/all-with-courses").hasAnyAuthority(AuthConstants.USER, AuthConstants.ADMIN)
+                        .requestMatchers("/api/v1/user-courses").hasAnyAuthority(AuthConstants.USER, AuthConstants.ADMIN)
                         .requestMatchers("/api/v1/user-courses/id/{id}").hasAnyAuthority(AuthConstants.USER, AuthConstants.ADMIN)
                         .requestMatchers("/api/v1/user-courses").hasAnyAuthority(AuthConstants.USER, AuthConstants.ADMIN)
-                        .requestMatchers("/api/v1/user-course-items/all").hasAnyAuthority(AuthConstants.USER, AuthConstants.ADMIN)
+                        .requestMatchers("/api/v1/user-course-items").hasAnyAuthority(AuthConstants.USER, AuthConstants.ADMIN)
                         .requestMatchers("/api/v1/user-course-items/learn/id/{id}").hasAnyAuthority(AuthConstants.USER, AuthConstants.ADMIN)
                         .anyRequest()
                         .authenticated()

@@ -1,6 +1,5 @@
 package com.piotrpabich.talktactics.user_course;
 
-import com.piotrpabich.talktactics.common.PageResult;
 import com.piotrpabich.talktactics.user_course.dto.UserCourseDto;
 import com.piotrpabich.talktactics.user_course.dto.UserCourseQueryCriteria;
 import com.piotrpabich.talktactics.user_course.dto.UserCourseDeleteRequest;
@@ -11,6 +10,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -28,8 +28,8 @@ public class UserCourseController {
     private final UserCourseFacade userCourseFacade;
     private final AuthenticationService authenticationService;
 
-    @GetMapping("/all")
-    public ResponseEntity<PageResult<UserCourseDto>> queryUserCourses(
+    @GetMapping
+    public ResponseEntity<Page<UserCourseDto>> queryUserCourses(
             final UserCourseQueryCriteria criteria,
             final Pageable pageable,
             final HttpServletRequest request

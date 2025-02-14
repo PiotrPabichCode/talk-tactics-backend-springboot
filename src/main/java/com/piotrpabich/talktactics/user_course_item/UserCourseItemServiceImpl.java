@@ -1,21 +1,16 @@
 package com.piotrpabich.talktactics.user_course_item;
 
-import com.piotrpabich.talktactics.common.PageResult;
 import com.piotrpabich.talktactics.user_course_item.dto.UserCourseItemQueryCriteria;
 import com.piotrpabich.talktactics.user_course_item.dto.UserCourseItemDto;
 import com.piotrpabich.talktactics.exception.EntityNotFoundException;
 import com.piotrpabich.talktactics.user.entity.User;
 import com.piotrpabich.talktactics.user_course_item.entity.UserCourseItem;
-import com.piotrpabich.talktactics.common.util.PageUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
-
-import java.util.HashMap;
-import java.util.Map;
 
 import static com.piotrpabich.talktactics.auth.AuthUtil.validateIfUserHimselfOrAdmin;
 import static com.piotrpabich.talktactics.common.QueryHelp.getPredicate;
@@ -28,12 +23,12 @@ public class UserCourseItemServiceImpl implements UserCourseItemService {
     private final UserCourseItemRepository userCourseItemRepository;
 
     @Override
-    public PageResult<UserCourseItemDto> queryAll(
+    public Page<UserCourseItemDto> queryAll(
             final UserCourseItemQueryCriteria criteria,
             final Pageable pageable
     ) {
-        final var page = userCourseItemRepository.findAll(getUserCourseItemSpecification(criteria), pageable);
-        return generatePageResult(page);
+        return userCourseItemRepository.findAll(getUserCourseItemSpecification(criteria), pageable)
+                .map(UserCourseItemDto::toDto);
     }
 
     @Override
@@ -68,15 +63,4 @@ public class UserCourseItemServiceImpl implements UserCourseItemService {
                 .orElseThrow(() -> new EntityNotFoundException(UserCourseItem.class, "id", String.valueOf(id)));
     }
 
-    private PageResult<UserCourseItemDto> generatePageResult(final Page<UserCourseItem> page) {
-        Map<String, String> contentMeta = new HashMap<>();
-        if (!page.getContent().isEmpty()) {
-            final var title = page.getContent().getFirst()
-                    .getUserCourse()
-                    .getCourse()
-                    .getTitle();
-            contentMeta.put("title", title);
-        }
-        return PageUtil.toPage(page.map(UserCourseItemDto::toDto), contentMeta);
-    }
 }

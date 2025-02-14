@@ -1,7 +1,6 @@
 package com.piotrpabich.talktactics.user;
 
 import com.piotrpabich.talktactics.auth.AuthConstants;
-import com.piotrpabich.talktactics.common.PageResult;
 import com.piotrpabich.talktactics.user.dto.*;
 import com.piotrpabich.talktactics.user.dto.DeleteFriendRequest;
 import com.piotrpabich.talktactics.user.dto.FriendInvitationRequest;
@@ -13,10 +12,10 @@ import com.piotrpabich.talktactics.exception.EntityExistsException;
 import com.piotrpabich.talktactics.exception.EntityNotFoundException;
 import com.piotrpabich.talktactics.user.entity.FriendInvitation;
 import com.piotrpabich.talktactics.user.entity.User;
-import com.piotrpabich.talktactics.common.util.PageUtil;
 import com.piotrpabich.talktactics.common.QueryHelp;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -45,12 +44,12 @@ public class UserServiceImpl implements UserService {
     private final PasswordEncoder passwordEncoder;
 
     @Override
-    public PageResult<UserDto> queryAll(
+    public Page<UserDto> queryAll(
             final UserQueryCriteria criteria,
             final Pageable pageable
     ) {
-        final var page = userRepository.findAll(getUsersSpecification(criteria), pageable);
-        return PageUtil.toPage(page.map(UserDto::from));
+        return userRepository.findAll(getUsersSpecification(criteria), pageable)
+                .map(UserDto::from);
     }
 
     @Override
