@@ -9,8 +9,8 @@ import lombok.Data;
 public class UserQueryCriteria {
     @Query(propName = "username", type = Query.Type.INNER_LIKE)
     private String username;
-    @Query(propName = "first_name", type = Query.Type.INNER_LIKE)
+    @Query(propName = "firstName", type = Query.Type.INNER_LIKE)
     private String firstName;
-    @Query(propName = "last_name", type = Query.Type.INNER_LIKE)
+    @Query(propName = "lastName", type = Query.Type.INNER_LIKE)
     private String lastName;
 }

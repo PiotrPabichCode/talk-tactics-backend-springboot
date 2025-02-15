@@ -1,15 +1,14 @@
 package com.piotrpabich.talktactics.user.dto;
 
-
-import com.fasterxml.jackson.annotation.JsonProperty;
+import jakarta.validation.constraints.NotNull;
 
 public record UpdatePasswordRequest(
-        @JsonProperty("id")
+        @NotNull
         Long id,
-        @JsonProperty("old_password")
+        @NotNull
         String oldPassword,
-        @JsonProperty("new_password")
+        @NotNull
         String newPassword,
-        @JsonProperty("repeat_new_password")
+        @NotNull
         String repeatNewPassword
 ) { }

@@ -1,13 +1,13 @@
 package com.piotrpabich.talktactics.user.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import jakarta.validation.constraints.NotNull;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public record FriendInvitationResponse(
-        @JsonProperty("sender_id")
+        @NotNull
         Long senderId,
-        @JsonProperty("receiver_id")
+        @NotNull
         Long receiverId,
         UserProfilePreviewDto sender,
         UserProfilePreviewDto receiver

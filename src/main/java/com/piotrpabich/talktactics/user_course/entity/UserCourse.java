@@ -4,7 +4,6 @@ import com.piotrpabich.talktactics.common.CommonEntity;
 import com.piotrpabich.talktactics.course.entity.Course;
 import com.piotrpabich.talktactics.user_course_item.entity.UserCourseItem;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.piotrpabich.talktactics.user.entity.User;
 import jakarta.persistence.*;
 import lombok.*;
@@ -22,7 +21,6 @@ import java.util.List;
 public class UserCourse extends CommonEntity {
 
     private double progress;
-    @JsonProperty("is_completed")
     private boolean completed;
     private int points;
 

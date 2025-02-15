@@ -6,7 +6,6 @@ import com.piotrpabich.talktactics.user_course.dto.UserCourseQueryCriteria;
 import com.piotrpabich.talktactics.user_course.dto.UserCourseDeleteRequest;
 import com.piotrpabich.talktactics.exception.EntityExistsException;
 import com.piotrpabich.talktactics.exception.EntityNotFoundException;
-import com.piotrpabich.talktactics.course.CourseRepository;
 import com.piotrpabich.talktactics.user_course_item.entity.UserCourseItem;
 import com.piotrpabich.talktactics.user_course_item.UserCourseItemRepository;
 import com.piotrpabich.talktactics.user.entity.User;

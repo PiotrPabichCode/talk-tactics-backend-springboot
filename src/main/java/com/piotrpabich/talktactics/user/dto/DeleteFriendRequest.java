@@ -1,10 +1,10 @@
 package com.piotrpabich.talktactics.user.dto;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import jakarta.validation.constraints.NotNull;
 
 public record DeleteFriendRequest(
-        @JsonProperty("user_id")
+        @NotNull
         Long userId,
-        @JsonProperty("friend_id")
+        @NotNull
         Long friendId
 ) { }

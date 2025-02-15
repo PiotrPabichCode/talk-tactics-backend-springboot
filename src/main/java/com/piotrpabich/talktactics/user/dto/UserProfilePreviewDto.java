@@ -1,16 +1,15 @@
 package com.piotrpabich.talktactics.user.dto;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import jakarta.validation.constraints.NotNull;
 
 public record UserProfilePreviewDto(
-        @JsonProperty("id")
-        long id,
-        @JsonProperty("first_name")
+        @NotNull
+        Long id,
+        @NotNull
         String firstName,
-        @JsonProperty("last_name")
+        @NotNull
         String lastName,
-        @JsonProperty("total_points")
-        int totalPoints,
+        Integer totalPoints,
         String bio
 ) {
 }

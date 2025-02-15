@@ -1,6 +1,5 @@
 package com.piotrpabich.talktactics.course_item.dto;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.piotrpabich.talktactics.course.dto.CourseDto;
 import com.piotrpabich.talktactics.course_item.entity.CourseItem;
 import com.piotrpabich.talktactics.course_item.entity.Meaning;
@@ -10,7 +9,6 @@ import java.util.List;
 public record CourseItemDto(
         Long id,
         String word,
-        @JsonProperty("part_of_speech")
         String partOfSpeech,
         String phonetic,
         String audio,

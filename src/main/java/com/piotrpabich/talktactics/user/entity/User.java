@@ -4,11 +4,9 @@ import com.piotrpabich.talktactics.common.CommonEntity;
 import com.piotrpabich.talktactics.user.dto.UserProfilePreviewDto;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.piotrpabich.talktactics.user_course.entity.UserCourse;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
@@ -33,10 +31,8 @@ public class User extends CommonEntity implements UserDetails {
     @JsonIgnore
     private String password;
 
-    @JsonProperty("first_name")
     private String firstName;
 
-    @JsonProperty("last_name")
     private String lastName;
 
     @Email(message = "Invalid email address", regexp = "^[a-zA-Z0-9_!#$%&'*+/=?`{|}~^.-]+@[a-zA-Z0-9.-]+$")
@@ -46,7 +42,6 @@ public class User extends CommonEntity implements UserDetails {
     @Size(max = 250)
     private String bio;
 
-    @JsonProperty("total_points")
     private int totalPoints;
 
     @Enumerated(EnumType.STRING)
@@ -74,7 +69,6 @@ public class User extends CommonEntity implements UserDetails {
             fetch = FetchType.LAZY,
             orphanRemoval = true
     )
-    @JsonProperty("sent_friend_requests")
     @OrderBy("createdAt DESC")
     private List<FriendInvitation> sentFriendInvitations;
 
@@ -83,7 +77,6 @@ public class User extends CommonEntity implements UserDetails {
             fetch = FetchType.LAZY,
             orphanRemoval = true
     )
-    @JsonProperty("received_friend_requests")
     @OrderBy("createdAt DESC")
     private List<FriendInvitation> receivedFriendInvitations;
 

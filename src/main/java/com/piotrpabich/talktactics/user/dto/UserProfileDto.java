@@ -1,17 +1,17 @@
 package com.piotrpabich.talktactics.user.dto;
 
 import com.piotrpabich.talktactics.user_course.dto.UserCourseDto;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import jakarta.validation.constraints.NotNull;
 
 import java.util.List;
 
 public record UserProfileDto(
+        @NotNull
         Long id,
-        @JsonProperty("first_name")
+        @NotNull
         String firstName,
-        @JsonProperty("last_name")
+        @NotNull
         String lastName,
-        @JsonProperty("total_points")
         Integer totalPoints,
         String bio,
         List<UserCourseDto> courses
