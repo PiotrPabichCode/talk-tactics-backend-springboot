@@ -25,4 +25,6 @@ public class CourseQueryCriteria {
     private Integer maxPoints;
     @Query(propName = "id", type = Query.Type.NOT_IN)
     private Set<Long> notInCourseIds = new HashSet<>();
+    @Query(blurry = "title,description,quantity,level", propName = "search")
+    private String search;
 }
