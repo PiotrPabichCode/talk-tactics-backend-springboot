@@ -14,4 +14,6 @@ public class CourseItemQueryCriteria {
     private String partOfSpeech;
     @Query(propName = "phonetic", type = Query.Type.NOT_NULL)
     private String phonetic;
+    @Query(blurry = "word,partOfSpeech,phonetic", propName = "search")
+    private String search;
 }

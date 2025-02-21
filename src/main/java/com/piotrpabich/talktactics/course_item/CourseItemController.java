@@ -34,9 +34,9 @@ public class CourseItemController {
         return ResponseEntity.ok(courseItemService.queryAll(criteria, pageable));
     }
 
-    @GetMapping("/{courseId}")
-    public ResponseEntity<CourseItemDto> queryCourseItem(@PathVariable final Long courseId) {
-        return ResponseEntity.ok(courseItemService.getById(courseId));
+    @GetMapping("/{id}")
+    public ResponseEntity<CourseItemDto> queryCourseItem(@PathVariable final Long id) {
+        return ResponseEntity.ok(courseItemService.getById(id));
     }
 
     @DeleteMapping
