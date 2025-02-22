@@ -9,6 +9,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -20,9 +21,14 @@ import java.util.List;
 @EntityListeners(UserCourseEntityListeners.class)
 public class UserCourse extends CommonEntity {
 
-    private double progress;
-    private boolean completed;
-    private int points;
+    public UserCourse(final User user, final Course course) {
+        this.user = user;
+        this.course = course;
+    }
+
+    private Double progress = 0.0;
+    private Boolean completed = false;
+    private Integer points = 0;
 
     @ManyToOne
     @JoinColumn(name = "user_id")
@@ -37,5 +43,5 @@ public class UserCourse extends CommonEntity {
             cascade = CascadeType.ALL,
             fetch = FetchType.LAZY,
             orphanRemoval = true)
-    private List<UserCourseItem> userCourseItems;
+    private List<UserCourseItem> userCourseItems = new ArrayList<>();
 }

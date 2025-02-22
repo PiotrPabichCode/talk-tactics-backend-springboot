@@ -11,6 +11,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -34,7 +35,7 @@ public class Course extends CommonEntity {
     @OneToMany(mappedBy = "course",
             cascade = CascadeType.ALL,
             orphanRemoval = true)
-    private List<CourseItem> courseItems;
+    private List<CourseItem> courseItems = new ArrayList<>();
 
     private int quantity;
 
@@ -42,7 +43,7 @@ public class Course extends CommonEntity {
     @OneToMany(mappedBy = "course",
             cascade = CascadeType.ALL,
             orphanRemoval = true)
-    private List<UserCourse> userCourses;
+    private List<UserCourse> userCourses = new ArrayList<>();
 
     public int getPoints() {
         return switch (this.level) {

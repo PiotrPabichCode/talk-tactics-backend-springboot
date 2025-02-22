@@ -18,11 +18,16 @@ import lombok.experimental.SuperBuilder;
 @EntityListeners(UserCourseItemListeners.class)
 public class UserCourseItem extends CommonEntity {
 
+    public UserCourseItem(final UserCourse userCourse, final CourseItem courseItem) {
+        this.userCourse = userCourse;
+        this.courseItem = courseItem;
+    }
+
     @ManyToOne
     @JoinColumn(name = "course_item_id")
     private CourseItem courseItem;
 
-    private boolean isLearned;
+    private boolean isLearned = false;
 
     @JsonIgnore
     @ManyToOne

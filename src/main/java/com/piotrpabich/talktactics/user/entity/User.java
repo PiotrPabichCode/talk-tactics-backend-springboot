@@ -14,6 +14,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -39,7 +40,6 @@ public class User extends CommonEntity implements UserDetails {
     @Column(unique = true)
     private String email;
 
-    @Size(max = 250)
     private String bio;
 
     private int totalPoints;
@@ -53,7 +53,7 @@ public class User extends CommonEntity implements UserDetails {
             cascade = CascadeType.ALL,
             fetch = FetchType.LAZY,
             orphanRemoval = true)
-    private List<UserCourse> userCourses;
+    private List<UserCourse> userCourses = new ArrayList<>();
 
     @JsonIgnore
     @ManyToMany
@@ -62,7 +62,7 @@ public class User extends CommonEntity implements UserDetails {
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "friend_id")
     )
-    private List<User> friends;
+    private List<User> friends = new ArrayList<>();
 
     @JsonIgnore
     @OneToMany(mappedBy = "sender",
@@ -70,7 +70,7 @@ public class User extends CommonEntity implements UserDetails {
             orphanRemoval = true
     )
     @OrderBy("createdAt DESC")
-    private List<FriendInvitation> sentFriendInvitations;
+    private List<FriendInvitation> sentFriendInvitations = new ArrayList<>();
 
     @JsonIgnore
     @OneToMany(mappedBy = "receiver",
@@ -78,8 +78,7 @@ public class User extends CommonEntity implements UserDetails {
             orphanRemoval = true
     )
     @OrderBy("createdAt DESC")
-    private List<FriendInvitation> receivedFriendInvitations;
-
+    private List<FriendInvitation> receivedFriendInvitations = new ArrayList<>();
 
     @JsonIgnore
     @Override

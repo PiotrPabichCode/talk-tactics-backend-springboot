@@ -22,11 +22,6 @@ public class Meaning extends CommonEntity {
     @Column(length = 800)
     private String example;
 
-    @JsonIgnoreProperties("meanings")
-    @ManyToOne
-    @JoinColumn(name = "course_id")
-    private Course course;
-
     @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "course_item_id")

@@ -21,7 +21,7 @@ public record UserCourseItemDto(
                 courseItem.getPartOfSpeech(),
                 courseItem.getPhonetic(),
                 courseItem.getAudio(),
-                courseItem.getLevel(),
+                courseItem.getCourse().getLevel(),
                 userCourseItem.isLearned()
         );
     }

@@ -26,7 +26,7 @@ public record CourseItemPreview(
                 courseItem.getPartOfSpeech(),
                 courseItem.getPhonetic(),
                 courseItem.getAudio(),
-                courseItem.getLevel()
+                courseItem.getCourse().getLevel()
         );
     }
 }

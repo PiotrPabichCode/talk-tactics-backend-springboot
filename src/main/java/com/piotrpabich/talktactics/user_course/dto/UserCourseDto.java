@@ -15,7 +15,7 @@ public record UserCourseDto(
         return new UserCourseDto(
                 userCourse.getId(),
                 userCourse.getProgress(),
-                userCourse.isCompleted(),
+                userCourse.getCompleted(),
                 userCourse.getPoints(),
                 CourseDto.from(userCourse.getCourse())
         );

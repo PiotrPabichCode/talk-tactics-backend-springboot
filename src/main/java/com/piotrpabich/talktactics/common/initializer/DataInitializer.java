@@ -16,6 +16,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.piotrpabich.talktactics.user_course.UserCourseRepository;
 import com.piotrpabich.talktactics.user_course.entity.UserCourse;
+import com.piotrpabich.talktactics.user_course_item.UserCourseItemRepository;
 import com.piotrpabich.talktactics.user_course_item.entity.UserCourseItem;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -55,6 +56,8 @@ public class DataInitializer implements ApplicationRunner {
     private static final int COURSES_SIZE = 50;
     private static final int BEGINNER_COURSES_BREAKPOINT = 15;
     private static final int INTERMEDIATE_COURSES_BREAKPOINT = 35;
+    private final UserCourseItemRepository userCourseItemRepository;
+
     @Override
     public void run(ApplicationArguments args) {
         Instant start = Instant.now();
@@ -75,29 +78,51 @@ public class DataInitializer implements ApplicationRunner {
         initUserCourses();
     }
     private void initUsers() {
-        userList.add(User.builder().username("admin").password(passwordEncoder.encode("admin")).email("email@gmail.com").firstName("Piotr").lastName("Pabich").bio("Passionate about technology, design, and the power of innovation. Always seeking new challenges and ways to make an impact.").role(Role.ADMIN).build());
-        userList.add(User.builder().username("user").password(passwordEncoder.encode("user")).email("user@gmail.com").firstName("Jan").lastName("Tomczyk").bio("Adventurous soul, chasing dreams one step at a time. Lover of art, nature, and good conversations. Here to make memories").role(Role.USER).build());
-        userList.add(User.builder().username("user1").password(passwordEncoder.encode("user1")).email("user1@gmail.com").firstName("Tomasz").lastName("Kukułka").bio("Avid reader, passionate writer, and eternal optimist. Finding beauty in the little things and spreading positivity wherever I go.").role(Role.USER).build());
+        userList.add(addUser("Piotr", "Pabich", "admin", "email@gmail.com", "Passionate about technology, design, and the power of innovation. Always seeking new challenges and ways to make an impact.", Role.ADMIN));
+        userList.add(addUser("Jan", "Tomczyk", "user", "user@gmail.com", "Adventurous soul, chasing dreams one step at a time. Lover of art, nature, and good conversations. Here to make memories", Role.USER));
+        userList.add(addUser("Tomasz", "Kukułka", "user1", "user1@gmail.com", "Avid reader, passionate writer, and eternal optimist. Finding beauty in the little things and spreading positivity wherever I go.", Role.USER));
 
         for(int i = 0; i < USERS_SIZE; i++) {
-            String firstName = faker.name().firstName();
-            String lastName = faker.name().lastName();
-            String username = String.format("%s%s%d", firstName, lastName, i);
-            String email = String.format("%s%s%d@email.com", firstName, lastName, i);
-            String bio = UserProfileBioGenerator.generateBio(random.nextInt(3) + 1);
-            userList.add(User.builder().username(username).password(passwordEncoder.encode("talktactics")).email(email).firstName(firstName).lastName(lastName).bio(bio).role(Role.USER).totalPoints(0).build());
+            userList.add(addUser(i));
         }
         userRepository.saveAll(userList);
     }
+
+    private User addUser(final Integer index) {
+        final var firstName = faker.name().firstName();
+        final var lastName = faker.name().lastName();
+        final var username = String.format("%s%s%d", firstName, lastName, index);
+        final var email = String.format("%s%s%d@email.com", firstName, lastName, index);
+        final var bio = UserProfileBioGenerator.generateBio(random.nextInt(3) + 1);
+        return addUser(firstName, lastName, username, email, bio, Role.USER);
+    }
+
+    private User addUser(final String firstName, final String lastName, final String username, final String email, final String bio, final Role role) {
+        final var user = new User();
+        user.setFirstName(firstName);
+        user.setLastName(lastName);
+        user.setUsername(username);
+        user.setEmail(email);
+        user.setBio(bio);
+        user.setRole(role);
+        user.setPassword(passwordEncoder.encode("12345678"));
+        return user;
+    }
+
     private void initCourses() {
         for(int i = 0; i < COURSES_SIZE; i++) {
-            String name = CourseDataGenerator.selectCourseTitle(i);
+            String title = CourseDataGenerator.selectCourseTitle(i);
             String description = CourseDataGenerator.selectCourseDescription(i);
             CourseLevel level = i < COURSES_SIZE / 4 ? CourseLevel.BEGINNER : i < COURSES_SIZE * 3/4 ? CourseLevel.INTERMEDIATE : CourseLevel.ADVANCED;
-            courseList.add(Course.builder().title(name).description(description).level(level).build());
+            final var course = new Course();
+            course.setTitle(title);
+            course.setDescription(description);
+            course.setLevel(level);
+            courseList.add(course);
         }
         courseRepository.saveAll(courseList);
     }
+
     private void initCourseItems() {
         try {
             JsonNode rootNode = readJsonFile("src/main/java/com/piotrpabich/talktactics/common/initializer/long_words.json");
@@ -128,7 +153,6 @@ public class DataInitializer implements ApplicationRunner {
                         JsonNode courseItemNode = rootNode.get(itemsAssigned).get(0);
                         CourseItem courseItem = createCourseItem(courseItemNode);
                         courseItem.setCourse(course);
-                        course.setLevel(course.getLevel());
                         courseItemList.add(courseItem);
                         courseItemsCount++;
                         itemsAssigned++;
@@ -144,7 +168,6 @@ public class DataInitializer implements ApplicationRunner {
                 CourseItem courseItem = createCourseItem(courseItemNode);
                 Course course = courseList.get(random.nextInt(COURSES_SIZE));
                 courseItem.setCourse(course);
-                courseItem.setLevel(course.getLevel());
                 courseItemList.add(courseItem);
                 itemsAssigned++;
             }
@@ -160,17 +183,55 @@ public class DataInitializer implements ApplicationRunner {
         for(User user: userList) {
             random.ints(0, courseList.size()).distinct().limit(random.nextInt(COURSES_SIZE / 2) + 1).forEach(value -> {
                 Course course = courseList.get(value);
-                UserCourse userCourse = UserCourse.builder().user(user).course(course).build();
+                UserCourse userCourse = new UserCourse(user, course);
+                user.getUserCourses().add(userCourse);
+                userCourseRepository.save(userCourse);
                 List<UserCourseItem> userCourseItems = new ArrayList<>();
                 for(CourseItem courseItem: course.getCourseItems()) {
-                    userCourseItems.add(UserCourseItem.builder().courseItem(courseItem).isLearned(random.nextBoolean()).userCourse(userCourse).build());
+                    final var userCourseItem = new UserCourseItem(userCourse, courseItem);
+                    userCourseItem.setLearned(random.nextBoolean());
+                    userCourseItems.add(userCourseItem);
                 }
                 userCourse.setUserCourseItems(userCourseItems);
-                userCourseList.add(userCourse);
+                userCourse.setCompleted(isCompleted(userCourse));
+                userCourse.setPoints(calculateTotalPoints(userCourse));
+                userCourse.setProgress(calculateProgress(userCourse));
+                userCourseItemRepository.saveAll(userCourseItems);
             });
+            updateUserTotalPoints(user);
         }
-        userCourseRepository.saveAll(userCourseList);
+        userRepository.saveAllAndFlush(userList);
     }
+
+    private void updateUserTotalPoints(final User user) {
+        final var totalPoints = user.getUserCourses().stream()
+                .mapToInt(UserCourse::getPoints)
+                .sum();
+        user.setTotalPoints(totalPoints);
+    }
+
+    private boolean isCompleted(final UserCourse userCourse) {
+        return userCourse.getUserCourseItems()
+                .stream()
+                .allMatch(UserCourseItem::isLearned);
+    }
+
+    private int calculateTotalPoints(final UserCourse userCourse) {
+        return userCourse.getUserCourseItems().stream()
+                .filter(UserCourseItem::isLearned)
+                .mapToInt(item -> item.getCourseItem().getPoints())
+                .sum() + (userCourse.getCompleted() ? userCourse.getPoints() : 0);
+    }
+
+    private double calculateProgress(final UserCourse userCourse) {
+        final var totalItems = userCourse.getUserCourseItems().size();
+        final var learnedItems = (int) userCourse.getUserCourseItems().stream()
+                .filter(UserCourseItem::isLearned)
+                .count();
+        final var progress = 100.0 * learnedItems / totalItems;
+        return Math.floor(progress * 10) / 10;
+    }
+
     private JsonNode readJsonFile(String filePath) throws IOException {
         ObjectMapper objectMapper = new ObjectMapper();
         File jsonFile = new File(filePath);
@@ -186,6 +247,7 @@ public class DataInitializer implements ApplicationRunner {
                 .phonetic(phonetic)
                 .audio(audio)
                 .build();
+        courseItemRepository.save(courseItem);
 
         JsonNode meaningsNode = itemNode.get("meanings");
         String partOfSpeech = meaningsNode.get(0).get("partOfSpeech").asText();
@@ -227,7 +289,7 @@ public class DataInitializer implements ApplicationRunner {
     }
     private void assignCourseItemsToCourses() {
         for(Course course: courseList) {
-            List<CourseItem> items = courseItemList.stream().filter(item -> item.getCourse().getId() == course.getId()).toList();
+            List<CourseItem> items = courseItemList.stream().filter(item -> Objects.equals(item.getCourse().getId(), course.getId())).toList();
             course.setCourseItems(items);
         }
     }

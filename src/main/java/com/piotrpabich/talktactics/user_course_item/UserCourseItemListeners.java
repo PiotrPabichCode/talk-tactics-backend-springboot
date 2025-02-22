@@ -36,7 +36,7 @@ public class UserCourseItemListeners {
         return userCourse.getUserCourseItems().stream()
                 .filter(UserCourseItem::isLearned)
                 .mapToInt(item -> item.getCourseItem().getPoints())
-                .sum() + (userCourse.isCompleted() ? userCourse.getPoints() : 0);
+                .sum() + (userCourse.getCompleted() ? userCourse.getPoints() : 0);
     }
 
     private double calculateProgress(final UserCourse userCourse) {
