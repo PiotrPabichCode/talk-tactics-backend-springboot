@@ -234,7 +234,9 @@ public class DataInitializer implements ApplicationRunner {
 
     private JsonNode readJsonFile(String filePath) throws IOException {
         ObjectMapper objectMapper = new ObjectMapper();
-        File jsonFile = new File(filePath);
+        String normalizedPath = filePath.replace("/", File.separator);
+
+        File jsonFile = new File(normalizedPath);
         return objectMapper.readTree(jsonFile);
     }
     private CourseItem createCourseItem(JsonNode itemNode) {
