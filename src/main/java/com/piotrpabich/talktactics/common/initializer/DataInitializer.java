@@ -27,8 +27,8 @@ import org.springframework.boot.ApplicationRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
-import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.*;
@@ -125,7 +125,10 @@ public class DataInitializer implements ApplicationRunner {
 
     private void initCourseItems() {
         try {
-            JsonNode rootNode = readJsonFile("src/main/java/com/piotrpabich/talktactics/common/initializer/long_words.json");
+            JsonNode rootNode = readJsonFile();
+            if(rootNode == null) {
+                return;
+            }
 
             int totalItems = rootNode.size();
             int itemsPerCourse = totalItems / COURSES_SIZE;
@@ -232,10 +235,18 @@ public class DataInitializer implements ApplicationRunner {
         return Math.floor(progress * 10) / 10;
     }
 
-    private JsonNode readJsonFile(String filePath) throws IOException {
+    private JsonNode readJsonFile() throws IOException {
+        InputStream inputStream = getClass().getClassLoader().getResourceAsStream(
+                "data/long_words.json"
+        );
+
+        if (inputStream == null) {
+            System.err.println("Resource not found: long_words.json");
+            return null;
+        }
+
         ObjectMapper objectMapper = new ObjectMapper();
-        File jsonFile = new File(filePath);
-        return objectMapper.readTree(jsonFile);
+        return objectMapper.readTree(inputStream);
     }
     private CourseItem createCourseItem(JsonNode itemNode) {
         String word = itemNode.hasNonNull("word") ? itemNode.get("word").asText() : null;
