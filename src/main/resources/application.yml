@@ -22,5 +22,7 @@ web:
     allow-credentials: true
 
 spring:
+  profiles:
+    active: ${ACTIVE_PROFILE}
   datasource:
     driver-class-name: org.postgresql.Driver
