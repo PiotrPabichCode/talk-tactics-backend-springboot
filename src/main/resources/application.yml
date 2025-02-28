@@ -9,6 +9,7 @@ application:
 server:
   error:
     include-message: always
+  port: 8082
 
 web:
   cors:
