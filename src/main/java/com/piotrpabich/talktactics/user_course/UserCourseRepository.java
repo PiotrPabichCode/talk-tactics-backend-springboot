@@ -5,8 +5,13 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
 import java.util.Optional;
+import java.util.UUID;
 
 public interface UserCourseRepository extends JpaRepository<UserCourse, Long>, JpaSpecificationExecutor<UserCourse> {
-    boolean existsByCourseIdAndUserId(long courseId, long userId);
-    Optional<UserCourse> findByCourseIdAndUserId(long courseId, long userId);
+
+    boolean existsByCourseUuidAndUserUuid(UUID courseUuid, UUID userUuid);
+
+    Optional<UserCourse> findByCourseUuidAndUserUuid(UUID courseUuid, UUID userUuid);
+
+    Optional<UserCourse> findByUuid(UUID userCourseUuid);
 }

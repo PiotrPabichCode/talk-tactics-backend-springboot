@@ -1,6 +1,6 @@
 package com.piotrpabich.talktactics.user.dto;
 
-public record UpdateUserDto(
+public record UpdateUserRequest(
         String username,
         String firstName,
         String lastName,

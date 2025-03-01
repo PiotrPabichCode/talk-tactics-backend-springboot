@@ -2,9 +2,11 @@ package com.piotrpabich.talktactics.user.dto;
 
 import jakarta.validation.constraints.NotNull;
 
+import java.util.UUID;
+
 public record UpdatePasswordRequest(
         @NotNull
-        Long id,
+        UUID userUuid,
         @NotNull
         String oldPassword,
         @NotNull

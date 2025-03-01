@@ -2,8 +2,6 @@ package com.piotrpabich.talktactics.course_item.entity;
 
 import com.piotrpabich.talktactics.common.CommonEntity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.piotrpabich.talktactics.course.entity.Course;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;

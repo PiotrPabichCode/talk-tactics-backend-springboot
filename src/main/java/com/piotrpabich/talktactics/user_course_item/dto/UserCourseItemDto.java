@@ -13,7 +13,7 @@ public record UserCourseItemDto(
         Boolean isLearned
 ) {
 
-    public static UserCourseItemDto toDto(final UserCourseItem userCourseItem) {
+    public static UserCourseItemDto of(final UserCourseItem userCourseItem) {
         final var courseItem = userCourseItem.getCourseItem();
         return new UserCourseItemDto(
                 userCourseItem.getId(),

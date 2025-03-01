@@ -11,6 +11,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.UUID;
+
 import static com.piotrpabich.talktactics.auth.AuthUtil.validateIfUserHimselfOrAdmin;
 
 @Slf4j
@@ -26,13 +28,13 @@ public class UserCourseItemFacade {
             final Pageable pageable,
             final User requester
     ) {
-        final var user = userService.getUserById(requester.getId());
+        final var user = userService.getUserByUuid(requester.getUuid());
         validateIfUserHimselfOrAdmin(requester, user);
         return userCourseItemService.queryAll(criteria, pageable);
     }
 
     @Transactional
-    public void learnUserCourseItem(final Long id, final User requester) {
-        userCourseItemService.learnUserCourseItem(id, requester);
+    public void learnUserCourseItem(final UUID userCourseItemUuid, final User requester) {
+        userCourseItemService.learnUserCourseItem(userCourseItemUuid, requester);
     }
 }

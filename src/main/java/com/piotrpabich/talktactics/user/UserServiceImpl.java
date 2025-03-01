@@ -22,17 +22,12 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.ReflectionUtils;
 
 import java.util.*;
 
 import static com.piotrpabich.talktactics.auth.AuthUtil.validateIfUserAdmin;
 import static com.piotrpabich.talktactics.auth.AuthUtil.validateIfUserHimselfOrAdmin;
-import static com.piotrpabich.talktactics.common.util.Utils.getJsonPropertyFieldMap;
-import static com.piotrpabich.talktactics.user.dto.UserProfileDto.toUserProfileDto;
-import static com.piotrpabich.talktactics.util.EmailValidator.isValidEmail;
 import static java.util.Comparator.comparingInt;
-import static org.springframework.util.ReflectionUtils.setField;
 
 @Service
 @Slf4j
@@ -49,58 +44,55 @@ public class UserServiceImpl implements UserService {
             final Pageable pageable
     ) {
         return userRepository.findAll(getUsersSpecification(criteria), pageable)
-                .map(UserDto::from);
+                .map(UserDto::of);
     }
 
     @Override
-    public User getUserById(final Long id, final User requester) {
-        final var user = getUserById(id);
+    public User getUserByUuid(final UUID userUuid, final User requester) {
+        final var user = getUserByUuid(userUuid);
         validateIfUserHimselfOrAdmin(requester, user);
         return user;
     }
 
     @Override
-    public User getUserById(final Long id) {
-        return userRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException(User.class, "id", String.valueOf(id)));
+    public User getUserByUuid(final UUID userUuid) {
+        return userRepository.findByUuid(userUuid)
+                .orElseThrow(() -> new EntityNotFoundException(User.class, "uuid", String.valueOf(userUuid)));
     }
+
     @Override
     public User getUserByUsername(final String username, final User requester) {
         return userRepository.findByUsername(username)
                 .orElseThrow(() -> new EntityNotFoundException(User.class, "username", username));
     }
+
     @Override
-    @Transactional
-    public void deleteUser(
-            final Long id,
-            final User requester
-    ) {
+    public void deleteUser(final UUID userUuid, final User requester) {
         validateIfUserAdmin(requester);
-        final var user = getUserById(id);
+        final var user = getUserByUuid(userUuid);
         if(AuthConstants.ADMIN.equals(user.getRole().toString())) {
             throw new BadCredentialsException("Cannot delete admin user");
         }
-        userRepository.deleteById(id);
+        userRepository.deleteByUuid(userUuid);
     }
+
     @Override
-    @Transactional
     public void updateUser(
-            final Long id,
-            final Map<String, Object> newValues,
+            final UUID userUuid,
+            final UpdateUserRequest request,
             final User requester
     ) {
-        final var user = getUserById(id);
+        final var user = getUserByUuid(userUuid);
         validateIfUserHimselfOrAdmin(requester, user);
-        validateUpdateUserRequest(user, newValues);
         userRepository.save(user);
     }
+
     @Override
-    @Transactional
     public void updatePassword(
             final UpdatePasswordRequest updatePasswordRequest,
             final User requester
     ) {
-        final var user = getUserById(updatePasswordRequest.id());
+        final var user = getUserByUuid(updatePasswordRequest.userUuid());
         validateIfUserHimselfOrAdmin(requester, user);
         validatePassword(user, updatePasswordRequest);
         user.setPassword(passwordEncoder.encode(updatePasswordRequest.newPassword()));
@@ -111,33 +103,30 @@ public class UserServiceImpl implements UserService {
     public List<UserProfilePreviewDto> getUserProfiles() {
         return userRepository.findAll().stream()
                 .sorted(comparingInt(User::getTotalPoints).reversed())
-                .map(User::toUserProfilePreviewDto)
+                .map(UserProfilePreviewDto::of)
                 .toList();
     }
 
     @Override
-    public UserProfileDto getUserProfileById(final Long id) {
-        final var user = getUserById(id);
-        final var userProfile = user.toUserProfilePreviewDto();
+    public UserProfileDto getUserProfileByUserUuid(final UUID userUuid) {
+        final var user = getUserByUuid(userUuid);
+        final var userProfile = UserProfilePreviewDto.of(user);
         final var userCourses = user.getUserCourses()
                 .stream()
-                .map(UserCourseDto::from)
+                .map(UserCourseDto::of)
                 .toList();
 
-        return toUserProfileDto(userProfile, userCourses);
+        return UserProfileDto.of(userProfile, userCourses);
     }
 
     @Override
-    public List<UserProfilePreviewDto> getFriends(
-            final Long id,
-            final User requester
-    ) {
-        final var user = getUserById(id);
+    public List<UserProfilePreviewDto> getUserFriends(final UUID userUuid, final User requester) {
+        final var user = getUserByUuid(userUuid);
         validateIfUserHimselfOrAdmin(requester, user);
 
         return user.getFriends().stream()
                 .sorted(comparingInt(User::getTotalPoints).reversed())
-                .map(User::toUserProfilePreviewDto)
+                .map(UserProfilePreviewDto::of)
                 .toList();
     }
 
@@ -162,9 +151,9 @@ public class UserServiceImpl implements UserService {
             final DeleteFriendRequest request,
             final User requester
     ) {
-        final var user = getUserById(request.userId());
+        final var user = getUserByUuid(request.userUuid());
         validateIfUserHimselfOrAdmin(requester, user);
-        final var friend = getUserById(request.friendId());
+        final var friend = getUserByUuid(request.friendUuid());
 
         if(!user.getFriends().contains(friend)) {
             throw new BadRequestException(UserConstants.NOT_FRIENDS_EXCEPTION);
@@ -178,11 +167,11 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public List<FriendInvitationResponse> getReceivedFriendInvitations(
-            final Long id,
+            final UUID userUuid,
             final Boolean withDetails,
             final User requester
     ) {
-        final var user = getUserById(id);
+        final var user = getUserByUuid(userUuid);
         validateIfUserHimselfOrAdmin(requester, user);
 
         return user.getReceivedFriendInvitations().stream()
@@ -192,11 +181,11 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public List<FriendInvitationResponse> getSentFriendInvitations(
-            final Long id,
+            final UUID userUuid,
             final Boolean withDetails,
             final User requester
     ) {
-        final var user = getUserById(id);
+        final var user = getUserByUuid(userUuid);
         validateIfUserHimselfOrAdmin(requester, user);
 
         return user.getSentFriendInvitations().stream()
@@ -208,32 +197,6 @@ public class UserServiceImpl implements UserService {
         return (root, criteriaQuery, criteriaBuilder) -> QueryHelp.getPredicate(root, criteria, criteriaBuilder);
     }
 
-    private void validateUpdateUserRequest(
-            final User user,
-            final Map<String, Object> newValues
-    ) {
-        if(newValues.containsKey("email")) {
-            final var email = (String) newValues.get("email");
-            if(!isValidEmail(email)) {
-                throw new BadCredentialsException(AuthConstants.EMAIL_FORBIDDEN_VALUES_EXCEPTION);
-            }
-        }
-
-        final var fieldMap = getJsonPropertyFieldMap(UpdateUserDto.class);
-
-        newValues.forEach((key, value) -> {
-            final var fieldName = fieldMap.get(key);
-            if (fieldName == null) {
-                throw new BadRequestException("Illegal new values given: " + key);
-            }
-            final var field = ReflectionUtils.findField(User.class, fieldName);
-            if (field == null) {
-                throw new BadRequestException("Field not found: " + fieldName);
-            }
-            field.setAccessible(true);
-            setField(field, user, value);
-        });
-    }
     private void validatePassword(
             final User user,
             final UpdatePasswordRequest request
@@ -256,7 +219,7 @@ public class UserServiceImpl implements UserService {
             final User user1,
             final User user2
     ) {
-        if(user1.equals(user2)) {
+        if(user1.getUuid().equals(user2.getUuid())) {
             throw new BadRequestException(UserConstants.SAME_USER_EXCEPTION);
         }
         if(user1.getFriends().contains(user2)) {
@@ -268,9 +231,9 @@ public class UserServiceImpl implements UserService {
             final FriendInvitationRequest request,
             final User requester
     ) {
-        final var sender = getUserById(request.senderId());
+        final var sender = getUserByUuid(request.senderUuid());
         validateIfUserHimselfOrAdmin(requester, sender);
-        final var receiver = getUserById(request.receiverId());
+        final var receiver = getUserByUuid(request.receiverUuid());
 
         validateFriendInvitationRequest(sender, receiver);
         checkIfFriendInvitationExists(sender, receiver);
@@ -289,12 +252,12 @@ public class UserServiceImpl implements UserService {
             final FriendInvitationRequest request,
             final User requester
     ) {
-        final var receiver = getUserById(request.receiverId());
+        final var receiver = getUserByUuid(request.receiverUuid());
         validateIfUserHimselfOrAdmin(requester, receiver);
-        final var sender = getUserById(request.senderId());
+        final var sender = getUserByUuid(request.senderUuid());
 
         validateFriendInvitationRequest(receiver, sender);
-        final var friendInvitation = getFriendInvitation(receiver, sender);
+        final var friendInvitation = getFriendInvitation(receiver.getUuid(), sender.getUuid());
 
         receiver.getFriends().add(sender);
         sender.getFriends().add(receiver);
@@ -309,13 +272,13 @@ public class UserServiceImpl implements UserService {
             final FriendInvitationRequest request,
             final User requester
     ) {
-        final var receiver = getUserById(request.receiverId());
+        final var receiver = getUserByUuid(request.receiverUuid());
         validateIfUserHimselfOrAdmin(requester, receiver);
-        final var sender = getUserById(request.senderId());
+        final var sender = getUserByUuid(request.senderUuid());
 
         validateFriendInvitationRequest(receiver, sender);
 
-        final var friendInvitation = getFriendInvitation(receiver, sender);
+        final var friendInvitation = getFriendInvitation(receiver.getUuid(), sender.getUuid());
         friendInvitationRepository.delete(friendInvitation);
 
         // Add notification to sender
@@ -325,31 +288,33 @@ public class UserServiceImpl implements UserService {
             final FriendInvitationRequest request,
             final User requester
     ) {
-        final var sender = getUserById(request.senderId());
+        final var sender = getUserByUuid(request.senderUuid());
         validateIfUserHimselfOrAdmin(requester, sender);
-        final var receiver = getUserById(request.receiverId());
+        final var receiver = getUserByUuid(request.receiverUuid());
 
         validateFriendInvitationRequest(sender, receiver);
 
-        final var friendInvitation = getFriendInvitation(sender, receiver);
+        final var friendInvitation = getFriendInvitation(sender.getUuid(), receiver.getUuid());
         friendInvitationRepository.delete(friendInvitation);
     }
 
-    private void checkIfFriendInvitationExists(
-            final User user1,
-            final User user2
-    ) {
-        final var exists = friendInvitationRepository.existsFriendInvitationByUserIds(user1.getId(), user2.getId());
-        if(exists) {
-            throw new EntityExistsException(FriendInvitation.class, "(user1 id, user2 id)" , String.format("(%d, %d)", user1.getId(), user2.getId()));
+    private void checkIfFriendInvitationExists(final User user1, final User user2) {
+        final var exists = friendInvitationRepository.existsFriendInvitation(user1.getUuid(), user2.getUuid());
+        if (exists) {
+            throw new EntityExistsException(
+                    FriendInvitation.class,
+                    "(user1Uuid, user2Uuid)",
+                    String.format("(%s, %s)", user1.getUuid(), user2.getUuid())
+            );
         }
     }
 
-    private FriendInvitation getFriendInvitation(
-            final User user1,
-            final User user2
-    ) {
-        return friendInvitationRepository.findFriendInvitationByUserIds(user1.getId(), user2.getId())
-                .orElseThrow(() -> new EntityNotFoundException(FriendInvitation.class, "(user1 id, user2 id)", String.format("(%d, %d)", user1.getId(), user2.getId())));
+    private FriendInvitation getFriendInvitation(final UUID user1Uuid, final UUID user2Uuid) {
+        return friendInvitationRepository.findFriendInvitation(user1Uuid, user2Uuid)
+                .orElseThrow(() -> new EntityNotFoundException(
+                        FriendInvitation.class,
+                        "(user1Uuid, user2Uuid)",
+                        String.format("(%s, %s)", user1Uuid, user2Uuid)
+                ));
     }
 }

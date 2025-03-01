@@ -11,6 +11,7 @@ import lombok.experimental.SuperBuilder;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @Entity
 @Table(name = "user_courses")
@@ -25,6 +26,8 @@ public class UserCourse extends CommonEntity {
         this.user = user;
         this.course = course;
     }
+
+    private UUID uuid = UUID.randomUUID();
 
     private Double progress = 0.0;
     private Boolean completed = false;

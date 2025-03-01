@@ -4,9 +4,11 @@ import com.piotrpabich.talktactics.course.entity.CourseLevel;
 import com.piotrpabich.talktactics.course_item.entity.CourseItem;
 import jakarta.validation.constraints.NotNull;
 
+import java.util.UUID;
+
 public record CourseItemPreview(
         @NotNull
-        Long id,
+        UUID uuid,
         @NotNull
         String word,
         @NotNull
@@ -19,9 +21,9 @@ public record CourseItemPreview(
         CourseLevel level
 ) {
 
-    public static CourseItemPreview toDto(final CourseItem courseItem) {
+    public static CourseItemPreview of(final CourseItem courseItem) {
         return new CourseItemPreview(
-                courseItem.getId(),
+                courseItem.getUuid(),
                 courseItem.getWord(),
                 courseItem.getPartOfSpeech(),
                 courseItem.getPhonetic(),

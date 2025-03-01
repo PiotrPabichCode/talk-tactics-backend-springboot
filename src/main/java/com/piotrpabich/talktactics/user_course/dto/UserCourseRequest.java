@@ -2,10 +2,12 @@ package com.piotrpabich.talktactics.user_course.dto;
 
 import jakarta.validation.constraints.NotNull;
 
-public record UserCourseAddRequest(
+import java.util.UUID;
+
+public record UserCourseRequest(
         @NotNull
-        Long courseId,
+        UUID courseUuid,
         @NotNull
-        Long userId
+        UUID userUuid
 ) {
 }

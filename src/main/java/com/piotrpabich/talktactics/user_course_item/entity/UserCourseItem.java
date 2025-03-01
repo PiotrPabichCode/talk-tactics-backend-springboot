@@ -9,6 +9,8 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 
+import java.util.UUID;
+
 @Entity
 @Table(name = "user_course_items")
 @Getter
@@ -17,6 +19,8 @@ import lombok.experimental.SuperBuilder;
 @SuperBuilder(toBuilder = true)
 @EntityListeners(UserCourseItemListeners.class)
 public class UserCourseItem extends CommonEntity {
+
+    private UUID uuid = UUID.randomUUID();
 
     public UserCourseItem(final UserCourse userCourse, final CourseItem courseItem) {
         this.userCourse = userCourse;

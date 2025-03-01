@@ -2,18 +2,19 @@ package com.piotrpabich.talktactics.user_course;
 
 import com.piotrpabich.talktactics.user_course.dto.UserCourseDto;
 import com.piotrpabich.talktactics.user_course.dto.UserCourseQueryCriteria;
-import com.piotrpabich.talktactics.user_course.dto.UserCourseAddRequest;
-import com.piotrpabich.talktactics.user_course.dto.UserCourseDeleteRequest;
+import com.piotrpabich.talktactics.user_course.dto.UserCourseRequest;
 import com.piotrpabich.talktactics.course.CourseService;
 import com.piotrpabich.talktactics.user.entity.User;
 import com.piotrpabich.talktactics.user.UserService;
 import com.piotrpabich.talktactics.user_course.entity.UserCourse;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
+
+import java.util.UUID;
 
 import static com.piotrpabich.talktactics.auth.AuthUtil.validateIfUserHimselfOrAdmin;
 
@@ -34,20 +35,20 @@ public class UserCourseFacade {
         return userCourseService.queryAll(criteria, pageable, requester);
     }
 
-    public UserCourse getById(final Long id, final User requester) {
-        return userCourseService.getById(id, requester);
+    public UserCourse getUserCourseByUuid(final UUID userCourseUuid, final User requester) {
+        return userCourseService.getUserCourseByUuid(userCourseUuid, requester);
     }
 
     @Transactional
-    public void addUserCourse(final UserCourseAddRequest request, final User requester) {
-        final var user = userService.getUserById(request.userId());
-        final var course = courseService.getById(request.courseId());
-        userCourseService.addUserCourse(user, course, requester);
+    public void assignUserCourse(final UserCourseRequest request, final User requester) {
+        final var user = userService.getUserByUuid(request.userUuid());
+        validateIfUserHimselfOrAdmin(requester, user);
+        final var course = courseService.getCourseByUuid(request.courseUuid());
+        userCourseService.assignUserCourse(user, course);
     }
 
-    @Transactional
-    public void deleteUserCourse(final UserCourseDeleteRequest request, final User requester) {
-        final var user = userService.getUserById(request.userId());
+    public void deleteUserCourse(final UserCourseRequest request, final User requester) {
+        final var user = userService.getUserByUuid(request.userUuid());
         validateIfUserHimselfOrAdmin(requester, user);
         userCourseService.deleteUserCourse(request);
     }

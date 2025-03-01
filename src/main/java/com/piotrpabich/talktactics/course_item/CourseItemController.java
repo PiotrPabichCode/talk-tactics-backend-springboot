@@ -13,7 +13,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Set;
+import java.util.UUID;
 
 import static com.piotrpabich.talktactics.common.AppConst.API_V1;
 import static com.piotrpabich.talktactics.common.AppConst.COURSE_ITEMS_PATH;
@@ -34,18 +34,18 @@ public class CourseItemController {
         return ResponseEntity.ok(courseItemService.queryAll(criteria, pageable));
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<CourseItemDto> queryCourseItem(@PathVariable final Long id) {
-        return ResponseEntity.ok(courseItemService.getById(id));
+    @GetMapping("/{courseUuid}")
+    public ResponseEntity<CourseItemDto> queryCourseItem(@PathVariable final UUID courseUuid) {
+        return ResponseEntity.ok(courseItemService.getCourseItemByUuid(courseUuid));
     }
 
-    @DeleteMapping
-    public ResponseEntity<Void> deleteCourseItems(
-            @RequestBody final Set<Long> ids,
+    @DeleteMapping("/{courseUuid}")
+    public ResponseEntity<Void> deleteCourseItem(
+            @PathVariable final UUID courseUuid,
             final HttpServletRequest request
     ) {
         final var requester = authenticationService.getUserFromRequest(request);
-        courseItemService.delete(ids, requester);
-        return ResponseEntity.ok().build();
+        courseItemService.delete(courseUuid, requester);
+        return ResponseEntity.noContent().build();
     }
 }

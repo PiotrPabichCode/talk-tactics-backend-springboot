@@ -13,6 +13,7 @@ import lombok.experimental.SuperBuilder;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @Entity
 @Getter
@@ -24,6 +25,8 @@ import java.util.List;
 public class Course extends CommonEntity {
 
     private String title;
+
+    private UUID uuid = UUID.randomUUID();
 
     @Column(length = 800)
     private String description;
@@ -37,7 +40,7 @@ public class Course extends CommonEntity {
             orphanRemoval = true)
     private List<CourseItem> courseItems = new ArrayList<>();
 
-    private int quantity;
+    private Integer quantity = 0;
 
     @JsonIgnore
     @OneToMany(mappedBy = "course",

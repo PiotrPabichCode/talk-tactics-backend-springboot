@@ -1,19 +1,29 @@
 package com.piotrpabich.talktactics.course.dto;
 
-import jakarta.persistence.Tuple;
+import com.piotrpabich.talktactics.course.entity.Course;
+import com.piotrpabich.talktactics.course.entity.CourseLevel;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+
+import java.util.UUID;
 
 public record CourseNavbarDto(
-        Long id,
+        @NotNull
+        UUID uuid,
+        @NotBlank
         String title,
-        String level,
+        @NotNull
+        CourseLevel level,
+        @Min(0)
         Integer quantity
 ) {
-    public static CourseNavbarDto fromTuple(final Tuple tuple) {
+    public static CourseNavbarDto of(final Course course) {
         return new CourseNavbarDto(
-                tuple.get("id", Long.class),
-                tuple.get("title", String.class),
-                tuple.get("level", String.class),
-                tuple.get("quantity", Integer.class)
+                course.getUuid(),
+                course.getTitle(),
+                course.getLevel(),
+                course.getQuantity()
         );
     }
 }

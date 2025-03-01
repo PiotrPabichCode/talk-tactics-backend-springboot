@@ -2,11 +2,13 @@ package com.piotrpabich.talktactics.user.dto;
 
 import jakarta.validation.constraints.NotNull;
 
+import java.util.UUID;
+
 public record FriendInvitationRequest(
         @NotNull
-        Long senderId,
+        UUID senderUuid,
         @NotNull
-        Long receiverId,
+        UUID receiverUuid,
         @NotNull
         FriendInvitationAction action
 ) {

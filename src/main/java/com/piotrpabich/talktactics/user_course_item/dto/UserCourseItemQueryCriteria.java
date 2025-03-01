@@ -4,12 +4,14 @@ import com.piotrpabich.talktactics.common.Query;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
+import java.util.UUID;
+
 @Data
 public class UserCourseItemQueryCriteria {
-    @NotNull(message = "courseId property cannot be null")
-    private Long courseId;
-    @NotNull(message = "userId property cannot be null")
-    private Long userId;
+    @NotNull(message = "courseUuid property cannot be null")
+    private UUID courseUuid;
+    @NotNull(message = "userUuid property cannot be null")
+    private UUID userUuid;
     @Query
     private Boolean isLearned;
     @Query(propName = "word", joinName = "courseItem" , type = Query.Type.INNER_LIKE)

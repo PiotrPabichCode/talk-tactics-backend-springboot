@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.Data;
 
 import java.util.Set;
+import java.util.UUID;
 
 @Data
 @Builder
@@ -21,10 +22,10 @@ public class UserCourseQueryCriteria {
     private Double minProgress;
     @Query(propName = "progress", type = Query.Type.LESS_THAN)
     private Double maxProgress;
-    @Query(propName = "id", joinName = "user", type = Query.Type.IN)
-    private Set<Long> userIds;
-    @Query(propName = "id", joinName = "course", type = Query.Type.IN)
-    private Set<Long> courseIds;
+    @Query(propName = "uuid", joinName = "user", type = Query.Type.IN)
+    private Set<UUID> userUuids;
+    @Query(propName = "uuid", joinName = "course", type = Query.Type.IN)
+    private Set<UUID> courseUuids;
     @Query(propName = "title", joinName = "course", type = Query.Type.INNER_LIKE)
     private String courseTitle;
     @Query(propName = "description", joinName = "course", type = Query.Type.INNER_LIKE)

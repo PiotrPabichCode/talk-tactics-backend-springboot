@@ -2,9 +2,11 @@ package com.piotrpabich.talktactics.user.dto;
 
 import jakarta.validation.constraints.NotNull;
 
+import java.util.UUID;
+
 public record DeleteFriendRequest(
         @NotNull
-        Long userId,
+        UUID userUuid,
         @NotNull
-        Long friendId
+        UUID friendUuid
 ) { }

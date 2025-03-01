@@ -1,17 +1,11 @@
 package com.piotrpabich.talktactics.user;
 
-import com.piotrpabich.talktactics.user.dto.UserDto;
-import com.piotrpabich.talktactics.user.dto.UserProfileDto;
-import com.piotrpabich.talktactics.user.dto.UserProfilePreviewDto;
-import com.piotrpabich.talktactics.user.dto.UserQueryCriteria;
-import com.piotrpabich.talktactics.user.dto.DeleteFriendRequest;
-import com.piotrpabich.talktactics.user.dto.FriendInvitationRequest;
-import com.piotrpabich.talktactics.user.dto.UpdatePasswordRequest;
-import com.piotrpabich.talktactics.user.dto.FriendInvitationResponse;
+import com.piotrpabich.talktactics.user.dto.*;
 import com.piotrpabich.talktactics.auth.AuthenticationService;
 import com.piotrpabich.talktactics.user.entity.User;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -19,7 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Map;
+import java.util.UUID;
 
 import static com.piotrpabich.talktactics.common.AppConst.API_V1;
 import static com.piotrpabich.talktactics.common.AppConst.USERS_PATH;
@@ -46,20 +40,20 @@ public class UserController {
         return ResponseEntity.ok(userService.getUserProfiles());
     }
 
-    @GetMapping("/profiles/{userId}")
-    public ResponseEntity<UserProfileDto> getUserProfileById(
-            @PathVariable final Long userId
+    @GetMapping("/profiles/{userUuid}")
+    public ResponseEntity<UserProfileDto> getUserProfileByUserUuid(
+            @PathVariable UUID userUuid
     ) {
-        return ResponseEntity.ok(userService.getUserProfileById(userId));
+        return ResponseEntity.ok(userService.getUserProfileByUserUuid(userUuid));
     }
 
-    @GetMapping("/id/{id}/friends")
-    public ResponseEntity<List<UserProfilePreviewDto>> getFriends(
-            @PathVariable final Long id,
+    @GetMapping("/{userUuid}/friends")
+    public ResponseEntity<List<UserProfilePreviewDto>> getUserFriends(
+            @PathVariable final UUID userUuid,
             final HttpServletRequest request
     ) {
         final var requester = authenticationService.getUserFromRequest(request);
-        return ResponseEntity.ok(userService.getFriends(id, requester));
+        return ResponseEntity.ok(userService.getUserFriends(userUuid, requester));
     }
 
     @PostMapping("/friend-invitation")
@@ -82,36 +76,37 @@ public class UserController {
         return ResponseEntity.noContent().build();
     }
 
-    @GetMapping("/id/{id}/received-friend-invitations")
+    @GetMapping("/{userUuid}/received-friend-invitations")
     public ResponseEntity<List<FriendInvitationResponse>> getReceivedFriendInvitations(
-            @PathVariable final Long id,
+            @PathVariable final UUID userUuid,
             @RequestParam(required = false) final Boolean withDetails,
             final HttpServletRequest request
     ) {
         final var requester = authenticationService.getUserFromRequest(request);
-        return ResponseEntity.ok(userService.getReceivedFriendInvitations(id, withDetails, requester));
+        return ResponseEntity.ok(userService.getReceivedFriendInvitations(userUuid, withDetails, requester));
     }
 
-    @GetMapping("/id/{id}/sent-friend-invitations")
+    @GetMapping("/{userUuid}/sent-friend-invitations")
     public ResponseEntity<List<FriendInvitationResponse>> getSentFriendInvitations(
-            @PathVariable final Long id,
+            @PathVariable final UUID userUuid,
             @RequestParam(required = false) final Boolean withDetails,
             final HttpServletRequest request
     ) {
         final var requester = authenticationService.getUserFromRequest(request);
-        return ResponseEntity.ok(userService.getSentFriendInvitations(id, withDetails, requester));
+        return ResponseEntity.ok(userService.getSentFriendInvitations(userUuid, withDetails, requester));
     }
 
-    @GetMapping("/id/{id}")
-    public ResponseEntity<User> getUserById(
-            @PathVariable final Long id,
+    @GetMapping("/{userUuid}")
+    public ResponseEntity<User> getUserByUuid(
+            @PathVariable final UUID userUuid,
             final HttpServletRequest request
     ) {
         final var requester = authenticationService.getUserFromRequest(request);
-        return ResponseEntity.ok(userService.getUserById(id, requester));
+        return ResponseEntity.ok(userService.getUserByUuid(userUuid, requester));
     }
+
     @GetMapping("/username/{username}")
-    public ResponseEntity<User> findByUsername(
+    public ResponseEntity<User> getUserByUsername(
             @PathVariable final String username,
             final HttpServletRequest request
     ) {
@@ -119,30 +114,30 @@ public class UserController {
         return ResponseEntity.ok(userService.getUserByUsername(username, requester));
     }
 
-    @PatchMapping("/id/{id}")
+    @PatchMapping("/{userUuid}")
     public ResponseEntity<Void> updateUser(
-            @PathVariable final Long id,
-            @RequestBody final Map<String, Object> fields,
+            @PathVariable final UUID userUuid,
+            @RequestBody final UpdateUserRequest updateUserRequest,
             final HttpServletRequest request
     ) {
         final var requester = authenticationService.getUserFromRequest(request);
-        userService.updateUser(id, fields, requester);
-        return ResponseEntity.noContent().build();
+        userService.updateUser(userUuid, updateUserRequest, requester);
+        return ResponseEntity.accepted().build();
     }
 
-    @DeleteMapping("/id/{id}")
+    @DeleteMapping("/{userUuid}")
     public ResponseEntity<Void> deleteUser(
-            @PathVariable final Long id,
+            @PathVariable final UUID userUuid,
             final HttpServletRequest request
     ) {
         final var requester = authenticationService.getUserFromRequest(request);
-        userService.deleteUser(id, requester);
+        userService.deleteUser(userUuid, requester);
         return ResponseEntity.noContent().build();
     }
 
     @PutMapping("/password")
     public ResponseEntity<Void> updatePassword(
-            @RequestBody final UpdatePasswordRequest updatePasswordRequest,
+            @Valid @RequestBody final UpdatePasswordRequest updatePasswordRequest,
             final HttpServletRequest request
     ) {
         final var requester = authenticationService.getUserFromRequest(request);

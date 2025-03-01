@@ -13,7 +13,7 @@ public record UserDto(
         Integer totalPoints,
         Role role
 ) {
-    public static UserDto from(final User user) {
+    public static UserDto of(final User user) {
         return new UserDto(
                 user.getId(),
                 user.getUsername(),

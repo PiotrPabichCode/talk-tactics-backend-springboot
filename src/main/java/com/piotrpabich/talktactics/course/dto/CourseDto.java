@@ -11,7 +11,7 @@ public record CourseDto(
         Integer quantity,
         Integer points
 ) {
-    public static CourseDto from(final Course course) {
+    public static CourseDto of(final Course course) {
         return new CourseDto(
                 course.getId(),
                 course.getTitle(),

@@ -2,8 +2,7 @@ package com.piotrpabich.talktactics.user_course;
 
 import com.piotrpabich.talktactics.user_course.dto.UserCourseDto;
 import com.piotrpabich.talktactics.user_course.dto.UserCourseQueryCriteria;
-import com.piotrpabich.talktactics.user_course.dto.UserCourseDeleteRequest;
-import com.piotrpabich.talktactics.user_course.dto.UserCourseAddRequest;
+import com.piotrpabich.talktactics.user_course.dto.UserCourseRequest;
 import com.piotrpabich.talktactics.user_course.entity.UserCourse;
 import com.piotrpabich.talktactics.auth.AuthenticationService;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -15,6 +14,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.UUID;
 
 import static com.piotrpabich.talktactics.common.AppConst.API_V1;
 import static com.piotrpabich.talktactics.common.AppConst.USER_COURSES_PATH;
@@ -38,32 +39,32 @@ public class UserCourseController {
         return ResponseEntity.ok(userCourseFacade.queryAll(criteria, pageable, requester));
     }
 
-    @GetMapping("/id/{id}")
-    public ResponseEntity<UserCourse> getById(
-            @PathVariable final Long id,
+    @GetMapping("/{userCourseUuid}")
+    public ResponseEntity<UserCourse> getUserCourseByUuid(
+            @PathVariable final UUID userCourseUuid,
             final HttpServletRequest request
     ) {
         final var requester = authenticationService.getUserFromRequest(request);
-        return ResponseEntity.ok(userCourseFacade.getById(id, requester));
+        return ResponseEntity.ok(userCourseFacade.getUserCourseByUuid(userCourseUuid, requester));
     }
 
     @PutMapping
-    public ResponseEntity<Void> addCourseToUser(
-            @RequestBody @Valid final UserCourseAddRequest addRequest,
+    public ResponseEntity<Void> assignCourseToUser(
+            @RequestBody @Valid final UserCourseRequest addRequest,
             final HttpServletRequest request
     ) {
         final var requester = authenticationService.getUserFromRequest(request);
-        userCourseFacade.addUserCourse(addRequest, requester);
+        userCourseFacade.assignUserCourse(addRequest, requester);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
     @DeleteMapping
     public ResponseEntity<Void> deleteUserCourse(
-            @RequestBody @Valid final UserCourseDeleteRequest deleteRequest,
+            @RequestBody @Valid final UserCourseRequest deleteRequest,
             final HttpServletRequest request
     ) {
         final var requester = authenticationService.getUserFromRequest(request);
         userCourseFacade.deleteUserCourse(deleteRequest, requester);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.noContent().build();
     }
 }

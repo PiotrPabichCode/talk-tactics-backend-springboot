@@ -4,10 +4,12 @@ import com.piotrpabich.talktactics.common.Query;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
+import java.util.UUID;
+
 @Data
 public class CourseItemQueryCriteria {
-    @NotNull(message = "courseId property cannot be null")
-    private Long courseId;
+    @NotNull(message = "courseUuid property cannot be null")
+    private UUID courseUuid;
     @Query(propName = "word", type = Query.Type.INNER_LIKE)
     private String word;
     @Query(propName = "partOfSpeech", type = Query.Type.INNER_LIKE)

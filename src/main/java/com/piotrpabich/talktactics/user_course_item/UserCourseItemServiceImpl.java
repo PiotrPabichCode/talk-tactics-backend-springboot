@@ -12,6 +12,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
+import java.util.UUID;
+
 import static com.piotrpabich.talktactics.auth.AuthUtil.validateIfUserHimselfOrAdmin;
 import static com.piotrpabich.talktactics.common.QueryHelp.getPredicate;
 
@@ -28,14 +30,14 @@ public class UserCourseItemServiceImpl implements UserCourseItemService {
             final Pageable pageable
     ) {
         return userCourseItemRepository.findAll(getUserCourseItemSpecification(criteria), pageable)
-                .map(UserCourseItemDto::toDto);
+                .map(UserCourseItemDto::of);
     }
 
     @Override
-    public void learnUserCourseItem(final Long id, final User requester) {
-        final var userCourseItem = getById(id);
-        final var userCourse = userCourseItem.getUserCourse();
-        validateIfUserHimselfOrAdmin(requester, userCourse.getUser());
+    public void learnUserCourseItem(final UUID userCourseItemUuid, final User requester) {
+        final var userCourseItem = getUserCourseItemByUuid(userCourseItemUuid);
+        final var user = userCourseItem.getUserCourse().getUser();
+        validateIfUserHimselfOrAdmin(requester, user);
 
         if (userCourseItem.isLearned()) {
             throw new IllegalArgumentException("UserCourseItem already learned");
@@ -52,15 +54,17 @@ public class UserCourseItemServiceImpl implements UserCourseItemService {
             final var userCourseRoot = root.get("userCourse");
             return criteriaBuilder.and(
                     getPredicate(root, criteria, criteriaBuilder),
-                    criteriaBuilder.equal(userCourseRoot.get("course").get("id"), criteria.getCourseId()),
-                    criteriaBuilder.equal(userCourseRoot.get("user").get("id"), criteria.getUserId())
+                    criteriaBuilder.equal(userCourseRoot.get("course").get("uuid"), criteria.getCourseUuid()),
+                    criteriaBuilder.equal(userCourseRoot.get("user").get("uuid"), criteria.getUserUuid())
             );
         };
     }
 
-    private UserCourseItem getById(final Long id) {
-        return userCourseItemRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException(UserCourseItem.class, "id", String.valueOf(id)));
+    private UserCourseItem getUserCourseItemByUuid(final UUID userCourseItemUuid) {
+        return userCourseItemRepository.findByUuid(userCourseItemUuid)
+                .orElseThrow(() -> new EntityNotFoundException(
+                        UserCourseItem.class,
+                        "uuid",
+                        String.valueOf(userCourseItemUuid)));
     }
-
 }

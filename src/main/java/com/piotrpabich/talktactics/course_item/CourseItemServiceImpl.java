@@ -12,9 +12,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Set;
+import java.util.UUID;
 
 import static com.piotrpabich.talktactics.auth.AuthUtil.validateIfUserAdmin;
 import static com.piotrpabich.talktactics.common.QueryHelp.getPredicate;
@@ -32,21 +31,23 @@ public class CourseItemServiceImpl implements CourseItemService {
             final Pageable pageable
     ) {
         return courseItemRepository.findAll(getCourseItemSpecification(criteria), pageable)
-                .map(CourseItemPreview::toDto);
+                .map(CourseItemPreview::of);
     }
 
     @Override
-    public CourseItemDto getById(final Long id) {
-        return courseItemRepository.findById(id)
-                .map(CourseItemDto::toDto)
-                .orElseThrow(() -> new EntityNotFoundException(CourseItemDto.class, "id", id.toString()));
+    public CourseItemDto getCourseItemByUuid(final UUID uuid) {
+        return courseItemRepository.findByUuid(uuid)
+                .map(CourseItemDto::of)
+                .orElseThrow(() -> new EntityNotFoundException(CourseItemDto.class, "uuid", uuid.toString()));
     }
 
     @Override
-    @Transactional
-    public void delete(final Set<Long> ids, final User requester) {
+    public void delete(final UUID uuid, final User requester) {
         validateIfUserAdmin(requester);
-        courseItemRepository.deleteAllById(ids);
+        if (!courseItemRepository.existsByUuid(uuid)) {
+            throw new EntityNotFoundException(CourseItemDto.class, "uuid", uuid.toString());
+        }
+        courseItemRepository.deleteByUuid(uuid);
     }
 
     private Specification<CourseItem> getCourseItemSpecification(
@@ -54,8 +55,8 @@ public class CourseItemServiceImpl implements CourseItemService {
     ) {
         return (root, criteriaQuery, criteriaBuilder) ->
                 criteriaBuilder.and(
-                        getPredicate(root, criteria, criteriaBuilder),
-                        criteriaBuilder.equal(root.get("course").get("id"), criteria.getCourseId())
+                    getPredicate(root, criteria, criteriaBuilder),
+                    criteriaBuilder.equal(root.get("course").get("uuid"), criteria.getCourseUuid())
                 );
     }
 }

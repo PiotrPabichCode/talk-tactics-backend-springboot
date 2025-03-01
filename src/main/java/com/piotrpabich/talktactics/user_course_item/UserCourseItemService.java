@@ -6,7 +6,9 @@ import com.piotrpabich.talktactics.user.entity.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import java.util.UUID;
+
 public interface UserCourseItemService {
     Page<UserCourseItemDto> queryAll(UserCourseItemQueryCriteria criteria, Pageable pageable);
-    void learnUserCourseItem(Long id, User requester);
+    void learnUserCourseItem(UUID userCourseItemUuid, User requester);
 }

@@ -12,6 +12,7 @@ import lombok.experimental.SuperBuilder;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @Entity
 @Table(name = "course_items")
@@ -20,6 +21,8 @@ import java.util.List;
 @RequiredArgsConstructor
 @SuperBuilder(toBuilder = true)
 public class CourseItem extends CommonEntity {
+
+    private UUID uuid = UUID.randomUUID();
 
     private String word;
 

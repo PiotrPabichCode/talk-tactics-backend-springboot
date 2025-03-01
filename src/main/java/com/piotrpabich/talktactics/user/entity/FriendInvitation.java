@@ -2,6 +2,7 @@ package com.piotrpabich.talktactics.user.entity;
 
 import com.piotrpabich.talktactics.common.CommonEntity;
 import com.piotrpabich.talktactics.user.dto.FriendInvitationResponse;
+import com.piotrpabich.talktactics.user.dto.UserProfilePreviewDto;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
@@ -24,17 +25,17 @@ public class FriendInvitation extends CommonEntity {
     public FriendInvitationResponse toFriendInvitationDto(Boolean withDetails) {
         if(withDetails == null || !withDetails) {
             return new FriendInvitationResponse(
-                    sender.getId(),
-                    receiver.getId(),
+                    sender.getUuid(),
+                    receiver.getUuid(),
                     null,
                     null
             );
         }
         return new FriendInvitationResponse(
-                sender.getId(),
-                receiver.getId(),
-                sender.toUserProfilePreviewDto(),
-                receiver.toUserProfilePreviewDto()
+                sender.getUuid(),
+                receiver.getUuid(),
+                UserProfilePreviewDto.of(sender),
+                UserProfilePreviewDto.of(receiver)
         );
     }
 }

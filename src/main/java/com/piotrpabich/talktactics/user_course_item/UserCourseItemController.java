@@ -12,6 +12,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.UUID;
+
 import static com.piotrpabich.talktactics.common.AppConst.API_V1;
 import static com.piotrpabich.talktactics.common.AppConst.USER_COURSE_ITEMS_PATH;
 
@@ -34,13 +36,13 @@ public class UserCourseItemController {
         return ResponseEntity.ok(userCourseItemFacade.queryAll(criteria, pageable, requester));
     }
 
-    @PostMapping("/learn/id/{id}")
+    @PostMapping("/learn/{userCourseItemUuid}")
     public ResponseEntity<Void> learnUserCourseItem(
-            @PathVariable final Long id,
+            @PathVariable final UUID userCourseItemUuid,
             final HttpServletRequest request
     ) {
         final var requester = authenticationService.getUserFromRequest(request);
-        userCourseItemFacade.learnUserCourseItem(id, requester);
+        userCourseItemFacade.learnUserCourseItem(userCourseItemUuid, requester);
         return ResponseEntity.noContent().build();
     }
 }

@@ -1,13 +1,11 @@
 package com.piotrpabich.talktactics.user.entity;
 
 import com.piotrpabich.talktactics.common.CommonEntity;
-import com.piotrpabich.talktactics.user.dto.UserProfilePreviewDto;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.piotrpabich.talktactics.user_course.entity.UserCourse;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.Size;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.springframework.security.core.GrantedAuthority;
@@ -17,6 +15,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.UUID;
 
 @Entity
 @Table(name = "users")
@@ -25,6 +24,8 @@ import java.util.List;
 @RequiredArgsConstructor
 @SuperBuilder(toBuilder = true)
 public class User extends CommonEntity implements UserDetails {
+
+    private UUID uuid = UUID.randomUUID();
 
     @Column(unique = true)
     private String username;
@@ -113,16 +114,6 @@ public class User extends CommonEntity implements UserDetails {
     @Override
     public boolean isEnabled() {
         return true;
-    }
-
-    public UserProfilePreviewDto toUserProfilePreviewDto() {
-        return new UserProfilePreviewDto(
-                this.getId(),
-                this.getFirstName(),
-                this.getLastName(),
-                this.getTotalPoints(),
-                this.getBio()
-        );
     }
 
     public boolean isAdmin() {

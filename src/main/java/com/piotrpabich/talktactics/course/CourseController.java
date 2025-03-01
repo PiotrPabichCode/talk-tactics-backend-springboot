@@ -1,22 +1,23 @@
 package com.piotrpabich.talktactics.course;
 
+import com.piotrpabich.talktactics.common.UuidResponse;
 import com.piotrpabich.talktactics.course.dto.CourseDto;
 import com.piotrpabich.talktactics.course.dto.CourseNavbarDto;
 import com.piotrpabich.talktactics.course.dto.CourseQueryCriteria;
-import com.piotrpabich.talktactics.course.entity.Course;
+import com.piotrpabich.talktactics.course.dto.CourseRequest;
 import com.piotrpabich.talktactics.auth.AuthenticationService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Set;
+import java.util.UUID;
 
 import static com.piotrpabich.talktactics.common.AppConst.API_V1;
 import static com.piotrpabich.talktactics.common.AppConst.COURSES_PATH;
@@ -43,31 +44,33 @@ public class CourseController {
     }
 
     @PostMapping
-    public ResponseEntity<Void> createCourse(
-            @Validated @RequestBody final Course course,
+    public ResponseEntity<UuidResponse> createCourse(
+            @Valid @RequestBody final CourseRequest courseRequest,
             final HttpServletRequest request
     ) {
         final var requester = authenticationService.getUserFromRequest(request);
-        courseService.create(course, requester);
-        return ResponseEntity.status(HttpStatus.CREATED).build();
-    }
-    @PutMapping
-    public ResponseEntity<Void> updateCourse(
-            @RequestBody final Course resources,
-            final HttpServletRequest request
-    ) {
-        final var requester = authenticationService.getUserFromRequest(request);
-        courseService.update(resources, requester);
-        return ResponseEntity.noContent().build();
+        final var response = courseService.create(courseRequest, requester);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
-    @DeleteMapping
-    public ResponseEntity<Void> deleteCourses(
-            @RequestBody final Set<Long> ids,
+    @PatchMapping("/{courseUuid}")
+    public ResponseEntity<Void> updateCourse(
+            @PathVariable final UUID courseUuid,
+            @RequestBody final CourseRequest updateRequest,
             final HttpServletRequest request
     ) {
         final var requester = authenticationService.getUserFromRequest(request);
-        courseService.delete(ids, requester);
-        return ResponseEntity.ok().build();
+        courseService.update(courseUuid, updateRequest, requester);
+        return ResponseEntity.accepted().build();
+    }
+
+    @DeleteMapping("/{courseUuid}")
+    public ResponseEntity<Void> deleteCourses(
+            @PathVariable final UUID courseUuid,
+            final HttpServletRequest request
+    ) {
+        final var requester = authenticationService.getUserFromRequest(request);
+        courseService.delete(courseUuid, requester);
+        return ResponseEntity.noContent().build();
     }
 }
