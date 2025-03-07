@@ -41,24 +41,22 @@ com
 
 1. Install Docker on your machine.
 2. Ensure Maven is installed.
-3. Make sure you have installed Java. I used Java 17.
+3. Make sure you have installed Java. I used Java 21.
 
 ## How to start
 
 1. Clone repository: `git clone https://github.com/PiotrPabichCode/talk-tactics-backend-springboot.git`
-2. Configure Secrets
-
-```bash
-DB_HOST=_YOUR_DATABASE_HOSTNAME
-DB_PORT=_YOUR_DATABASE_PORT
-DB_USERNAME=_YOUR_DATABASE_USERNAME
-DB_PASSWORD=_YOUR_DATABASE_PASSWORD
-DB_DATABASE=_YOUR_DATABASE_NAME
-JWT_SECRET_KEY=_RANDOM_JWT_SECRET_KEY
-JWT_TOKEN_EXPIRATION=_EXPIRATION_IN_MS
-JWT_REFRESH_TOKEN_EXPIRATION=_REFRESH_EXPIRATION_IN_MS
-```
-
+2. Configure Secrets:
+    ```bash
+    DB_HOST=_YOUR_DATABASE_HOSTNAME
+    DB_PORT=_YOUR_DATABASE_PORT
+    DB_USERNAME=_YOUR_DATABASE_USERNAME
+    DB_PASSWORD=_YOUR_DATABASE_PASSWORD
+    DB_DATABASE=_YOUR_DATABASE_NAME
+    JWT_SECRET_KEY=_RANDOM_JWT_SECRET_KEY
+    JWT_TOKEN_EXPIRATION=_EXPIRATION_IN_MS
+    JWT_REFRESH_TOKEN_EXPIRATION=_REFRESH_EXPIRATION_IN_MS
+    ```
 3. Update the `application.yml` properties file located in the backend directory to match your specific needs.
 4. Open a command-line interface (CLI) or terminal and navigate to the backend directory of the project.
 5. Install all dependencies from `pom.xml` file
