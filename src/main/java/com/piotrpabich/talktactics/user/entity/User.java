@@ -1,13 +1,11 @@
 package com.piotrpabich.talktactics.user.entity;
 
 import com.piotrpabich.talktactics.common.CommonEntity;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.piotrpabich.talktactics.user_course.entity.UserCourse;
+import com.piotrpabich.talktactics.course.participant.entity.CourseParticipant;
+import com.piotrpabich.talktactics.user.friend.entity.FriendInvitation;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import lombok.*;
-import lombok.experimental.SuperBuilder;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -22,7 +20,6 @@ import java.util.UUID;
 @Getter
 @Setter
 @RequiredArgsConstructor
-@SuperBuilder(toBuilder = true)
 public class User extends CommonEntity implements UserDetails {
 
     private UUID uuid = UUID.randomUUID();
@@ -30,7 +27,6 @@ public class User extends CommonEntity implements UserDetails {
     @Column(unique = true)
     private String username;
 
-    @JsonIgnore
     private String password;
 
     private String firstName;
@@ -48,12 +44,9 @@ public class User extends CommonEntity implements UserDetails {
     @Enumerated(EnumType.STRING)
     private Role role;
 
-    @JsonIgnore
-    @JsonIgnoreProperties("user")
     @OneToMany(mappedBy = "user", orphanRemoval = true)
-    private List<UserCourse> userCourses = new ArrayList<>();
+    private List<CourseParticipant> courseParticipants = new ArrayList<>();
 
-    @JsonIgnore
     @ManyToMany
     @JoinTable(
             name = "user_friends",
@@ -62,17 +55,14 @@ public class User extends CommonEntity implements UserDetails {
     )
     private List<User> friends = new ArrayList<>();
 
-    @JsonIgnore
     @OneToMany(mappedBy = "sender", orphanRemoval = true)
     @OrderBy("createdAt DESC")
     private List<FriendInvitation> sentFriendInvitations = new ArrayList<>();
 
-    @JsonIgnore
     @OneToMany(mappedBy = "receiver", orphanRemoval = true)
     @OrderBy("createdAt DESC")
     private List<FriendInvitation> receivedFriendInvitations = new ArrayList<>();
 
-    @JsonIgnore
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of(new SimpleGrantedAuthority(role.name()));
@@ -83,25 +73,21 @@ public class User extends CommonEntity implements UserDetails {
         return username;
     }
 
-    @JsonIgnore
     @Override
     public boolean isAccountNonExpired() {
         return true;
     }
 
-    @JsonIgnore
     @Override
     public boolean isAccountNonLocked() {
         return true;
     }
 
-    @JsonIgnore
     @Override
     public boolean isCredentialsNonExpired() {
         return true;
     }
 
-    @JsonIgnore
     @Override
     public boolean isEnabled() {
         return true;

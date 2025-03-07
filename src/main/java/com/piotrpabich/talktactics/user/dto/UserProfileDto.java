@@ -1,6 +1,6 @@
 package com.piotrpabich.talktactics.user.dto;
 
-import com.piotrpabich.talktactics.user_course.dto.UserCourseDto;
+import com.piotrpabich.talktactics.course.participant.dto.CourseParticipantDto;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 
@@ -19,11 +19,11 @@ public record UserProfileDto(
         @NotNull
         String bio,
         @NotNull
-        List<UserCourseDto> courses
+        List<CourseParticipantDto> courses
 ){
     public static UserProfileDto of(
         final UserProfilePreviewDto userProfile,
-        final List<UserCourseDto> userCourses
+        final List<CourseParticipantDto> courseParticipants
     ) {
         return new UserProfileDto(
             userProfile.uuid(),
@@ -31,7 +31,7 @@ public record UserProfileDto(
             userProfile.lastName(),
             userProfile.totalPoints(),
             userProfile.bio(),
-            userCourses
+            courseParticipants
         );
     }
 }

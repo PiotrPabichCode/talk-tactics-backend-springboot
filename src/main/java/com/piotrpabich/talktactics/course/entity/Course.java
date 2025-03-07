@@ -2,15 +2,10 @@ package com.piotrpabich.talktactics.course.entity;
 
 import com.piotrpabich.talktactics.common.CommonEntity;
 import com.piotrpabich.talktactics.course.CourseConstants;
-import com.piotrpabich.talktactics.course_item.entity.CourseItem;
-import com.piotrpabich.talktactics.user_course.entity.UserCourse;
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.piotrpabich.talktactics.course.word.entity.CourseWord;
+import com.piotrpabich.talktactics.course.participant.entity.CourseParticipant;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import lombok.*;
-import lombok.experimental.SuperBuilder;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -19,9 +14,7 @@ import java.util.UUID;
 @Getter
 @Setter
 @RequiredArgsConstructor
-@SuperBuilder(toBuilder = true)
 @Table(name = "courses")
-@EntityListeners(CourseEntityListeners.class)
 public class Course extends CommonEntity {
 
     private String title;
@@ -34,19 +27,20 @@ public class Course extends CommonEntity {
     @Enumerated(EnumType.STRING)
     private CourseLevel level;
 
-    @JsonIgnore
-    @OneToMany(mappedBy = "course",
-            cascade = CascadeType.ALL,
-            orphanRemoval = true)
-    private List<CourseItem> courseItems = new ArrayList<>();
+    @OneToMany(mappedBy = "course", orphanRemoval = true)
+    private List<CourseWord> courseWords = new ArrayList<>();
 
     private Integer quantity = 0;
 
-    @JsonIgnore
-    @OneToMany(mappedBy = "course",
-            cascade = CascadeType.ALL,
-            orphanRemoval = true)
-    private List<UserCourse> userCourses = new ArrayList<>();
+    @OneToMany(mappedBy = "course", orphanRemoval = true)
+    private List<CourseParticipant> courseParticipants = new ArrayList<>();
+
+    @PreUpdate
+    public void beforeUpdate() {
+        if(this.getCourseWords() != null) {
+            this.setQuantity(this.getCourseWords().size());
+        }
+    }
 
     public int getPoints() {
         return switch (this.level) {

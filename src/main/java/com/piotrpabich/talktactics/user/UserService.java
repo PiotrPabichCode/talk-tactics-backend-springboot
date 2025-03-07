@@ -3,15 +3,16 @@ package com.piotrpabich.talktactics.user;
 import com.piotrpabich.talktactics.auth.AuthConstants;
 import com.piotrpabich.talktactics.exception.NotFoundException;
 import com.piotrpabich.talktactics.user.dto.*;
-import com.piotrpabich.talktactics.user.dto.DeleteFriendRequest;
-import com.piotrpabich.talktactics.user.dto.FriendInvitationRequest;
-import com.piotrpabich.talktactics.user.dto.FriendInvitationResponse;
-import com.piotrpabich.talktactics.user.entity.FriendInvitationType;
-import com.piotrpabich.talktactics.user_course.dto.UserCourseDto;
+import com.piotrpabich.talktactics.user.friend.dto.DeleteFriendRequest;
+import com.piotrpabich.talktactics.user.friend.dto.FriendInvitationRequest;
+import com.piotrpabich.talktactics.user.friend.dto.FriendInvitationResponse;
+import com.piotrpabich.talktactics.user.friend.FriendInvitationType;
+import com.piotrpabich.talktactics.course.participant.dto.CourseParticipantDto;
 import com.piotrpabich.talktactics.exception.BadRequestException;
-import com.piotrpabich.talktactics.user.entity.FriendInvitation;
+import com.piotrpabich.talktactics.user.friend.entity.FriendInvitation;
 import com.piotrpabich.talktactics.user.entity.User;
 import com.piotrpabich.talktactics.common.QueryHelp;
+import com.piotrpabich.talktactics.user.friend.FriendInvitationService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.data.domain.Page;
@@ -97,12 +98,12 @@ public class UserService {
         final var user = userRepository.findByUuidWithCourses(userUuid)
                 .orElseThrow(() -> new NotFoundException(String.format("User with uuid: %s was not found", userUuid)));
         final var userProfile = UserProfilePreviewDto.of(user);
-        final var userCourses = user.getUserCourses()
+        final var courseParticipants = user.getCourseParticipants()
                 .stream()
-                .map(UserCourseDto::of)
+                .map(CourseParticipantDto::of)
                 .toList();
 
-        return UserProfileDto.of(userProfile, userCourses);
+        return UserProfileDto.of(userProfile, courseParticipants);
     }
 
     public List<UserProfilePreviewDto> getUserFriends(final UUID userUuid, final User requester) {

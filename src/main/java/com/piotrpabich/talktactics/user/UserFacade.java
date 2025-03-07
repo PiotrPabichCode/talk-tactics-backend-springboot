@@ -1,8 +1,11 @@
 package com.piotrpabich.talktactics.user;
 
 import com.piotrpabich.talktactics.user.dto.*;
-import com.piotrpabich.talktactics.user.entity.FriendInvitationType;
+import com.piotrpabich.talktactics.user.friend.FriendInvitationType;
 import com.piotrpabich.talktactics.user.entity.User;
+import com.piotrpabich.talktactics.user.friend.dto.DeleteFriendRequest;
+import com.piotrpabich.talktactics.user.friend.dto.FriendInvitationRequest;
+import com.piotrpabich.talktactics.user.friend.dto.FriendInvitationResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

@@ -2,7 +2,10 @@ package com.piotrpabich.talktactics.user;
 
 import com.piotrpabich.talktactics.auth.AuthenticationService;
 import com.piotrpabich.talktactics.user.dto.*;
-import com.piotrpabich.talktactics.user.entity.FriendInvitationType;
+import com.piotrpabich.talktactics.user.friend.FriendInvitationType;
+import com.piotrpabich.talktactics.user.friend.dto.DeleteFriendRequest;
+import com.piotrpabich.talktactics.user.friend.dto.FriendInvitationRequest;
+import com.piotrpabich.talktactics.user.friend.dto.FriendInvitationResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;

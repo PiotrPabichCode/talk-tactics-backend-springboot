@@ -31,14 +31,13 @@ public class AuthenticationService {
 
     public AuthenticationResponse register(final RegisterRequest request) {
         validateNewUser(request);
-        final var user = User.builder()
-                .username(request.username())
-                .password(passwordEncoder.encode(request.password()))
-                .email(request.email())
-                .firstName(request.firstName())
-                .lastName(request.lastName())
-                .role(Role.USER)
-                .build();
+        final var user = new User();
+        user.setUsername(request.username());
+        user.setPassword(passwordEncoder.encode(request.password()));
+        user.setEmail(request.email());
+        user.setFirstName(request.firstName());
+        user.setLastName(request.lastName());
+        user.setRole(Role.USER);
         userRepository.save(user);
         final var jwtToken = tokenService.generateToken(user);
         final var jwtRefreshToken = tokenService.generateRefreshToken(user);
