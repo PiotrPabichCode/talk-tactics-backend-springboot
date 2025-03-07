@@ -16,7 +16,6 @@ import java.util.UUID;
 @Getter
 @Setter
 @RequiredArgsConstructor
-@SuperBuilder(toBuilder = true)
 @EntityListeners(UserCourseItemListeners.class)
 public class UserCourseItem extends CommonEntity {
 

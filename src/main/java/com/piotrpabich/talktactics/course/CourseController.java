@@ -1,11 +1,11 @@
 package com.piotrpabich.talktactics.course;
 
+import com.piotrpabich.talktactics.auth.AuthenticationService;
 import com.piotrpabich.talktactics.common.UuidResponse;
 import com.piotrpabich.talktactics.course.dto.CourseDto;
 import com.piotrpabich.talktactics.course.dto.CourseNavbarDto;
 import com.piotrpabich.talktactics.course.dto.CourseQueryCriteria;
 import com.piotrpabich.talktactics.course.dto.CourseRequest;
-import com.piotrpabich.talktactics.auth.AuthenticationService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
@@ -25,7 +25,7 @@ import static com.piotrpabich.talktactics.common.AppConst.COURSES_PATH;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping(API_V1 + COURSES_PATH)
-@Tag(name = "CourseController", description = "Courses management APIs")
+@Tag(name = "CourseController")
 public class CourseController {
     private final CourseService courseService;
     private final AuthenticationService authenticationService;
@@ -45,7 +45,7 @@ public class CourseController {
 
     @PostMapping
     public ResponseEntity<UuidResponse> createCourse(
-            @Valid @RequestBody final CourseRequest courseRequest,
+            @RequestBody @Valid final CourseRequest courseRequest,
             final HttpServletRequest request
     ) {
         final var requester = authenticationService.getUserFromRequest(request);
@@ -65,7 +65,7 @@ public class CourseController {
     }
 
     @DeleteMapping("/{courseUuid}")
-    public ResponseEntity<Void> deleteCourses(
+    public ResponseEntity<Void> deleteCourse(
             @PathVariable final UUID courseUuid,
             final HttpServletRequest request
     ) {

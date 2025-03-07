@@ -1,10 +1,10 @@
 package com.piotrpabich.talktactics.user_course;
 
+import com.piotrpabich.talktactics.auth.AuthenticationService;
 import com.piotrpabich.talktactics.user_course.dto.UserCourseDto;
 import com.piotrpabich.talktactics.user_course.dto.UserCourseQueryCriteria;
 import com.piotrpabich.talktactics.user_course.dto.UserCourseRequest;
 import com.piotrpabich.talktactics.user_course.entity.UserCourse;
-import com.piotrpabich.talktactics.auth.AuthenticationService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
@@ -23,7 +23,7 @@ import static com.piotrpabich.talktactics.common.AppConst.USER_COURSES_PATH;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping(API_V1 + USER_COURSES_PATH)
-@Tag(name = "UserCourseController", description = "User courses management APIs")
+@Tag(name = "UserCourseController")
 public class UserCourseController {
 
     private final UserCourseFacade userCourseFacade;

@@ -1,15 +1,10 @@
 package com.piotrpabich.talktactics.exception;
 
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.http.HttpStatus;
 
-import static org.springframework.http.HttpStatus.FORBIDDEN;
+public class ForbiddenException extends CustomHttpException {
 
-@Slf4j
-@ResponseStatus(FORBIDDEN)
-public class ForbiddenException extends RuntimeException {
     public ForbiddenException(final String message) {
-        super(message);
-        log.warn(message);
+        super(HttpStatus.FORBIDDEN, message);
     }
 }

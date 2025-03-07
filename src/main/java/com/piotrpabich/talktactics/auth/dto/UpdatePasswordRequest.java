@@ -1,16 +1,17 @@
-package com.piotrpabich.talktactics.user.dto;
+package com.piotrpabich.talktactics.auth.dto;
 
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 
 import java.util.UUID;
 
 public record UpdatePasswordRequest(
         @NotNull
         UUID userUuid,
-        @NotNull
+        @Size(min = 8, max = 100)
         String oldPassword,
-        @NotNull
+        @Size(min = 8, max = 100)
         String newPassword,
-        @NotNull
+        @Size(min = 8, max = 100)
         String repeatNewPassword
 ) { }

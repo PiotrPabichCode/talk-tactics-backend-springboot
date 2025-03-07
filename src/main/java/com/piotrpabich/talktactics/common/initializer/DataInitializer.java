@@ -20,7 +20,7 @@ import com.piotrpabich.talktactics.user_course_item.UserCourseItemRepository;
 import com.piotrpabich.talktactics.user_course_item.entity.UserCourseItem;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import lombok.extern.log4j.Log4j2;
 import net.datafaker.Faker;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
@@ -35,7 +35,7 @@ import java.util.*;
 
 @Component
 @Transactional
-@Slf4j
+@Log4j2
 @RequiredArgsConstructor
 public class DataInitializer implements ApplicationRunner {
 

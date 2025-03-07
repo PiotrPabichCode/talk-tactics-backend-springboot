@@ -3,11 +3,11 @@ package com.piotrpabich.talktactics.common;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.ObjectUtil;
 import jakarta.persistence.criteria.*;
-import lombok.extern.slf4j.Slf4j;
+import lombok.extern.log4j.Log4j2;
 import java.lang.reflect.Field;
 import java.util.*;
 
-@Slf4j
+@Log4j2
 @SuppressWarnings({"unchecked","all"})
 public class QueryHelp {
 

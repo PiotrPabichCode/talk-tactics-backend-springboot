@@ -1,8 +1,8 @@
 package com.piotrpabich.talktactics.user;
 
-import com.piotrpabich.talktactics.user.dto.*;
 import com.piotrpabich.talktactics.auth.AuthenticationService;
-import com.piotrpabich.talktactics.user.entity.User;
+import com.piotrpabich.talktactics.user.dto.*;
+import com.piotrpabich.talktactics.user.entity.FriendInvitationType;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
@@ -21,10 +21,10 @@ import static com.piotrpabich.talktactics.common.AppConst.USERS_PATH;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping(API_V1 + USERS_PATH)
-@Tag(name = "UserController", description = "Users management APIs")
+@Tag(name = "UserController")
 public class UserController {
 
-    private final UserService userService;
+    private final UserFacade userFacade;
     private final AuthenticationService authenticationService;
 
     @GetMapping
@@ -32,19 +32,19 @@ public class UserController {
             final UserQueryCriteria criteria,
             final Pageable pageable
     ) {
-        return ResponseEntity.ok(userService.queryAll(criteria, pageable));
+        return ResponseEntity.ok(userFacade.queryAll(criteria, pageable));
     }
 
     @GetMapping("/profiles")
     public ResponseEntity<List<UserProfilePreviewDto>> getUserProfiles() {
-        return ResponseEntity.ok(userService.getUserProfiles());
+        return ResponseEntity.ok(userFacade.getUserProfiles());
     }
 
     @GetMapping("/profiles/{userUuid}")
     public ResponseEntity<UserProfileDto> getUserProfileByUserUuid(
             @PathVariable UUID userUuid
     ) {
-        return ResponseEntity.ok(userService.getUserProfileByUserUuid(userUuid));
+        return ResponseEntity.ok(userFacade.getUserProfileByUserUuid(userUuid));
     }
 
     @GetMapping("/{userUuid}/friends")
@@ -53,65 +53,55 @@ public class UserController {
             final HttpServletRequest request
     ) {
         final var requester = authenticationService.getUserFromRequest(request);
-        return ResponseEntity.ok(userService.getUserFriends(userUuid, requester));
+        return ResponseEntity.ok(userFacade.getUserFriends(userUuid, requester));
     }
 
     @PostMapping("/friend-invitation")
     public ResponseEntity<Void> handleFriendInvitation(
-            @RequestBody final FriendInvitationRequest friendInvitationRequest,
+            @RequestBody @Valid final FriendInvitationRequest friendInvitationRequest,
             final HttpServletRequest request
     ) {
         final var requester = authenticationService.getUserFromRequest(request);
-        userService.handleFriendInvitationRequest(friendInvitationRequest, requester);
+        userFacade.handleFriendInvitationRequest(friendInvitationRequest, requester);
         return ResponseEntity.noContent().build();
     }
 
-    @DeleteMapping("/delete-friend")
+    @DeleteMapping("/friend")
     public ResponseEntity<Void> deleteFriend(
-            @RequestBody DeleteFriendRequest friendDeleteRequest,
+            @RequestBody @Valid final DeleteFriendRequest friendDeleteRequest,
             final HttpServletRequest request
     ) {
         final var requester = authenticationService.getUserFromRequest(request);
-        userService.deleteFriend(friendDeleteRequest, requester);
+        userFacade.deleteFriend(friendDeleteRequest, requester);
         return ResponseEntity.noContent().build();
     }
 
-    @GetMapping("/{userUuid}/received-friend-invitations")
+    @GetMapping("/{userUuid}/friend-invitations")
     public ResponseEntity<List<FriendInvitationResponse>> getReceivedFriendInvitations(
             @PathVariable final UUID userUuid,
-            @RequestParam(required = false) final Boolean withDetails,
+            @RequestParam final FriendInvitationType type,
             final HttpServletRequest request
     ) {
         final var requester = authenticationService.getUserFromRequest(request);
-        return ResponseEntity.ok(userService.getReceivedFriendInvitations(userUuid, withDetails, requester));
-    }
-
-    @GetMapping("/{userUuid}/sent-friend-invitations")
-    public ResponseEntity<List<FriendInvitationResponse>> getSentFriendInvitations(
-            @PathVariable final UUID userUuid,
-            @RequestParam(required = false) final Boolean withDetails,
-            final HttpServletRequest request
-    ) {
-        final var requester = authenticationService.getUserFromRequest(request);
-        return ResponseEntity.ok(userService.getSentFriendInvitations(userUuid, withDetails, requester));
+        return ResponseEntity.ok(userFacade.getFriendInvitations(userUuid, type, requester));
     }
 
     @GetMapping("/{userUuid}")
-    public ResponseEntity<User> getUserByUuid(
+    public ResponseEntity<UserDto> getUserByUuid(
             @PathVariable final UUID userUuid,
             final HttpServletRequest request
     ) {
         final var requester = authenticationService.getUserFromRequest(request);
-        return ResponseEntity.ok(userService.getUserByUuid(userUuid, requester));
+        return ResponseEntity.ok(userFacade.getUserByUuid(userUuid, requester));
     }
 
     @GetMapping("/username/{username}")
-    public ResponseEntity<User> getUserByUsername(
+    public ResponseEntity<UserDto> getUserByUsername(
             @PathVariable final String username,
             final HttpServletRequest request
     ) {
         final var requester = authenticationService.getUserFromRequest(request);
-        return ResponseEntity.ok(userService.getUserByUsername(username, requester));
+        return ResponseEntity.ok(userFacade.getUserByUsername(username, requester));
     }
 
     @PatchMapping("/{userUuid}")
@@ -121,7 +111,7 @@ public class UserController {
             final HttpServletRequest request
     ) {
         final var requester = authenticationService.getUserFromRequest(request);
-        userService.updateUser(userUuid, updateUserRequest, requester);
+        userFacade.updateUser(userUuid, updateUserRequest, requester);
         return ResponseEntity.accepted().build();
     }
 
@@ -131,17 +121,7 @@ public class UserController {
             final HttpServletRequest request
     ) {
         final var requester = authenticationService.getUserFromRequest(request);
-        userService.deleteUser(userUuid, requester);
-        return ResponseEntity.noContent().build();
-    }
-
-    @PutMapping("/password")
-    public ResponseEntity<Void> updatePassword(
-            @Valid @RequestBody final UpdatePasswordRequest updatePasswordRequest,
-            final HttpServletRequest request
-    ) {
-        final var requester = authenticationService.getUserFromRequest(request);
-        userService.updatePassword(updatePasswordRequest, requester);
+        userFacade.deleteUser(userUuid, requester);
         return ResponseEntity.noContent().build();
     }
 }

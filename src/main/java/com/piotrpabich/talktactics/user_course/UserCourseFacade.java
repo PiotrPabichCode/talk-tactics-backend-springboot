@@ -1,15 +1,15 @@
 package com.piotrpabich.talktactics.user_course;
 
+import com.piotrpabich.talktactics.course.CourseService;
+import com.piotrpabich.talktactics.user.UserService;
 import com.piotrpabich.talktactics.user_course.dto.UserCourseDto;
 import com.piotrpabich.talktactics.user_course.dto.UserCourseQueryCriteria;
 import com.piotrpabich.talktactics.user_course.dto.UserCourseRequest;
-import com.piotrpabich.talktactics.course.CourseService;
 import com.piotrpabich.talktactics.user.entity.User;
-import com.piotrpabich.talktactics.user.UserService;
 import com.piotrpabich.talktactics.user_course.entity.UserCourse;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -19,7 +19,7 @@ import java.util.UUID;
 import static com.piotrpabich.talktactics.auth.AuthUtil.validateIfUserHimselfOrAdmin;
 
 @Service
-@Slf4j
+@Log4j2
 @RequiredArgsConstructor
 public class UserCourseFacade {
 

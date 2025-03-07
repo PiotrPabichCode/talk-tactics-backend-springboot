@@ -1,17 +1,18 @@
 package com.piotrpabich.talktactics.user.dto;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
+import com.piotrpabich.talktactics.user.entity.FriendInvitation;
 import jakarta.validation.constraints.NotNull;
 
-import java.util.UUID;
-
-@JsonInclude(JsonInclude.Include.NON_NULL)
 public record FriendInvitationResponse(
         @NotNull
-        UUID senderUuid,
-        @NotNull
-        UUID receiverUuid,
         UserProfilePreviewDto sender,
+        @NotNull
         UserProfilePreviewDto receiver
 ) {
+        public static FriendInvitationResponse of(final FriendInvitation friendInvitation) {
+                return new FriendInvitationResponse(
+                        UserProfilePreviewDto.of(friendInvitation.getSender()),
+                        UserProfilePreviewDto.of(friendInvitation.getReceiver())
+                );
+        }
 }

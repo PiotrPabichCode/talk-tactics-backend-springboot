@@ -50,10 +50,7 @@ public class User extends CommonEntity implements UserDetails {
 
     @JsonIgnore
     @JsonIgnoreProperties("user")
-    @OneToMany(mappedBy = "user",
-            cascade = CascadeType.ALL,
-            fetch = FetchType.LAZY,
-            orphanRemoval = true)
+    @OneToMany(mappedBy = "user", orphanRemoval = true)
     private List<UserCourse> userCourses = new ArrayList<>();
 
     @JsonIgnore
@@ -66,18 +63,12 @@ public class User extends CommonEntity implements UserDetails {
     private List<User> friends = new ArrayList<>();
 
     @JsonIgnore
-    @OneToMany(mappedBy = "sender",
-            fetch = FetchType.LAZY,
-            orphanRemoval = true
-    )
+    @OneToMany(mappedBy = "sender", orphanRemoval = true)
     @OrderBy("createdAt DESC")
     private List<FriendInvitation> sentFriendInvitations = new ArrayList<>();
 
     @JsonIgnore
-    @OneToMany(mappedBy = "receiver",
-            fetch = FetchType.LAZY,
-            orphanRemoval = true
-    )
+    @OneToMany(mappedBy = "receiver", orphanRemoval = true)
     @OrderBy("createdAt DESC")
     private List<FriendInvitation> receivedFriendInvitations = new ArrayList<>();
 
@@ -118,5 +109,19 @@ public class User extends CommonEntity implements UserDetails {
 
     public boolean isAdmin() {
         return this.role.equals(Role.ADMIN);
+    }
+
+    public void addFriend(final User user) {
+        if (user != null && !this.equals(user) && !this.friends.contains(user)) {
+            this.getFriends().add(user);
+            user.getFriends().add(this);
+        }
+    }
+
+    public void removeFriend(final User user) {
+        if (user != null && this.friends.contains(user)) {
+            this.getFriends().remove(user);
+            user.getFriends().remove(this);
+        }
     }
 }

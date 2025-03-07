@@ -1,8 +1,8 @@
 package com.piotrpabich.talktactics.user_course_item;
 
+import com.piotrpabich.talktactics.auth.AuthenticationService;
 import com.piotrpabich.talktactics.user_course_item.dto.UserCourseItemQueryCriteria;
 import com.piotrpabich.talktactics.user_course_item.dto.UserCourseItemDto;
-import com.piotrpabich.talktactics.auth.AuthenticationService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
@@ -20,7 +20,7 @@ import static com.piotrpabich.talktactics.common.AppConst.USER_COURSE_ITEMS_PATH
 @RestController
 @RequiredArgsConstructor
 @RequestMapping(API_V1 + USER_COURSE_ITEMS_PATH)
-@Tag(name = "UserCourseItemController", description = "User course items management APIs")
+@Tag(name = "UserCourseItemController")
 public class UserCourseItemController {
 
     private final UserCourseItemFacade userCourseItemFacade;
@@ -36,7 +36,7 @@ public class UserCourseItemController {
         return ResponseEntity.ok(userCourseItemFacade.queryAll(criteria, pageable, requester));
     }
 
-    @PostMapping("/learn/{userCourseItemUuid}")
+    @PostMapping("/{userCourseItemUuid}/learn")
     public ResponseEntity<Void> learnUserCourseItem(
             @PathVariable final UUID userCourseItemUuid,
             final HttpServletRequest request
