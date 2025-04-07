@@ -9,4 +9,5 @@ public record DeleteFriendRequest(
         UUID userUuid,
         @NotNull
         UUID friendUuid
-) { }
+) {
+}

@@ -14,10 +14,10 @@ public class CourseParticipantWordQueryCriteria {
     private UUID userUuid;
     @Query
     private Boolean isLearned;
-    @Query(propName = "word", joinName = "courseWord" , type = Query.Type.INNER_LIKE)
+    @Query(propName = "word", joinName = "courseWord", type = Query.Type.INNER_LIKE)
     private String word;
-    @Query(propName = "partOfSpeech", joinName = "courseWord" ,type = Query.Type.INNER_LIKE)
+    @Query(propName = "partOfSpeech", joinName = "courseWord", type = Query.Type.INNER_LIKE)
     private String partOfSpeech;
-    @Query(propName = "phonetic", joinName = "courseWord" ,type = Query.Type.NOT_NULL)
+    @Query(propName = "phonetic", joinName = "courseWord", type = Query.Type.NOT_NULL)
     private String phonetic;
 }

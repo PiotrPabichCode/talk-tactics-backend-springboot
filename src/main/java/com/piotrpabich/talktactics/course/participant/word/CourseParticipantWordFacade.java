@@ -1,14 +1,15 @@
 package com.piotrpabich.talktactics.course.participant.word;
 
-import com.piotrpabich.talktactics.user.UserService;
 import com.piotrpabich.talktactics.course.participant.word.dto.CourseParticipantWordDto;
 import com.piotrpabich.talktactics.course.participant.word.dto.CourseParticipantWordQueryCriteria;
+import com.piotrpabich.talktactics.user.UserService;
 import com.piotrpabich.talktactics.user.entity.User;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.UUID;
 
@@ -32,6 +33,7 @@ public class CourseParticipantWordFacade {
         return courseParticipantWordService.queryAll(criteria, pageable);
     }
 
+    @Transactional
     void learnCourseParticipantWord(final UUID userCourseItemUuid, final User requester) {
         courseParticipantWordService.learnCourseParticipantWord(userCourseItemUuid, requester);
     }

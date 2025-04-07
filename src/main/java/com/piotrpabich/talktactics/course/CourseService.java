@@ -1,5 +1,6 @@
 package com.piotrpabich.talktactics.course;
 
+import com.piotrpabich.talktactics.common.QueryHelp;
 import com.piotrpabich.talktactics.common.UuidResponse;
 import com.piotrpabich.talktactics.course.dto.CourseDto;
 import com.piotrpabich.talktactics.course.dto.CourseNavbarDto;
@@ -9,7 +10,6 @@ import com.piotrpabich.talktactics.course.entity.Course;
 import com.piotrpabich.talktactics.exception.ConflictException;
 import com.piotrpabich.talktactics.exception.NotFoundException;
 import com.piotrpabich.talktactics.user.entity.User;
-import com.piotrpabich.talktactics.common.QueryHelp;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.data.domain.Page;

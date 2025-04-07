@@ -24,9 +24,6 @@ import static org.springframework.security.config.Customizer.withDefaults;
 @RequiredArgsConstructor
 public class SecurityConfig {
 
-    private final JwtAuthenticationFilter jwtAuthFilter;
-    private final AuthenticationProvider authenticationProvider;
-
     public static final AntPathRequestMatcher[] WHITELIST_URLS = {
             new AntPathRequestMatcher("/v2/api-docs"),
             new AntPathRequestMatcher("/v3/api-docs"),
@@ -47,7 +44,6 @@ public class SecurityConfig {
             new AntPathRequestMatcher("/api/v1/course-items", HttpMethod.GET.name()),
             new AntPathRequestMatcher("/api/v1/course-items/{id}", HttpMethod.GET.name())
     };
-
     private static final AntPathRequestMatcher[] ADMIN_URLS = {
             new AntPathRequestMatcher("/api/v1/courses", HttpMethod.POST.name()),
             new AntPathRequestMatcher("/api/v1/courses", HttpMethod.PUT.name()),
@@ -55,6 +51,8 @@ public class SecurityConfig {
             new AntPathRequestMatcher("/api/v1/course-items", HttpMethod.DELETE.name()),
             new AntPathRequestMatcher("/api/v1/users")
     };
+    private final JwtAuthenticationFilter jwtAuthFilter;
+    private final AuthenticationProvider authenticationProvider;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {

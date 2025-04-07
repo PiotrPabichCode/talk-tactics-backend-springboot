@@ -14,4 +14,5 @@ public record UpdatePasswordRequest(
         String newPassword,
         @Size(min = 8, max = 100)
         String repeatNewPassword
-) { }
+) {
+}

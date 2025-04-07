@@ -55,7 +55,7 @@ public class TokenService {
         try {
             final var username = extractUsername(token);
             final var userDetails = userDetailsService.loadUserByUsername(username);
-            if(!username.equals(userDetails.getUsername()) || isTokenExpired(token)) {
+            if (!username.equals(userDetails.getUsername()) || isTokenExpired(token)) {
                 return Optional.empty();
             }
             return Optional.of(userDetails);

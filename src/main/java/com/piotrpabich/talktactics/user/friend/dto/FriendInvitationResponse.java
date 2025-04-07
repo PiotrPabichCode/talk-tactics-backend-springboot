@@ -10,10 +10,10 @@ public record FriendInvitationResponse(
         @NotNull
         UserProfilePreviewDto receiver
 ) {
-        public static FriendInvitationResponse of(final FriendInvitation friendInvitation) {
-                return new FriendInvitationResponse(
-                        UserProfilePreviewDto.of(friendInvitation.getSender()),
-                        UserProfilePreviewDto.of(friendInvitation.getReceiver())
-                );
-        }
+    public static FriendInvitationResponse of(final FriendInvitation friendInvitation) {
+        return new FriendInvitationResponse(
+                UserProfilePreviewDto.of(friendInvitation.getSender()),
+                UserProfilePreviewDto.of(friendInvitation.getReceiver())
+        );
+    }
 }

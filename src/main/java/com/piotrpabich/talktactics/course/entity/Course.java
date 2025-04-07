@@ -2,10 +2,13 @@ package com.piotrpabich.talktactics.course.entity;
 
 import com.piotrpabich.talktactics.common.CommonEntity;
 import com.piotrpabich.talktactics.course.CourseConstants;
-import com.piotrpabich.talktactics.course.word.entity.CourseWord;
 import com.piotrpabich.talktactics.course.participant.entity.CourseParticipant;
+import com.piotrpabich.talktactics.course.word.entity.CourseWord;
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -37,7 +40,7 @@ public class Course extends CommonEntity {
 
     @PreUpdate
     public void beforeUpdate() {
-        if(this.getCourseWords() != null) {
+        if (this.getCourseWords() != null) {
             this.setQuantity(this.getCourseWords().size());
         }
     }

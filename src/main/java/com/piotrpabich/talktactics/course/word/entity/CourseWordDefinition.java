@@ -2,7 +2,9 @@ package com.piotrpabich.talktactics.course.word.entity;
 
 import com.piotrpabich.talktactics.common.CommonEntity;
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Table(name = "course_word_definitions")

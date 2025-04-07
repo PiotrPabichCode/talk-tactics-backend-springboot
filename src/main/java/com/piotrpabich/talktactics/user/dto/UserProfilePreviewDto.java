@@ -19,13 +19,13 @@ public record UserProfilePreviewDto(
         String bio
 ) {
 
-        public static UserProfilePreviewDto of(final User user) {
-                return new UserProfilePreviewDto(
-                        user.getUuid(),
-                        user.getFirstName(),
-                        user.getLastName(),
-                        user.getTotalPoints(),
-                        user.getBio()
-                );
-        }
+    public static UserProfilePreviewDto of(final User user) {
+        return new UserProfilePreviewDto(
+                user.getUuid(),
+                user.getFirstName(),
+                user.getLastName(),
+                user.getTotalPoints(),
+                user.getBio()
+        );
+    }
 }

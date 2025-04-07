@@ -1,8 +1,8 @@
 package com.piotrpabich.talktactics.course.word;
 
 import com.piotrpabich.talktactics.course.word.dto.CourseWordDto;
-import com.piotrpabich.talktactics.course.word.dto.CourseWordQueryCriteria;
 import com.piotrpabich.talktactics.course.word.dto.CourseWordPreview;
+import com.piotrpabich.talktactics.course.word.dto.CourseWordQueryCriteria;
 import com.piotrpabich.talktactics.course.word.entity.CourseWord;
 import com.piotrpabich.talktactics.exception.NotFoundException;
 import com.piotrpabich.talktactics.user.entity.User;
@@ -52,8 +52,8 @@ public class CourseWordService {
     ) {
         return (root, criteriaQuery, criteriaBuilder) ->
                 criteriaBuilder.and(
-                    getPredicate(root, criteria, criteriaBuilder),
-                    criteriaBuilder.equal(root.get("course").get("uuid"), criteria.getCourseUuid())
+                        getPredicate(root, criteria, criteriaBuilder),
+                        criteriaBuilder.equal(root.get("course").get("uuid"), criteria.getCourseUuid())
                 );
     }
 

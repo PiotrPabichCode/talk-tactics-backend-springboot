@@ -2,7 +2,6 @@ package com.piotrpabich.talktactics.auth.dto;
 
 import com.piotrpabich.talktactics.auth.PasswordMatches;
 import jakarta.validation.constraints.Email;
-
 import jakarta.validation.constraints.Size;
 
 @PasswordMatches

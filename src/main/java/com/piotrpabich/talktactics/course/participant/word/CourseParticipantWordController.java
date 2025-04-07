@@ -1,8 +1,8 @@
 package com.piotrpabich.talktactics.course.participant.word;
 
 import com.piotrpabich.talktactics.auth.AuthenticationService;
-import com.piotrpabich.talktactics.course.participant.word.dto.CourseParticipantWordQueryCriteria;
 import com.piotrpabich.talktactics.course.participant.word.dto.CourseParticipantWordDto;
+import com.piotrpabich.talktactics.course.participant.word.dto.CourseParticipantWordQueryCriteria;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;

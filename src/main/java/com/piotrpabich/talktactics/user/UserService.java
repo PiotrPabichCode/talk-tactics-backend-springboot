@@ -1,18 +1,18 @@
 package com.piotrpabich.talktactics.user;
 
 import com.piotrpabich.talktactics.auth.AuthConstants;
+import com.piotrpabich.talktactics.common.QueryHelp;
+import com.piotrpabich.talktactics.course.participant.dto.CourseParticipantDto;
+import com.piotrpabich.talktactics.exception.BadRequestException;
 import com.piotrpabich.talktactics.exception.NotFoundException;
 import com.piotrpabich.talktactics.user.dto.*;
+import com.piotrpabich.talktactics.user.entity.User;
+import com.piotrpabich.talktactics.user.friend.FriendInvitationService;
+import com.piotrpabich.talktactics.user.friend.FriendInvitationType;
 import com.piotrpabich.talktactics.user.friend.dto.DeleteFriendRequest;
 import com.piotrpabich.talktactics.user.friend.dto.FriendInvitationRequest;
 import com.piotrpabich.talktactics.user.friend.dto.FriendInvitationResponse;
-import com.piotrpabich.talktactics.user.friend.FriendInvitationType;
-import com.piotrpabich.talktactics.course.participant.dto.CourseParticipantDto;
-import com.piotrpabich.talktactics.exception.BadRequestException;
 import com.piotrpabich.talktactics.user.friend.entity.FriendInvitation;
-import com.piotrpabich.talktactics.user.entity.User;
-import com.piotrpabich.talktactics.common.QueryHelp;
-import com.piotrpabich.talktactics.user.friend.FriendInvitationService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.data.domain.Page;
@@ -22,7 +22,8 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.*;
+import java.util.List;
+import java.util.UUID;
 
 import static com.piotrpabich.talktactics.auth.AuthUtil.validateIfUserAdmin;
 import static com.piotrpabich.talktactics.auth.AuthUtil.validateIfUserHimselfOrAdmin;

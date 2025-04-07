@@ -20,18 +20,18 @@ public record UserProfileDto(
         String bio,
         @NotNull
         List<CourseParticipantDto> courses
-){
+) {
     public static UserProfileDto of(
-        final UserProfilePreviewDto userProfile,
-        final List<CourseParticipantDto> courseParticipants
+            final UserProfilePreviewDto userProfile,
+            final List<CourseParticipantDto> courseParticipants
     ) {
         return new UserProfileDto(
-            userProfile.uuid(),
-            userProfile.firstName(),
-            userProfile.lastName(),
-            userProfile.totalPoints(),
-            userProfile.bio(),
-            courseParticipants
+                userProfile.uuid(),
+                userProfile.firstName(),
+                userProfile.lastName(),
+                userProfile.totalPoints(),
+                userProfile.bio(),
+                courseParticipants
         );
     }
 }

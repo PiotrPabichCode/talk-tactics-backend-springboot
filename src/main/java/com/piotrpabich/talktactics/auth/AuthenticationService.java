@@ -1,16 +1,13 @@
 package com.piotrpabich.talktactics.auth;
 
-import com.piotrpabich.talktactics.auth.dto.AuthenticationRequest;
-import com.piotrpabich.talktactics.auth.dto.AuthenticationResponse;
-import com.piotrpabich.talktactics.auth.dto.RefreshTokenRequest;
-import com.piotrpabich.talktactics.auth.dto.RegisterRequest;
+import com.piotrpabich.talktactics.auth.dto.*;
 import com.piotrpabich.talktactics.auth.token.TokenService;
 import com.piotrpabich.talktactics.exception.BadRequestException;
-import com.piotrpabich.talktactics.auth.dto.UpdatePasswordRequest;
+import com.piotrpabich.talktactics.exception.ForbiddenException;
 import com.piotrpabich.talktactics.exception.NotFoundException;
+import com.piotrpabich.talktactics.user.UserRepository;
 import com.piotrpabich.talktactics.user.entity.Role;
 import com.piotrpabich.talktactics.user.entity.User;
-import com.piotrpabich.talktactics.user.UserRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -29,7 +26,7 @@ public class AuthenticationService {
     private final TokenService tokenService;
     private final AuthenticationManager authenticationManager;
 
-    public AuthenticationResponse register(final RegisterRequest request) {
+    AuthenticationResponse register(final RegisterRequest request) {
         validateNewUser(request);
         final var user = new User();
         user.setUsername(request.username());
@@ -39,41 +36,31 @@ public class AuthenticationService {
         user.setLastName(request.lastName());
         user.setRole(Role.USER);
         userRepository.save(user);
-        final var jwtToken = tokenService.generateToken(user);
-        final var jwtRefreshToken = tokenService.generateRefreshToken(user);
-        return AuthenticationResponse.of(user, jwtToken, jwtRefreshToken);
+        return generateAuthenticationResponse(user);
     }
 
-    public AuthenticationResponse authenticate(final AuthenticationRequest request) {
+    AuthenticationResponse authenticate(final AuthenticationRequest request) {
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         request.username(),
                         request.password()
                 )
         );
-        final var user = userRepository.findByUsername(request.username())
-                .orElseThrow(() -> new NotFoundException(String.format("User with username: %s was not found", request.username())));
-        final var jwtToken = tokenService.generateToken(user);
-        final var jwtRefreshToken = tokenService.generateRefreshToken(user);
-        return AuthenticationResponse.of(user, jwtToken, jwtRefreshToken);
+        final var user = getUser(request.username());
+        return generateAuthenticationResponse(user);
     }
 
-    public AuthenticationResponse reauthenticate(RefreshTokenRequest request) {
-        final var user = userRepository.findByUsername(request.username())
-                .orElseThrow();
-        final var jwtToken = tokenService.generateToken(user);
-        final var jwtRefreshToken = tokenService.generateRefreshToken(user);
-        return AuthenticationResponse.of(user, jwtToken, jwtRefreshToken);
+    AuthenticationResponse reauthenticate(final RefreshTokenRequest request) {
+        final var optionalUserDetails = tokenService.validateToken(request.refreshToken());
+        if (optionalUserDetails.isEmpty()) {
+            throw new ForbiddenException("User refresh token has been expired");
+        }
+        final var username = optionalUserDetails.get().getUsername();
+        final var user = getUser(username);
+        return generateAuthenticationResponse(user);
     }
 
-    public User getUserFromRequest(final HttpServletRequest request) {
-        final var token = getTokenFromRequest(request);
-        final var username = tokenService.extractUsername(token);
-        return userRepository.findByUsername(username)
-                .orElseThrow(() -> new NotFoundException(String.format("User with username: %s was not found", username)));
-    }
-
-    public void updatePassword(
+    void updatePassword(
             final UpdatePasswordRequest updatePasswordRequest,
             final User requester
     ) {
@@ -83,6 +70,18 @@ public class AuthenticationService {
         validatePassword(user, updatePasswordRequest);
         user.setPassword(passwordEncoder.encode(updatePasswordRequest.newPassword()));
         userRepository.save(user);
+    }
+
+    public User getUserFromRequest(final HttpServletRequest request) {
+        final var token = getTokenFromRequest(request);
+        final var username = tokenService.extractUsername(token);
+        return getUser(username);
+    }
+
+    private AuthenticationResponse generateAuthenticationResponse(final User user) {
+        final var jwtToken = tokenService.generateToken(user);
+        final var jwtRefreshToken = tokenService.generateRefreshToken(user);
+        return AuthenticationResponse.of(user, jwtToken, jwtRefreshToken);
     }
 
     private void validatePassword(
@@ -98,6 +97,11 @@ public class AuthenticationService {
         if (passwordEncoder.matches(user.getPassword(), request.newPassword())) {
             throw new BadRequestException(AuthConstants.DUPLICATED_PASSWORD_EXCEPTION);
         }
+    }
+
+    private User getUser(final String username) {
+        return userRepository.findByUsername(username)
+                .orElseThrow(() -> new NotFoundException(String.format("User with username: %s was not found", username)));
     }
 
     private String getTokenFromRequest(final HttpServletRequest request) {

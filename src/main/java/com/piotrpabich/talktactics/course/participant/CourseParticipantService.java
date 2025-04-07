@@ -1,23 +1,24 @@
 package com.piotrpabich.talktactics.course.participant;
 
+import com.piotrpabich.talktactics.common.QueryHelp;
 import com.piotrpabich.talktactics.course.entity.Course;
-import com.piotrpabich.talktactics.exception.ConflictException;
-import com.piotrpabich.talktactics.exception.ForbiddenException;
-import com.piotrpabich.talktactics.exception.NotFoundException;
 import com.piotrpabich.talktactics.course.participant.dto.CourseParticipantDto;
 import com.piotrpabich.talktactics.course.participant.dto.CourseParticipantQueryCriteria;
 import com.piotrpabich.talktactics.course.participant.dto.CourseParticipantRequest;
-import com.piotrpabich.talktactics.course.participant.word.CourseParticipantWordRepository;
-import com.piotrpabich.talktactics.user.entity.User;
 import com.piotrpabich.talktactics.course.participant.entity.CourseParticipant;
-import com.piotrpabich.talktactics.common.QueryHelp;
+import com.piotrpabich.talktactics.course.participant.word.CourseParticipantWordRepository;
+import com.piotrpabich.talktactics.exception.ConflictException;
+import com.piotrpabich.talktactics.exception.ForbiddenException;
+import com.piotrpabich.talktactics.exception.NotFoundException;
+import com.piotrpabich.talktactics.user.entity.User;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
+import java.util.Set;
+import java.util.UUID;
 
 import static com.piotrpabich.talktactics.auth.AuthUtil.isUserAdmin;
 import static com.piotrpabich.talktactics.auth.AuthUtil.validateIfUserHimselfOrAdmin;
@@ -66,7 +67,7 @@ public class CourseParticipantService {
     private void validateQueryAll(final Set<UUID> userUuids, final User requester) {
         if (!isUserAdmin(requester)) {
             userUuids.stream().findAny().ifPresent(userUuid -> {
-                if(!userUuid.equals(requester.getUuid())) {
+                if (!userUuid.equals(requester.getUuid())) {
                     throw new ForbiddenException("You can only query multiple users if you are an admin or the user himself");
                 }
             });

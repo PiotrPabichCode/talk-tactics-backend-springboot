@@ -5,7 +5,9 @@ import com.piotrpabich.talktactics.course.participant.entity.CourseParticipant;
 import com.piotrpabich.talktactics.user.friend.entity.FriendInvitation;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
-import lombok.*;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -109,5 +111,9 @@ public class User extends CommonEntity implements UserDetails {
             this.getFriends().remove(user);
             user.getFriends().remove(this);
         }
+    }
+
+    public void addPoints(final int points) {
+        this.totalPoints += points;
     }
 }

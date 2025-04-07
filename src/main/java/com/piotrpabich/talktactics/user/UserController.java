@@ -45,7 +45,7 @@ public class UserController {
 
     @GetMapping("/profiles/{userUuid}")
     public ResponseEntity<UserProfileDto> getUserProfileByUserUuid(
-            @PathVariable UUID userUuid
+            @PathVariable final UUID userUuid
     ) {
         return ResponseEntity.ok(userFacade.getUserProfileByUserUuid(userUuid));
     }

@@ -5,7 +5,9 @@ import com.piotrpabich.talktactics.course.CourseConstants;
 import com.piotrpabich.talktactics.course.entity.Course;
 import com.piotrpabich.talktactics.course.participant.word.entity.CourseParticipantWord;
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.List;

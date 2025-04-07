@@ -1,11 +1,12 @@
 package com.piotrpabich.talktactics.course.participant.word;
 
+import com.piotrpabich.talktactics.course.participant.entity.CourseParticipant;
+import com.piotrpabich.talktactics.course.participant.word.dto.CourseParticipantWordDto;
+import com.piotrpabich.talktactics.course.participant.word.dto.CourseParticipantWordQueryCriteria;
+import com.piotrpabich.talktactics.course.participant.word.entity.CourseParticipantWord;
 import com.piotrpabich.talktactics.exception.ConflictException;
 import com.piotrpabich.talktactics.exception.NotFoundException;
-import com.piotrpabich.talktactics.course.participant.word.dto.CourseParticipantWordQueryCriteria;
-import com.piotrpabich.talktactics.course.participant.word.dto.CourseParticipantWordDto;
 import com.piotrpabich.talktactics.user.entity.User;
-import com.piotrpabich.talktactics.course.participant.word.entity.CourseParticipantWord;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.data.domain.Page;
@@ -35,14 +36,16 @@ public class CourseParticipantWordService {
 
     void learnCourseParticipantWord(final UUID uuid, final User requester) {
         final var courseParticipantWord = getCourseParticipantWordByUuid(uuid);
-        final var user = courseParticipantWord.getCourseParticipant().getUser();
+        final var courseParticipant = courseParticipantWord.getCourseParticipant();
+        final var user = courseParticipant.getUser();
         validateIfUserHimselfOrAdmin(requester, user);
 
         if (courseParticipantWord.isLearned()) {
             throw new ConflictException(String.format("Course participant word with uuid: %s already learned", uuid));
         }
 
-        courseParticipantWord.setLearned(true);
+        courseParticipantWord.learnWord();
+        completeCourseIfPossible(courseParticipant);
         courseParticipantWordRepository.save(courseParticipantWord);
     }
 
@@ -63,4 +66,17 @@ public class CourseParticipantWordService {
         return courseParticipantWordRepository.findByUuid(uuid)
                 .orElseThrow(() -> new NotFoundException(String.format("Course participant word with uuid %s not found", uuid)));
     }
+
+    private void completeCourseIfPossible(final CourseParticipant courseParticipant) {
+        final var isCompleted = courseParticipant.getCourseParticipantWords()
+                .stream()
+                .allMatch(CourseParticipantWord::isLearned);
+        if (isCompleted) {
+            final var completedCoursePoints = courseParticipant.getCourse().getPoints();
+            courseParticipant.setFinished(true);
+            courseParticipant.addPoints(completedCoursePoints);
+            courseParticipant.getUser().addPoints(completedCoursePoints);
+        }
+    }
+
 }

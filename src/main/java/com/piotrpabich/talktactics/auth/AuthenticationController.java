@@ -1,10 +1,6 @@
 package com.piotrpabich.talktactics.auth;
 
-import com.piotrpabich.talktactics.auth.dto.AuthenticationRequest;
-import com.piotrpabich.talktactics.auth.dto.RefreshTokenRequest;
-import com.piotrpabich.talktactics.auth.dto.RegisterRequest;
-import com.piotrpabich.talktactics.auth.dto.AuthenticationResponse;
-import com.piotrpabich.talktactics.auth.dto.UpdatePasswordRequest;
+import com.piotrpabich.talktactics.auth.dto.*;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;

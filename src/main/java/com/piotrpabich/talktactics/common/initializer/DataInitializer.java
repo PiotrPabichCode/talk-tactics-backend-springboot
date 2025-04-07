@@ -1,23 +1,23 @@
 package com.piotrpabich.talktactics.common.initializer;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.piotrpabich.talktactics.course.CourseDataGenerator;
 import com.piotrpabich.talktactics.course.CourseRepository;
 import com.piotrpabich.talktactics.course.entity.Course;
 import com.piotrpabich.talktactics.course.entity.CourseLevel;
-import com.piotrpabich.talktactics.course.word.CourseWordRepository;
-import com.piotrpabich.talktactics.course.word.CourseWordDefinitionRepository;
-import com.piotrpabich.talktactics.course.word.entity.CourseWord;
-import com.piotrpabich.talktactics.course.word.entity.CourseWordDefinition;
-import com.piotrpabich.talktactics.course.CourseDataGenerator;
-import com.piotrpabich.talktactics.user.UserRepository;
-import com.piotrpabich.talktactics.user.entity.Role;
-import com.piotrpabich.talktactics.user.entity.User;
-import com.piotrpabich.talktactics.user.UserProfileBioGenerator;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.piotrpabich.talktactics.course.participant.CourseParticipantRepository;
 import com.piotrpabich.talktactics.course.participant.entity.CourseParticipant;
 import com.piotrpabich.talktactics.course.participant.word.CourseParticipantWordRepository;
 import com.piotrpabich.talktactics.course.participant.word.entity.CourseParticipantWord;
+import com.piotrpabich.talktactics.course.word.CourseWordDefinitionRepository;
+import com.piotrpabich.talktactics.course.word.CourseWordRepository;
+import com.piotrpabich.talktactics.course.word.entity.CourseWord;
+import com.piotrpabich.talktactics.course.word.entity.CourseWordDefinition;
+import com.piotrpabich.talktactics.user.UserProfileBioGenerator;
+import com.piotrpabich.talktactics.user.UserRepository;
+import com.piotrpabich.talktactics.user.entity.Role;
+import com.piotrpabich.talktactics.user.entity.User;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -31,7 +31,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.time.Duration;
 import java.time.Instant;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import java.util.Random;
 import java.util.stream.IntStream;
 
 @Component
@@ -40,6 +43,10 @@ import java.util.stream.IntStream;
 @RequiredArgsConstructor
 public class DataInitializer implements ApplicationRunner {
 
+    private static final int USERS_SIZE = 50;
+    private static final int COURSES_SIZE = 50;
+    private static final int BEGINNER_COURSES_BREAKPOINT = 15;
+    private static final int INTERMEDIATE_COURSES_BREAKPOINT = 35;
     private final CourseRepository courseRepository;
     private final UserRepository userRepository;
     private final CourseWordDefinitionRepository courseWordDefinitionRepository;
@@ -48,14 +55,9 @@ public class DataInitializer implements ApplicationRunner {
     private final PasswordEncoder passwordEncoder;
     private final Faker faker = new Faker();
     private final Random random = new Random();
-
     private final ArrayList<User> userList = new ArrayList<>();
     private final ArrayList<Course> courseList = new ArrayList<>();
     private final ArrayList<CourseWord> courseWordList = new ArrayList<>();
-    private static final int USERS_SIZE = 50;
-    private static final int COURSES_SIZE = 50;
-    private static final int BEGINNER_COURSES_BREAKPOINT = 15;
-    private static final int INTERMEDIATE_COURSES_BREAKPOINT = 35;
     private final CourseParticipantWordRepository courseParticipantWordRepository;
 
     @Override
@@ -77,6 +79,7 @@ public class DataInitializer implements ApplicationRunner {
         initCourseWords();
         initCourseParticipants();
     }
+
     private void initUsers() {
         UserInitializer userInitializer = new UserInitializer(userRepository, passwordEncoder, faker);
         userList.addAll(userInitializer.initializeUsers(USERS_SIZE));

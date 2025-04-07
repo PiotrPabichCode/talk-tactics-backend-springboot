@@ -1,12 +1,12 @@
 package com.piotrpabich.talktactics.course.participant;
 
 import com.piotrpabich.talktactics.course.CourseService;
-import com.piotrpabich.talktactics.user.UserService;
 import com.piotrpabich.talktactics.course.participant.dto.CourseParticipantDto;
 import com.piotrpabich.talktactics.course.participant.dto.CourseParticipantQueryCriteria;
 import com.piotrpabich.talktactics.course.participant.dto.CourseParticipantRequest;
-import com.piotrpabich.talktactics.user.entity.User;
 import com.piotrpabich.talktactics.course.participant.entity.CourseParticipant;
+import com.piotrpabich.talktactics.user.UserService;
+import com.piotrpabich.talktactics.user.entity.User;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
