@@ -123,9 +123,9 @@ public class DataInitializer implements ApplicationRunner {
 
         public List<User> initializeUsers(int usersSize) {
             List<User> users = new ArrayList<>();
-            users.add(createUser("Piotr", "Pabich", "admin", "email@gmail.com", "Passionate about technology, design, and the power of innovation. Always seeking new challenges and ways to make an impact.", Role.ADMIN));
-            users.add(createUser("Jan", "Tomczyk", "user", "user@gmail.com", "Adventurous soul, chasing dreams one step at a time. Lover of art, nature, and good conversations. Here to make memories", Role.USER));
-            users.add(createUser("Tomasz", "Kukułka", "user1", "user1@gmail.com", "Avid reader, passionate writer, and eternal optimist. Finding beauty in the little things and spreading positivity wherever I go.", Role.USER));
+            users.add(createUser("Piotr", "Pabich", "admin", "admin@talktactics.com", "Passionate about technology, design, and the power of innovation. Always seeking new challenges and ways to make an impact.", Role.ADMIN));
+            users.add(createUser("Jan", "Tomczyk", "user", "user@talktactics.com", "Adventurous soul, chasing dreams one step at a time. Lover of art, nature, and good conversations. Here to make memories", Role.USER));
+            users.add(createUser("Tomasz", "Kukułka", "user1", "user1@talktactics.com", "Avid reader, passionate writer, and eternal optimist. Finding beauty in the little things and spreading positivity wherever I go.", Role.USER));
 
             IntStream.range(0, usersSize).forEach(i -> users.add(createUser(i)));
             userRepository.saveAll(users);
@@ -135,8 +135,8 @@ public class DataInitializer implements ApplicationRunner {
         private User createUser(int index) {
             final var firstName = faker.name().firstName();
             final var lastName = faker.name().lastName();
-            final var username = String.format("%s%s%d", firstName, lastName, index);
-            final var email = String.format("%s%s%d@email.com", firstName, lastName, index);
+            final var username = String.format("%s.%s%d", firstName, lastName, index);
+            final var email = String.format("%s.%s%d@talktactics.com", firstName, lastName, index);
             final var bio = UserProfileBioGenerator.generateBio(new Random().nextInt(3) + 1);
             return createUser(firstName, lastName, username, email, bio, Role.USER);
         }
