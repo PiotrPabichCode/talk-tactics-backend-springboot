@@ -3,8 +3,10 @@ package com.piotrpabich.talktactics.course.dto;
 import com.piotrpabich.talktactics.course.entity.Course;
 import com.piotrpabich.talktactics.course.entity.CourseLevel;
 
+import java.util.UUID;
+
 public record CourseDto(
-        Long id,
+        UUID uuid,
         String title,
         String description,
         CourseLevel level,
@@ -13,7 +15,7 @@ public record CourseDto(
 ) {
     public static CourseDto of(final Course course) {
         return new CourseDto(
-                course.getId(),
+                course.getUuid(),
                 course.getTitle(),
                 course.getDescription(),
                 course.getLevel(),

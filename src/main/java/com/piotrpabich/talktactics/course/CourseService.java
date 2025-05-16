@@ -7,6 +7,7 @@ import com.piotrpabich.talktactics.course.dto.CourseNavbarDto;
 import com.piotrpabich.talktactics.course.dto.CourseQueryCriteria;
 import com.piotrpabich.talktactics.course.dto.CourseRequest;
 import com.piotrpabich.talktactics.course.entity.Course;
+import com.piotrpabich.talktactics.course.word.CourseWordService;
 import com.piotrpabich.talktactics.exception.ConflictException;
 import com.piotrpabich.talktactics.exception.NotFoundException;
 import com.piotrpabich.talktactics.user.entity.User;
@@ -30,6 +31,7 @@ public class CourseService {
 
     private final CourseRepository courseRepository;
     private final CourseMapper courseMapper;
+    private final CourseWordService courseWordService;
 
     public Page<CourseDto> queryAll(
             final CourseQueryCriteria criteria,
@@ -42,7 +44,10 @@ public class CourseService {
     public List<CourseNavbarDto> getNavbarList() {
         return courseRepository.findNavbarList()
                 .stream()
-                .map(CourseNavbarDto::of)
+                .map(course -> {
+                    final var wordUuid = courseWordService.getRandomUuidByCourseUuid(course.getUuid());
+                    return CourseNavbarDto.of(course, wordUuid);
+                })
                 .toList();
     }
 

@@ -80,7 +80,7 @@ public class UserController {
     }
 
     @GetMapping("/{userUuid}/friend-invitations")
-    public ResponseEntity<List<FriendInvitationResponse>> getReceivedFriendInvitations(
+    public ResponseEntity<List<FriendInvitationResponse>> getFriendInvitations(
             @PathVariable final UUID userUuid,
             @RequestParam final FriendInvitationType type,
             final HttpServletRequest request

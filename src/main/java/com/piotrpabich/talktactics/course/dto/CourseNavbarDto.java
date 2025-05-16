@@ -16,14 +16,17 @@ public record CourseNavbarDto(
         @NotNull
         CourseLevel level,
         @Min(0)
-        Integer quantity
+        Integer quantity,
+        @NotNull
+        UUID wordUuid
 ) {
-    public static CourseNavbarDto of(final Course course) {
+    public static CourseNavbarDto of(final Course course, final UUID wordUuid) {
         return new CourseNavbarDto(
                 course.getUuid(),
                 course.getTitle(),
                 course.getLevel(),
-                course.getQuantity()
+                course.getQuantity(),
+                wordUuid
         );
     }
 }

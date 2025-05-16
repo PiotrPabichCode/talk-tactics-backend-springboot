@@ -2,7 +2,6 @@ package com.piotrpabich.talktactics.course.word.dto;
 
 import com.piotrpabich.talktactics.course.dto.CourseDto;
 import com.piotrpabich.talktactics.course.word.entity.CourseWord;
-import com.piotrpabich.talktactics.course.word.entity.CourseWordDefinition;
 import jakarta.validation.constraints.NotNull;
 
 import java.util.List;
@@ -20,7 +19,7 @@ public record CourseWordDto(
         @NotNull
         String audio,
         @NotNull
-        List<CourseWordDefinition> definitions,
+        List<CourseWordDefinitionDto> definitions,
         @NotNull
         CourseDto course
 ) {
@@ -32,7 +31,7 @@ public record CourseWordDto(
                 courseWord.getPartOfSpeech(),
                 courseWord.getPhonetic(),
                 courseWord.getAudio(),
-                courseWord.getDefinitions(),
+                courseWord.getDefinitions().stream().map(CourseWordDefinitionDto::of).toList(),
                 CourseDto.of(courseWord.getCourse())
         );
     }

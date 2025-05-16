@@ -57,4 +57,8 @@ public class CourseWordService {
                 );
     }
 
+    public UUID getRandomUuidByCourseUuid(final UUID courseUuid) {
+        return courseWordRepository.findRandomUuidByCourseUuidNative(courseUuid);
+    }
+
 }
