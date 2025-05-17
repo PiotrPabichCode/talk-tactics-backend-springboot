@@ -1,29 +1,37 @@
 package com.piotrpabich.talktactics.user.dto;
 
-import com.piotrpabich.talktactics.user_course.dto.UserCourseDto;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.piotrpabich.talktactics.course.participant.dto.CourseParticipantDto;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotNull;
 
 import java.util.List;
+import java.util.UUID;
 
 public record UserProfileDto(
-        Long id,
-        @JsonProperty("first_name")
+        @NotNull
+        UUID uuid,
+        @NotNull
         String firstName,
-        @JsonProperty("last_name")
+        @NotNull
         String lastName,
-        @JsonProperty("total_points")
+        @Min(0)
         Integer totalPoints,
+        @NotNull
         String bio,
-        List<UserCourseDto> courses
-){
-    public static UserProfileDto toUserProfileDto(UserProfilePreviewDto userProfile, List<UserCourseDto> userCourses) {
+        @NotNull
+        List<CourseParticipantDto> courses
+) {
+    public static UserProfileDto of(
+            final UserProfilePreviewDto userProfile,
+            final List<CourseParticipantDto> courseParticipants
+    ) {
         return new UserProfileDto(
-                userProfile.id(),
+                userProfile.uuid(),
                 userProfile.firstName(),
                 userProfile.lastName(),
                 userProfile.totalPoints(),
                 userProfile.bio(),
-                userCourses
+                courseParticipants
         );
     }
 }

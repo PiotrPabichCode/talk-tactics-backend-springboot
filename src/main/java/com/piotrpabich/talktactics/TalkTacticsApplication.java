@@ -8,8 +8,8 @@ import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
 @ConfigurationPropertiesScan
 public class TalkTacticsApplication {
 
-	public static void main(String[] args) {
-		SpringApplication.run(TalkTacticsApplication.class, args);
-	}
+    public static void main(String[] args) {
+        SpringApplication.run(TalkTacticsApplication.class, args);
+    }
 
 }

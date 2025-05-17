@@ -3,7 +3,7 @@ package com.piotrpabich.talktactics.config;
 import com.piotrpabich.talktactics.auth.AuthConstants;
 import com.piotrpabich.talktactics.config.security.JwtAuthenticationFilter;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -15,41 +15,44 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
-import org.springframework.security.web.util.matcher.RequestMatcher;
 
 import static org.springframework.security.config.Customizer.withDefaults;
 
 @Configuration
-@Slf4j
+@Log4j2
 @EnableWebSecurity
 @RequiredArgsConstructor
 public class SecurityConfig {
 
+    public static final AntPathRequestMatcher[] WHITELIST_URLS = {
+            new AntPathRequestMatcher("/v2/api-docs"),
+            new AntPathRequestMatcher("/v3/api-docs"),
+            new AntPathRequestMatcher("/v3/api-docs/**"),
+            new AntPathRequestMatcher("/swagger-resources"),
+            new AntPathRequestMatcher("/swagger-resources/**"),
+            new AntPathRequestMatcher("/configuration/ui"),
+            new AntPathRequestMatcher("/configuration/security"),
+            new AntPathRequestMatcher("/swagger-ui.html"),
+            new AntPathRequestMatcher("/webjars/**"),
+            new AntPathRequestMatcher("/swagger-ui/**"),
+            new AntPathRequestMatcher("/error"),
+            new AntPathRequestMatcher("/api/v1/auth/**"),
+            new AntPathRequestMatcher("/api/v1/courses/navbar"),
+            new AntPathRequestMatcher("/api/v1/users/profiles"),
+            new AntPathRequestMatcher("/api/v1/users/profiles/{userId}"),
+            new AntPathRequestMatcher("/api/v1/courses", HttpMethod.GET.name()),
+            new AntPathRequestMatcher("/api/v1/course-items", HttpMethod.GET.name()),
+            new AntPathRequestMatcher("/api/v1/course-items/{id}", HttpMethod.GET.name())
+    };
+    private static final AntPathRequestMatcher[] ADMIN_URLS = {
+            new AntPathRequestMatcher("/api/v1/courses", HttpMethod.POST.name()),
+            new AntPathRequestMatcher("/api/v1/courses", HttpMethod.PUT.name()),
+            new AntPathRequestMatcher("/api/v1/courses", HttpMethod.DELETE.name()),
+            new AntPathRequestMatcher("/api/v1/course-items", HttpMethod.DELETE.name()),
+            new AntPathRequestMatcher("/api/v1/users")
+    };
     private final JwtAuthenticationFilter jwtAuthFilter;
     private final AuthenticationProvider authenticationProvider;
-
-    private static final String[] PERMITTED_ENDPOINTS = {
-            "/v2/api-docs",
-            "/v3/api-docs",
-            "/v3/api-docs/**",
-            "/swagger-resources",
-            "/swagger-resources/**",
-            "/configuration/ui",
-            "/configuration/security",
-            "/swagger-ui.html",
-            "/webjars/**",
-            "/swagger-ui/**",
-    };
-
-    public static final RequestMatcher[] WHITELIST_URLS = {
-        new AntPathRequestMatcher("/error"),
-        new AntPathRequestMatcher("/api/v1/auth/**"),
-        new AntPathRequestMatcher("/api/v1/courses/all"),
-        new AntPathRequestMatcher("/api/v1/courses/navbar"),
-        new AntPathRequestMatcher("/api/v1/course-items/all"),
-        new AntPathRequestMatcher("/api/v1/users/profiles"),
-        new AntPathRequestMatcher("/api/v1/users/profiles/{userId}")
-    };
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -58,30 +61,8 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .cors(withDefaults())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(PERMITTED_ENDPOINTS).permitAll()
                         .requestMatchers(WHITELIST_URLS).permitAll()
-                        .requestMatchers(HttpMethod.POST, "/api/v1/courses").hasAnyAuthority(AuthConstants.ADMIN)
-                        .requestMatchers(HttpMethod.PUT, "/api/v1/courses").hasAnyAuthority(AuthConstants.ADMIN)
-                        .requestMatchers(HttpMethod.DELETE, "/api/v1/courses").hasAnyAuthority(AuthConstants.ADMIN)
-                        .requestMatchers(HttpMethod.DELETE,"/api/v1/course-items").hasAnyAuthority(AuthConstants.ADMIN)
-                        .requestMatchers("/api/v1/users/all").hasAnyAuthority(AuthConstants.ADMIN)
-                        .requestMatchers(HttpMethod.GET, "/api/v1/users/id/{id}").hasAnyAuthority(AuthConstants.USER, AuthConstants.ADMIN)
-                        .requestMatchers( "/api/v1/users/id/{id}/friends").hasAnyAuthority(AuthConstants.USER, AuthConstants.ADMIN)
-                        .requestMatchers( "/api/v1/users/friend-invitation").hasAnyAuthority(AuthConstants.USER, AuthConstants.ADMIN)
-                        .requestMatchers( "/api/v1/users/delete-friend").hasAnyAuthority(AuthConstants.USER, AuthConstants.ADMIN)
-                        .requestMatchers( "/api/v1/users/id/{id}/received-friend-invitations").hasAnyAuthority(AuthConstants.USER, AuthConstants.ADMIN)
-                        .requestMatchers( "/api/v1/users/id/{id}/sent-friend-invitations").hasAnyAuthority(AuthConstants.USER, AuthConstants.ADMIN)
-                        .requestMatchers(HttpMethod.PATCH, "/api/v1/users/id/{id}").hasAnyAuthority(AuthConstants.USER, AuthConstants.ADMIN)
-                        .requestMatchers(HttpMethod.DELETE, "/api/v1/users/id/{id}").hasAnyAuthority(AuthConstants.ADMIN)
-                        .requestMatchers("/api/v1/users/password").hasAnyAuthority(AuthConstants.USER, AuthConstants.ADMIN)
-                        .requestMatchers("/api/v1/users/username/{username}").hasAnyAuthority(AuthConstants.USER, AuthConstants.ADMIN)
-                        .requestMatchers("/api/v1/user-courses/all").hasAnyAuthority(AuthConstants.USER, AuthConstants.ADMIN)
-                        .requestMatchers("/api/v1/user-courses/all-with-courses").hasAnyAuthority(AuthConstants.USER, AuthConstants.ADMIN)
-                        .requestMatchers("/api/v1/user-courses/id/{id}").hasAnyAuthority(AuthConstants.USER, AuthConstants.ADMIN)
-                        .requestMatchers("/api/v1/user-courses/user-id/{id}").hasAnyAuthority(AuthConstants.USER, AuthConstants.ADMIN)
-                        .requestMatchers("/api/v1/user-courses").hasAnyAuthority(AuthConstants.USER, AuthConstants.ADMIN)
-                        .requestMatchers("/api/v1/user-course-items/all").hasAnyAuthority(AuthConstants.USER, AuthConstants.ADMIN)
-                        .requestMatchers("/api/v1/user-course-items/learn/id/{id}").hasAnyAuthority(AuthConstants.USER, AuthConstants.ADMIN)
+                        .requestMatchers(ADMIN_URLS).hasAnyAuthority(AuthConstants.ADMIN)
                         .anyRequest()
                         .authenticated()
                 )

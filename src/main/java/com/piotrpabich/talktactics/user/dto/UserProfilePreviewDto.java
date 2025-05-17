@@ -1,16 +1,31 @@
 package com.piotrpabich.talktactics.user.dto;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.piotrpabich.talktactics.user.entity.User;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+
+import java.util.UUID;
 
 public record UserProfilePreviewDto(
-        @JsonProperty("id")
-        long id,
-        @JsonProperty("first_name")
+        @NotNull
+        UUID uuid,
+        @NotBlank
         String firstName,
-        @JsonProperty("last_name")
+        @NotBlank
         String lastName,
-        @JsonProperty("total_points")
-        int totalPoints,
+        @NotNull
+        Integer totalPoints,
+        @NotBlank
         String bio
 ) {
+
+    public static UserProfilePreviewDto of(final User user) {
+        return new UserProfilePreviewDto(
+                user.getUuid(),
+                user.getFirstName(),
+                user.getLastName(),
+                user.getTotalPoints(),
+                user.getBio()
+        );
+    }
 }

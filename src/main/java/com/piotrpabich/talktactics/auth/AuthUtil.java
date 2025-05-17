@@ -1,7 +1,7 @@
 package com.piotrpabich.talktactics.auth;
 
-import com.piotrpabich.talktactics.user.entity.User;
 import com.piotrpabich.talktactics.exception.ForbiddenException;
+import com.piotrpabich.talktactics.user.entity.User;
 
 public final class AuthUtil {
 

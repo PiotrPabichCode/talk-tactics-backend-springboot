@@ -1,53 +1,28 @@
 package com.piotrpabich.talktactics.exception.handler;
 
-import com.piotrpabich.talktactics.exception.EntityExistsException;
-import com.piotrpabich.talktactics.exception.EntityNotFoundException;
-import com.piotrpabich.talktactics.common.util.ThrowableUtil;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
+import com.piotrpabich.talktactics.exception.CustomHttpException;
+import lombok.extern.log4j.Log4j2;
+import org.apache.logging.log4j.ThreadContext;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.FieldError;
-import org.springframework.validation.ObjectError;
-import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-import static org.springframework.http.HttpStatus.NOT_FOUND;
-
-@Slf4j
-@RestControllerAdvice
+@Log4j2
+@ControllerAdvice
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler(value = Throwable.class)
-    public ResponseEntity<ApiError> handleException(Throwable e){
-        log.error(ThrowableUtil.getStackTrace(e));
-        return buildResponseEntity(ApiError.error(e.getMessage()));
+    @ExceptionHandler(CustomHttpException.class)
+    public ResponseEntity<ApiExceptionResponse> handleCustomHttpException(final CustomHttpException exception) {
+        log.warn("CustomHttpException", exception);
+        final var response = new ApiExceptionResponse(exception);
+        logResponse(response);
+        return ResponseEntity.status(response.getStatus()).body(response);
     }
 
-    @ExceptionHandler(value = EntityNotFoundException.class)
-    public ResponseEntity<ApiError> handleEntityNotFoundException(EntityNotFoundException e) {
-        log.error(ThrowableUtil.getStackTrace(e));
-        return buildResponseEntity(ApiError.error(NOT_FOUND.value(),e.getMessage()));
-    }
-
-    @ExceptionHandler(value = EntityExistsException.class)
-    public ResponseEntity<ApiError> entityExistException(EntityExistsException e) {
-        log.error(ThrowableUtil.getStackTrace(e));
-        return buildResponseEntity(ApiError.error(e.getMessage()));
-    }
-
-    @ExceptionHandler(value = MethodArgumentNotValidException.class)
-    public ResponseEntity<ApiError> handleMethodArgumentNotValidException(MethodArgumentNotValidException e){
-        log.error(ThrowableUtil.getStackTrace(e));
-        ObjectError objectError = e.getBindingResult().getAllErrors().get(0);
-        String message = objectError.getDefaultMessage();
-        if (objectError instanceof FieldError) {
-            message = ((FieldError) objectError).getField() + ": " + message;
-        }
-        return buildResponseEntity(ApiError.error(message));
-    }
-
-    private ResponseEntity<ApiError> buildResponseEntity(ApiError apiError) {
-        return new ResponseEntity<>(apiError, HttpStatus.valueOf(apiError.getStatus()));
+    private void logResponse(final ApiExceptionResponse response) {
+        final var map = response.toMap();
+        ThreadContext.putAll(map);
+        log.warn("Response status: {}. Response body: {}", response.getStatus().value(), map);
+        ThreadContext.removeAll(map.keySet());
     }
 }

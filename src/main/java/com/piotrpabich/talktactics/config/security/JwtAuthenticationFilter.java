@@ -34,22 +34,21 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             @NonNull HttpServletResponse response,
             @NonNull FilterChain filterChain
     ) throws ServletException, IOException {
-        for(RequestMatcher anyRequest: WHITELIST_URLS) {
-            if(anyRequest.matches(request)) {
+        for (RequestMatcher anyRequest : WHITELIST_URLS) {
+            if (anyRequest.matches(request)) {
                 filterChain.doFilter(request, response);
                 return;
             }
         }
         final String authHeader = request.getHeader("Authorization");
-        final String jwt;
-        if(authHeader == null || !authHeader.startsWith("Bearer ")) {
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             filterChain.doFilter(request, response);
             return;
         }
-        jwt = authHeader.substring(7);
-        if(SecurityContextHolder.getContext().getAuthentication() == null) {
+        final var jwt = authHeader.substring(7);
+        if (SecurityContextHolder.getContext().getAuthentication() == null) {
             Optional<UserDetails> userDetails = tokenService.validateToken(jwt);
-            if(userDetails.isEmpty()) {
+            if (userDetails.isEmpty()) {
                 response.sendError(HttpStatus.UNAUTHORIZED.value(), AuthConstants.JWT_INVALID_EXCEPTION);
                 return;
             }

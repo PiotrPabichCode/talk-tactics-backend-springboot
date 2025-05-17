@@ -1,50 +1,49 @@
 package com.piotrpabich.talktactics.course.entity;
 
-import cn.hutool.core.bean.BeanUtil;
-import cn.hutool.core.bean.copier.CopyOptions;
 import com.piotrpabich.talktactics.common.CommonEntity;
 import com.piotrpabich.talktactics.course.CourseConstants;
-import com.piotrpabich.talktactics.course_item.entity.CourseItem;
-import com.piotrpabich.talktactics.user_course.entity.UserCourse;
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.piotrpabich.talktactics.course.participant.entity.CourseParticipant;
+import com.piotrpabich.talktactics.course.word.entity.CourseWord;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import lombok.*;
-import lombok.experimental.SuperBuilder;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @Entity
 @Getter
 @Setter
-@AllArgsConstructor
-@NoArgsConstructor
-@SuperBuilder(toBuilder = true)
+@RequiredArgsConstructor
 @Table(name = "courses")
-@EntityListeners(CourseEntityListeners.class)
 public class Course extends CommonEntity {
-    @NotBlank(message = "Cannot be blank")
+
     private String title;
+
+    private UUID uuid = UUID.randomUUID();
+
     @Column(length = 800)
     private String description;
-    @NotNull
+
     @Enumerated(EnumType.STRING)
     private CourseLevel level;
 
-    @JsonIgnore
-    @OneToMany(mappedBy = "course",
-            cascade = CascadeType.ALL,
-            orphanRemoval = true)
-    private List<CourseItem> courseItems;
+    @OneToMany(mappedBy = "course", orphanRemoval = true)
+    private List<CourseWord> courseWords = new ArrayList<>();
 
-    private int quantity;
+    private Integer quantity = 0;
 
-    @JsonIgnore
-    @OneToMany(mappedBy = "course",
-            cascade = CascadeType.ALL,
-            orphanRemoval = true)
-    private List<UserCourse> userCourses;
+    @OneToMany(mappedBy = "course", orphanRemoval = true)
+    private List<CourseParticipant> courseParticipants = new ArrayList<>();
+
+    @PreUpdate
+    public void beforeUpdate() {
+        if (this.getCourseWords() != null) {
+            this.setQuantity(this.getCourseWords().size());
+        }
+    }
 
     public int getPoints() {
         return switch (this.level) {
@@ -52,9 +51,5 @@ public class Course extends CommonEntity {
             case INTERMEDIATE -> CourseConstants.INTERMEDIATE_COMPLETED_POINTS;
             case ADVANCED -> CourseConstants.ADVANCED_COMPLETED_POINTS;
         };
-    }
-
-    public void copy(Course source){
-        BeanUtil.copyProperties(source,this, CopyOptions.create().setIgnoreNullValue(true));
     }
 }
