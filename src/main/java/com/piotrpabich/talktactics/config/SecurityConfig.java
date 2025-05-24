@@ -38,17 +38,19 @@ public class SecurityConfig {
             new AntPathRequestMatcher("/error"),
             new AntPathRequestMatcher("/api/v1/auth/**"),
             new AntPathRequestMatcher("/api/v1/courses/navbar"),
+            new AntPathRequestMatcher("/api/v1/course-participants"),
+            new AntPathRequestMatcher("/api/v1/course-participants/{courseParticipantUuid}"),
             new AntPathRequestMatcher("/api/v1/users/profiles"),
-            new AntPathRequestMatcher("/api/v1/users/profiles/{userId}"),
+            new AntPathRequestMatcher("/api/v1/users/profiles/{userUuid}"),
             new AntPathRequestMatcher("/api/v1/courses", HttpMethod.GET.name()),
-            new AntPathRequestMatcher("/api/v1/course-items", HttpMethod.GET.name()),
-            new AntPathRequestMatcher("/api/v1/course-items/{id}", HttpMethod.GET.name())
+            new AntPathRequestMatcher("/api/v1/course-words", HttpMethod.GET.name()),
+            new AntPathRequestMatcher("/api/v1/course-words/{courseUuid}", HttpMethod.GET.name())
     };
     private static final AntPathRequestMatcher[] ADMIN_URLS = {
             new AntPathRequestMatcher("/api/v1/courses", HttpMethod.POST.name()),
-            new AntPathRequestMatcher("/api/v1/courses", HttpMethod.PUT.name()),
+            new AntPathRequestMatcher("/api/v1/courses", HttpMethod.PATCH.name()),
             new AntPathRequestMatcher("/api/v1/courses", HttpMethod.DELETE.name()),
-            new AntPathRequestMatcher("/api/v1/course-items", HttpMethod.DELETE.name()),
+            new AntPathRequestMatcher("/api/v1/course-words", HttpMethod.DELETE.name()),
             new AntPathRequestMatcher("/api/v1/users")
     };
     private final JwtAuthenticationFilter jwtAuthFilter;
