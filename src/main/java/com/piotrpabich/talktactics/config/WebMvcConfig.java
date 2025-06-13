@@ -7,6 +7,8 @@ import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
+import java.util.List;
+
 @Configuration
 @EnableWebMvc
 @RequiredArgsConstructor
@@ -16,7 +18,7 @@ public class WebMvcConfig implements WebMvcConfigurer {
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         final CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(corsConfig.allowedOrigins());
+        configuration.setAllowedOrigins(List.of("*"));
         configuration.setAllowedMethods(corsConfig.allowedMethods());
         configuration.setAllowedHeaders(corsConfig.allowedHeaders());
         configuration.setExposedHeaders(corsConfig.exposedHeaders());
