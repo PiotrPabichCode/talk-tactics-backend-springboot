@@ -16,6 +16,7 @@ web:
     allowed-origins:
       - http://localhost:3000
       - https://talk-tactics-frontend.vercel.app
+      - https://talktacticsapi.piotrpabich.work
     allowed-methods: GET, POST, PATCH, PUT, DELETE, OPTIONS, HEAD
     max-age: 3600
     allowed-headers: Origin, x-requested-with, x-user-agent, authorization, accept, content-type, x-auth-token, x-trace-id
