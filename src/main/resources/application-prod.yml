@@ -8,5 +8,4 @@ spring:
   jpa:
     hibernate:
       ddl-auto: create
-    show-sql: false
     open-in-view: false

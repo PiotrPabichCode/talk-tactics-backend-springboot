@@ -15,6 +15,9 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import static org.springframework.security.config.Customizer.withDefaults;
 
@@ -46,6 +49,7 @@ public class SecurityConfig {
             new AntPathRequestMatcher("/api/v1/course-words", HttpMethod.GET.name()),
             new AntPathRequestMatcher("/api/v1/course-words/{courseUuid}", HttpMethod.GET.name())
     };
+
     private static final AntPathRequestMatcher[] ADMIN_URLS = {
             new AntPathRequestMatcher("/api/v1/courses", HttpMethod.POST.name()),
             new AntPathRequestMatcher("/api/v1/courses", HttpMethod.PATCH.name()),
@@ -53,6 +57,8 @@ public class SecurityConfig {
             new AntPathRequestMatcher("/api/v1/course-words", HttpMethod.DELETE.name()),
             new AntPathRequestMatcher("/api/v1/users")
     };
+
+    private final CorsProperties corsProperties;
     private final JwtAuthenticationFilter jwtAuthFilter;
     private final AuthenticationProvider authenticationProvider;
 
@@ -73,6 +79,20 @@ public class SecurityConfig {
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
+    }
+
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        final var config = new CorsConfiguration();
+        config.setAllowedOrigins(corsProperties.allowedOrigins());
+        config.setAllowedMethods(corsProperties.allowedMethods());
+        config.setAllowedHeaders(corsProperties.allowedHeaders());
+        config.setMaxAge(corsProperties.maxAge());
+        config.setAllowCredentials(corsProperties.allowCredentials());
+
+        final var source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", config);
+        return source;
     }
 
 }
